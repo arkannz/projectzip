@@ -487,4 +487,89 @@ class RabController extends Controller
             'total_untung_rugi' => $totalUntungRugi,
         ]);
     }
+
+    /**
+     * Refresh/Sync harga bahan dari inventory ke RAB items
+     */
+    public function refreshPrices(Request $request)
+    {
+        $typeId     = $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return response()->json(['error' => 'Missing parameters'], 400);
+        }
+
+        // Ambil semua inventory items untuk lookup
+        $inventoryItems = InventoryItem::all()->keyBy('nama');
+
+        // Ambil RAB items
+        $rabItems = RabItem::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->get();
+
+        $updated = 0;
+        foreach ($rabItems as $item) {
+            // Cari di inventory dengan exact match
+            $inventory = $inventoryItems->get($item->uraian);
+            
+            // Jika tidak ketemu, coba cari dengan LIKE
+            if (!$inventory) {
+                $inventory = InventoryItem::where('nama', 'LIKE', '%' . $item->uraian . '%')
+                    ->orWhere('nama', 'LIKE', '%' . str_replace(' ', '', $item->uraian) . '%')
+                    ->first();
+            }
+
+            if ($inventory && $inventory->harga > 0) {
+                $item->harga_bahan = $inventory->harga;
+                $item->total_harga = $item->bahan_out > 0 
+                    ? $item->bahan_out * $inventory->harga 
+                    : $item->bahan_baku * $inventory->harga;
+                $item->save();
+                $updated++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Berhasil update harga untuk {$updated} item",
+            'updated' => $updated,
+        ]);
+    }
+
+    /**
+     * Reset dan regenerate RAB items (hapus yang lama, buat baru)
+     */
+    public function regenerate(Request $request)
+    {
+        $typeId     = $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return response()->json(['error' => 'Missing parameters'], 400);
+        }
+
+        // Hapus RAB items yang ada
+        RabItem::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->delete();
+
+        // Hapus borongan yang ada
+        RabCategoryBorongan::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->delete();
+
+        // Generate ulang
+        $this->generateRabFromTemplate($typeId, $unitId, $locationId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'RAB berhasil di-regenerate',
+        ]);
+    }
 }

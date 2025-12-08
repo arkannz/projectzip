@@ -72,6 +72,12 @@
             — Unit {{ $selectedUnit->kode_unit ?? '' }}
         </h4>
         <div>
+            <button type="button" class="btn btn-warning mr-2" id="btnRefreshPrices" title="Refresh harga dari inventory">
+                <i class="fas fa-sync"></i> Refresh Harga
+            </button>
+            <button type="button" class="btn btn-danger mr-2" id="btnRegenerate" title="Hapus dan generate ulang RAB">
+                <i class="fas fa-redo"></i> Regenerate
+            </button>
             <button type="button" class="btn btn-success mr-2" id="btnSaveAll">
                 <i class="fas fa-save"></i> Simpan Semua
             </button>
@@ -495,6 +501,70 @@ $(document).ready(function() {
             .finally(() => {
                 btn.prop('disabled', false).html('<i class="fas fa-save"></i> Simpan Semua');
             });
+    });
+
+    // Refresh Prices from Inventory
+    $('#btnRefreshPrices').on('click', function() {
+        if (!confirm('Refresh harga bahan dari inventory? Data yang sudah diinput (OUT, Upah, Progress) tidak akan berubah.')) {
+            return;
+        }
+
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Refreshing...');
+
+        $.ajax({
+            url: '{{ route("rab.refresh-prices") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                type_id: typeId,
+                unit_id: unitId,
+                location_id: locationId
+            }
+        })
+        .then(response => {
+            alert(response.message);
+            location.reload();
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan saat refresh harga');
+        })
+        .finally(() => {
+            btn.prop('disabled', false).html('<i class="fas fa-sync"></i> Refresh Harga');
+        });
+    });
+
+    // Regenerate RAB
+    $('#btnRegenerate').on('click', function() {
+        if (!confirm('PERINGATAN: Ini akan MENGHAPUS semua data RAB yang sudah ada dan membuat ulang dari template.\n\nSemua data OUT, Upah, Progress akan HILANG!\n\nLanjutkan?')) {
+            return;
+        }
+
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Regenerating...');
+
+        $.ajax({
+            url: '{{ route("rab.regenerate") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                type_id: typeId,
+                unit_id: unitId,
+                location_id: locationId
+            }
+        })
+        .then(response => {
+            alert(response.message);
+            location.reload();
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan saat regenerate RAB');
+        })
+        .finally(() => {
+            btn.prop('disabled', false).html('<i class="fas fa-redo"></i> Regenerate');
+        });
     });
 
     // Helper functions
