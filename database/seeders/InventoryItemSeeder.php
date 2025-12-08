@@ -9,154 +9,161 @@ class InventoryItemSeeder extends Seeder
 {
     public function run()
     {
+        // Format: 'nama' => ['harga' => xxx, 'satuan' => 'xxx']
         $items = [
 
             // A — PONDASI
-            'Besi ø6',
-            'Besi ø8 Ulir',
-            'Kayu 3/5',
-            'Cerucuk',
-            'Papan Mal',
-            'Pasir',
-            'Batu',
-            'Semen PCC 40 Kg Tiga Roda',
+            ['nama' => 'Besi ø6', 'harga' => 22000, 'satuan' => 'Batang'],
+            ['nama' => 'Besi ø8 Ulir', 'harga' => 49000, 'satuan' => 'Batang'],
+            ['nama' => 'Kayu 3/5', 'harga' => 11000, 'satuan' => 'Batang'],
+            ['nama' => 'Cerucuk', 'harga' => 11000, 'satuan' => 'Batang'],
+            ['nama' => 'Papan Mal', 'harga' => 150000, 'satuan' => 'Lembar'],
+            ['nama' => 'Pasir', 'harga' => 150000, 'satuan' => 'Kubik'],
+            ['nama' => 'Batu', 'harga' => 500000, 'satuan' => 'Truk'],
+            ['nama' => 'Semen PCC 40 Kg Tiga Roda', 'harga' => 60700, 'satuan' => 'Sak'],
 
             // B — URUG
-            'Pipa 4"',
-            'Pipa 2"',
+            ['nama' => 'Pipa 4"', 'harga' => 48000, 'satuan' => 'Batang'],
+            ['nama' => 'Pipa 2"', 'harga' => 22000, 'satuan' => 'Batang'],
 
             // C — COR LANTAI
-            'Plastik cor',
+            ['nama' => 'Plastik cor', 'harga' => 15000, 'satuan' => 'Meter'],
 
             // D — PINTU
-            'Pintu Kayu 120 x 220',
-            'Pintu Kayu 80 x 220',
-            'Pintu WC PVC Biru',
-            'Pintu WC Edenjoice Putih',
-            'Engsel Pintu 4"',
-            'Peganggan pintu 2 daun',
-            'Pengunci Pintu 2 daun',
-            'Pegangan kunci 1 daun',
-            'Avian',
-            'Tinner Nb Kaleng',
-            'Slot 6"',
-            'Slot 4"',
+            ['nama' => 'Pintu Kayu 120 x 220', 'harga' => 1550000, 'satuan' => 'Unit'],
+            ['nama' => 'Pintu Kayu 80 x 220', 'harga' => 775000, 'satuan' => 'Unit'],
+            ['nama' => 'Pintu WC PVC Biru', 'harga' => 260000, 'satuan' => 'Unit'],
+            ['nama' => 'Pintu WC Edenjoice Putih', 'harga' => 799000, 'satuan' => 'Unit'],
+            ['nama' => 'Engsel Pintu 4"', 'harga' => 15000, 'satuan' => 'Pcs'],
+            ['nama' => 'Peganggan pintu 2 daun', 'harga' => 100000, 'satuan' => 'Set'],
+            ['nama' => 'Pengunci Pintu 2 daun', 'harga' => 60000, 'satuan' => 'Set'],
+            ['nama' => 'Pegangan kunci 1 daun', 'harga' => 65000, 'satuan' => 'Set'],
+            ['nama' => 'Avian', 'harga' => 83000, 'satuan' => 'Kaleng'],
+            ['nama' => 'Tinner Nb Kaleng', 'harga' => 23000, 'satuan' => 'Kaleng'],
+            ['nama' => 'Slot 6"', 'harga' => 17000, 'satuan' => 'Pcs'],
+            ['nama' => 'Slot 4"', 'harga' => 11000, 'satuan' => 'Pcs'],
 
             // E — BATA
-            'Papan',
-            'Kusen Pintu (2 Daun)',
-            'Kusen Pintu (1 Daun)',
-            'Bata',
+            ['nama' => 'Papan', 'harga' => 11000, 'satuan' => 'Lembar'],
+            ['nama' => 'Besi ø8', 'harga' => 35000, 'satuan' => 'Batang'],
+            ['nama' => 'Kusen Pintu (2 Daun)', 'harga' => 363250, 'satuan' => 'Set'],
+            ['nama' => 'Kusen Pintu (1 Daun)', 'harga' => 337050, 'satuan' => 'Set'],
+            ['nama' => 'Bata', 'harga' => 1850, 'satuan' => 'Pcs'],
 
             // F — COR TIANG DEPAN
-            'Multiplek',
+            ['nama' => 'Multiplek', 'harga' => 130000, 'satuan' => 'Lembar'],
 
             // G — PLASTER
-            'Pipa 5/8',
+            ['nama' => 'Pipa 5/8', 'harga' => 8600, 'satuan' => 'Batang'],
 
             // H — ATAP
-            'Kayu 4/6',
-            'Kayu 5/7',
-            'Lisplank',
-            'Seng Metal 4 Susun (merah)',
-            'Seng Metal 2 Susun (hitam)',
-            'Perabung Hitam',
-            'Perabung Merah',
-            'Paku 2 inch',
-            'Paku 3 inch',
+            ['nama' => 'Kayu 4/6', 'harga' => 15000, 'satuan' => 'Batang'],
+            ['nama' => 'Kayu 5/7', 'harga' => 30000, 'satuan' => 'Batang'],
+            ['nama' => 'Lisplank', 'harga' => 60000, 'satuan' => 'Lembar'],
+            ['nama' => 'Seng Metal 4 Susun (merah)', 'harga' => 52000, 'satuan' => 'Lembar'],
+            ['nama' => 'Seng Metal 2 Susun (hitam)', 'harga' => 36000, 'satuan' => 'Lembar'],
+            ['nama' => 'Perabung Hitam', 'harga' => 50000, 'satuan' => 'Pcs'],
+            ['nama' => 'Perabung Merah', 'harga' => 650000, 'satuan' => 'Pcs'],
+            ['nama' => 'Paku 2 inch', 'harga' => 130000, 'satuan' => 'Kg'],
+            ['nama' => 'Paku 3 inch', 'harga' => 130000, 'satuan' => 'Kg'],
 
             // I — DEK
-            'Gypsum',
-            'Baut',
-            'Paku Beton 4 inch',
-            'Paku 3 inch',
-            'Paku 2 inch',
+            ['nama' => 'Gypsum', 'harga' => 11000, 'satuan' => 'Lembar'],
+            ['nama' => 'Baut', 'harga' => 60000, 'satuan' => 'Kotak'],
+            ['nama' => 'Paku Beton 4 inch', 'harga' => 37000, 'satuan' => 'Kg'],
+            // Paku 3 inch & 2 inch sudah ada di atas
 
             // J — MINIMALIS
-            'Keramik 60 x 60 Blackmatt',
+            ['nama' => 'Keramik 60 x 60 Blackmatt', 'harga' => 165000, 'satuan' => 'Dus'],
 
             // K — CARPORT
-            'Keramik 60 x 60 Cream',
+            // Items already exist above
 
             // L — KERAMIK
-            'Oker',
+            ['nama' => 'Keramik 60 x 60 Cream', 'harga' => 165000, 'satuan' => 'Dus'],
+            ['nama' => 'Oker', 'harga' => 15000, 'satuan' => 'Kg'],
 
             // M — WC
-            'Keramik 30 x 30',
-            'Keramik 25 x 40',
-            'Closed jongkok Ina',
-            'Closed Duduk Volk',
-            'Floor drain',
-            'Bak Air',
-            'Pipa 1/2"',
-            'Lbow 1/2"',
-            'Kran Air Plastik 1/2"',
-            'SDD 1/2"',
+            ['nama' => 'Keramik 30 x 30', 'harga' => 60000, 'satuan' => 'Dus'],
+            ['nama' => 'Keramik 25 x 40', 'harga' => 270000, 'satuan' => 'Dus'],
+            ['nama' => 'Closed jongkok Ina', 'harga' => 780000, 'satuan' => 'Unit'],
+            ['nama' => 'Closed Duduk Volk', 'harga' => 5000, 'satuan' => 'Unit'],
+            ['nama' => 'Floor drain', 'harga' => 5000, 'satuan' => 'Pcs'],
+            ['nama' => 'Bak Air', 'harga' => 140000, 'satuan' => 'Unit'],
+            ['nama' => 'Pipa 1/2"', 'harga' => 18000, 'satuan' => 'Batang'],
+            ['nama' => 'Lbow 1/2"', 'harga' => 2500, 'satuan' => 'Pcs'],
+            ['nama' => 'Kran Air Plastik 1/2"', 'harga' => 10000, 'satuan' => 'Pcs'],
+            ['nama' => 'SDD 1/2"', 'harga' => 5000, 'satuan' => 'Pcs'],
 
             // N — ACI MINIMALIS
-            'Semen TR-30 40 Kg Tiga Roda',
-            'Semen Aci Putih 25 kg',
+            ['nama' => 'Semen TR-30 40 Kg Tiga Roda', 'harga' => 124500, 'satuan' => 'Sak'],
 
             // O — CAT
-            'Mowilex weathercoat',
-            'Nippon paint Q-LUC',
+            ['nama' => 'Mowilex weathercoat', 'harga' => 2434900, 'satuan' => 'Pail'],
+            ['nama' => 'Nippon paint Q-LUC', 'harga' => 275000, 'satuan' => 'Pail'],
+            ['nama' => 'Semen Aci Putih 25 kg', 'harga' => 115000, 'satuan' => 'Sak'],
 
             // P — PAGAR
-            'Box MCB tanam 3 grup',
+            // Items exist above
 
             // Q — MINIMALIS CARPORT
+            // Using same items as above
 
             // R — TALANG AIR
-            'Pipa 3"',
-            'Cekakan pipa 2"',
-            'Lbow 3" ke 2"',
-            'Sambungan 3" ke 2"',
-            'Penutup pipa 3"',
-            'Lem pipa fox',
+            ['nama' => 'Pipa 3"', 'harga' => 82000, 'satuan' => 'Batang'],
+            ['nama' => 'Cekakan pipa 2"', 'harga' => 4000, 'satuan' => 'Pcs'],
+            ['nama' => 'Lbow 3" ke 2"', 'harga' => 15000, 'satuan' => 'Pcs'],
+            ['nama' => 'Sambungan 3" ke 2"', 'harga' => 12000, 'satuan' => 'Pcs'],
+            ['nama' => 'Lbow 2"', 'harga' => 4000, 'satuan' => 'Pcs'],
+            ['nama' => 'Penutup pipa 3"', 'harga' => 8000, 'satuan' => 'Pcs'],
+            ['nama' => 'Lem pipa fox', 'harga' => 22000, 'satuan' => 'Tube'],
 
             // S — JENDELA
-            'Aluminium white ink (openback)',
-            'Aluminium white ink (m)',
-            'Aluminium white ink (stoper casmen)',
-            'List ornamen 20 mm white',
-            'Klem sedang 13 x 26 x 1,4 mm',
-            'Karet C besar HTM',
-            'Karet cacing HTM',
-            'Rambuncis dks white kanan',
-            'Rambuncis dks white kiri',
-            'Engsel casment glatino 8 inch',
-            'Marks sosis black 620 ml',
-            'Sekrup 8 x 3 rata',
-            'Sekrup 8 x 1,5 rata @ 50 pcs',
-            'Sekrup 8 x 1 bulat',
-            'Sekrup 8 x 0,5 rata',
-            'Rivet GT 429',
-            'Fisher S6 vini star',
-            'Reben 5, 203 cm x 102 cm asahi',
-            'Marks sosis white 620 ml',
+            ['nama' => 'Aluminium white ink (openback)', 'harga' => 165000, 'satuan' => 'Batang'],
+            ['nama' => 'Aluminium white ink (m)', 'harga' => 198000, 'satuan' => 'Batang'],
+            ['nama' => 'Aluminium white ink (stoper casmen)', 'harga' => 86000, 'satuan' => 'Batang'],
+            ['nama' => 'List ornamen 20 mm white', 'harga' => 50000, 'satuan' => 'Batang'],
+            ['nama' => 'Klem sedang 13 x 26 x 1,4 mm', 'harga' => 60000, 'satuan' => 'Kotak'],
+            ['nama' => 'Karet C besar HTM', 'harga' => 55000, 'satuan' => 'Meter'],
+            ['nama' => 'Karet cacing HTM', 'harga' => 50000, 'satuan' => 'Meter'],
+            ['nama' => 'Rambuncis dks white kanan', 'harga' => 11000, 'satuan' => 'Pcs'],
+            ['nama' => 'Rambuncis dks white kiri', 'harga' => 11000, 'satuan' => 'Pcs'],
+            ['nama' => 'Engsel casment glatino 8 inch', 'harga' => 17000, 'satuan' => 'Pcs'],
+            ['nama' => 'Marks sosis black 620 ml', 'harga' => 40000, 'satuan' => 'Tube'],
+            ['nama' => 'Sekrup 8 x 3 rata', 'harga' => 400, 'satuan' => 'Pcs'],
+            ['nama' => 'Sekrup 8 x 1,5 rata @ 50 pcs', 'harga' => 15000, 'satuan' => 'Pak'],
+            ['nama' => 'Sekrup 8 x 1 bulat', 'harga' => 200, 'satuan' => 'Pcs'],
+            ['nama' => 'Sekrup 8 x 0,5 rata', 'harga' => 100, 'satuan' => 'Pcs'],
+            ['nama' => 'Rivet GT 429', 'harga' => 55000, 'satuan' => 'Kotak'],
+            ['nama' => 'Fisher S6 vini star', 'harga' => 10000, 'satuan' => 'Pak'],
+            ['nama' => 'Reben 5, 203 cm x 102 cm asahi', 'harga' => 300000, 'satuan' => 'Lembar'],
+            ['nama' => 'Marks sosis white 620 ml', 'harga' => 40000, 'satuan' => 'Tube'],
 
             // T — ELEKTRIKAL
-            'Saklar tunggal broco',
-            'Saklar dobel broco',
-            'Stop kontak tunggal broco',
-            'Kabel NYA 1,5 Eterna (100m)',
-            'Kabel NYA 2,5 Eterna (100m)',
-            'Kabel NYM 2 x 1,5 Jumbo (50m)',
-            'Kabel NYM 2 x 2,5 Jumbo (50m)',
-            'MCB 10A Powell',
-            'MCB Kwh 1300 amper',
+            ['nama' => 'Saklar tunggal broco', 'harga' => 14000, 'satuan' => 'Pcs'],
+            ['nama' => 'Saklar dobel broco', 'harga' => 18000, 'satuan' => 'Pcs'],
+            ['nama' => 'Stop kontak tunggal broco', 'harga' => 15000, 'satuan' => 'Pcs'],
+            ['nama' => 'Kabel NYA 1,5 Eterna (100m)', 'harga' => 336000, 'satuan' => 'Roll'],
+            ['nama' => 'Kabel NYA 2,5 Eterna (100m)', 'harga' => 5500, 'satuan' => 'Meter'],
+            ['nama' => 'Kabel NYM 2 x 1,5 Jumbo (50m)', 'harga' => 8200, 'satuan' => 'Meter'],
+            ['nama' => 'Kabel NYM 2 x 2,5 Jumbo (50m)', 'harga' => 12500, 'satuan' => 'Meter'],
+            ['nama' => 'MCB 10A Powell', 'harga' => 19000, 'satuan' => 'Pcs'],
+            ['nama' => 'Box MCB tanam 3 grup', 'harga' => 14000, 'satuan' => 'Pcs'],
+            ['nama' => 'MCB Kwh 1300 amper', 'harga' => 60000, 'satuan' => 'Pcs'],
         ];
 
-        foreach ($items as $name) {
-            InventoryItem::firstOrCreate(
-                ['nama' => $name],
+        foreach ($items as $item) {
+            InventoryItem::updateOrCreate(
+                ['nama' => $item['nama']],
                 [
-                    'harga'      => 0,
+                    'harga'      => $item['harga'],
                     'stok_awal'  => 0,
-                    'satuan'     => 'Unit',
+                    'satuan'     => $item['satuan'],
                     'keterangan' => null,
                 ]
             );
         }
+
+        echo "✔ SELESAI — " . count($items) . " ITEM INVENTORY BERHASIL DIIMPORT\n";
     }
 }

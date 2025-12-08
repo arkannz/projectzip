@@ -324,8 +324,19 @@ return [
         // RAB items:
         [
             'text' => 'R A B',
-            'url'  => 'rab',
             'icon' => 'fas fa-file-invoice-dollar',
+            'submenu' => [
+                [
+                    'text' => 'Semua RAB',
+                    'url'  => 'rab',
+                    'icon' => 'fas fa-list',
+                ],
+                [
+                    'text' => 'RAB Type 50',
+                    'url'  => 'rab/type50',
+                    'icon' => 'fas fa-file-alt',
+                ],
+            ],
         ],
         // Tukang items:
         [

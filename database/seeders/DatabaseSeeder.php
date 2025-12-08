@@ -25,15 +25,18 @@ class DatabaseSeeder extends Seeder
         // Memanggil Seeder
         $this->call([
             // Master Data
-            InventoryItemSeeder::class,
-            TypeSeeder::class,           // Type rumah (36, 45, 50, 60, 70, 90)
+            InventoryItemSeeder::class,  // Data inventory dengan harga bahan
+            TypeSeeder::class,           // Type rumah (36, 40, 45, 50, 55, 60, 70, 80, 100)
             
             // RAB Template & Categories
-            RabCategorySeeder::class,
-            RabTemplateSeeder::class,
+            RabCategorySeeder::class,    // Kategori RAB (A-T)
+            RabTemplateSeeder::class,    // Template RAB items
             
             // RAB Type Values (bahan_baku per type)
             RabType50Seeder::class,      // Data bahan_baku untuk type 50
+            
+            // RAB Borongan per Category per Type
+            RabCategoryBoronganSeeder::class,  // Data borongan default per kategori per type
         ]);
 
     }

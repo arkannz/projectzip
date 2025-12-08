@@ -17,4 +17,14 @@ class RabCategory extends Model
     {
         return $this->hasMany(RabTemplate::class, 'category_id');
     }
+
+    public function items()
+    {
+        return $this->hasMany(RabItem::class, 'rab_category_id');
+    }
+
+    public function borongans()
+    {
+        return $this->hasMany(RabCategoryBorongan::class, 'rab_category_id');
+    }
 }

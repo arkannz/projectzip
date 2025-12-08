@@ -55,9 +55,19 @@ Route::post('/inventory/add-unit', [App\Http\Controllers\Admin\InventoryControll
 
 Route::get('/inventory/history', [InventoryController::class, 'history'])->name('inventory.history');
 
-Route::get('/rab', [RabController::class, 'index'])->name('rab.index');
+// RAB Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/rab', [RabController::class, 'index'])->name('rab.index');
+    Route::post('/rab/store', [RabController::class, 'store'])->name('rab.store');
 
-Route::post('/rab/store', [RabController::class, 'store'])->name('rab.store');
+    // RAB Type 50 Routes
+    Route::get('/rab/type50', [RabController::class, 'type50'])->name('rab.type50');
+    Route::get('/rab/type50/print', [RabController::class, 'type50Print'])->name('rab.type50.print');
+    Route::put('/rab/item/{item}', [RabController::class, 'updateItem'])->name('rab.update-item');
+    Route::post('/rab/batch-update', [RabController::class, 'batchUpdate'])->name('rab.batch-update');
+    Route::post('/rab/update-borongan', [RabController::class, 'updateCategoryBorongan'])->name('rab.update-borongan');
+    Route::get('/rab/summary', [RabController::class, 'getSummary'])->name('rab.summary');
+});
 
 
 require __DIR__.'/auth.php';
