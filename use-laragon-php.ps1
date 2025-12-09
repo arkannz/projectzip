@@ -1,5 +1,10 @@
 # Script untuk menggunakan PHP Laragon
 # Jalankan dengan: .\use-laragon-php.ps1
+# 
+# Script ini mengatur PATH untuk menggunakan PHP Laragon 8.3.16
+# yang diperlukan untuk project Laravel 12 (memerlukan PHP ^8.2)
+
+Write-Host "`n=== Mengaktifkan PHP Laragon ===" -ForegroundColor Cyan
 
 # Set PATH untuk menggunakan PHP Laragon
 $env:Path = "C:\laragon\bin\php\php-8.3.16-Win32-vs16-x64;$env:Path"
@@ -11,6 +16,11 @@ php -v
 Write-Host "`n✓ PHP Laragon 8.3.16 sudah aktif!" -ForegroundColor Green
 Write-Host "Sekarang Anda bisa menjalankan:" -ForegroundColor Yellow
 Write-Host "  - php artisan ..." -ForegroundColor White
-Write-Host "  - composer ..." -ForegroundColor White
+Write-Host "  - composer install" -ForegroundColor White
+Write-Host "  - composer update" -ForegroundColor White
+Write-Host "  - php artisan migrate" -ForegroundColor White
+Write-Host "  - php artisan serve" -ForegroundColor White
+Write-Host "`nCatatan: PATH ini hanya berlaku untuk session PowerShell ini." -ForegroundColor Gray
+Write-Host "Untuk set permanen, tambahkan ke PowerShell Profile atau System PATH." -ForegroundColor Gray
 Write-Host "`n" -ForegroundColor White
 

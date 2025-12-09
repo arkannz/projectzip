@@ -102,3 +102,44 @@ git commit -m "fix: Resolve merge conflicts"
 git push origin main
 ```
 
+## Branch Protection (Main Dilindungi)
+
+Jika branch `main` dilindungi dan tidak bisa langsung push:
+
+### Solusi: Gunakan Branch Baru + Pull Request
+
+```powershell
+# 1. Buat branch baru
+git checkout -b nama-branch-baru
+
+# 2. Lakukan perubahan dan commit
+git add .
+git commit -m "feat: Add new feature"
+
+# 3. Push ke branch baru
+git push origin nama-branch-baru
+
+# 4. Buka GitHub dan buat Pull Request
+# 5. Merge Pull Request untuk menggabungkan ke main
+```
+
+### Contoh Workflow dengan Branch Protection
+
+```powershell
+# 1. Buat branch untuk fitur baru
+git checkout -b feature/tambah-fitur
+
+# 2. Edit file
+# ... buat perubahan ...
+
+# 3. Commit
+git add .
+git commit -m "feat: Tambah fitur baru"
+
+# 4. Push ke branch
+git push origin feature/tambah-fitur
+
+# 5. Di GitHub: Buat Pull Request dari feature/tambah-fitur ke main
+# 6. Review dan merge Pull Request
+```
+
