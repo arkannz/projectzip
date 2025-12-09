@@ -67,8 +67,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/rab/batch-update', [RabController::class, 'batchUpdate'])->name('rab.batch-update');
     Route::post('/rab/update-borongan', [RabController::class, 'updateCategoryBorongan'])->name('rab.update-borongan');
     Route::get('/rab/summary', [RabController::class, 'getSummary'])->name('rab.summary');
-    Route::post('/rab/refresh-prices', [RabController::class, 'refreshPrices'])->name('rab.refresh-prices');
-    Route::post('/rab/regenerate', [RabController::class, 'regenerate'])->name('rab.regenerate');
 });
 
 
