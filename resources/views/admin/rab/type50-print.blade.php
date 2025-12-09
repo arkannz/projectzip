@@ -11,18 +11,22 @@
             box-sizing: border-box;
         }
 
-        body {
+        html, body {
             font-family: Arial, sans-serif;
             font-size: 10px;
             line-height: 1.3;
             background: #fff;
             color: #000;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
         }
 
         .page {
-            width: 210mm;
-            min-height: 297mm;
-            padding: 10mm 15mm;
+            width: 215.9mm;
+            min-height: 330.2mm;
+            padding: 8mm 10mm;
             margin: 0 auto;
             background: white;
         }
@@ -53,40 +57,65 @@
         .main-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 9px;
+            font-size: 8px;
+            table-layout: fixed;
         }
 
         .main-table th,
         .main-table td {
             border: 1px solid #000;
-            padding: 2px 4px;
+            padding: 2px 3px;
             vertical-align: middle;
+            word-wrap: break-word;
+            overflow: hidden;
         }
 
         .main-table thead th {
-            background-color: #e3f2fd;
+            background-color: #d5d8dc;
+            color: #000;
             font-weight: bold;
             text-align: center;
-            font-size: 8px;
+            font-size: 7px;
+            padding: 3px 2px;
         }
 
         .main-table .category-row {
-            background-color: #f5f5f5;
+            background-color: #3498db;
+            color: #000;
             font-weight: bold;
         }
 
         .main-table .category-row td {
             padding: 3px 5px;
+            background-color: #3498db;
+            color: #000;
         }
 
         .main-table .summary-row {
-            background-color: #e3f2fd;
+            background-color: #aed6f1;
             font-weight: bold;
+        }
+        
+        .main-table .summary-row td {
+            background-color: #aed6f1;
         }
 
         .main-table .grand-total-row {
-            background-color: #bbdefb;
+            background-color: #a5d6a7;
             font-weight: bold;
+        }
+        
+        .main-table .grand-total-row td {
+            background-color: #a5d6a7;
+        }
+        
+        .main-table .total-bahan-hk-row {
+            background-color: #ffccbc;
+            font-weight: bold;
+        }
+        
+        .main-table .total-bahan-hk-row td {
+            background-color: #ffccbc;
         }
 
         .text-center { text-align: center; }
@@ -95,16 +124,16 @@
         
         .text-danger { color: #dc3545; }
         
-        .col-no { width: 25px; }
-        .col-uraian { width: 150px; }
-        .col-baku { width: 45px; }
-        .col-out { width: 40px; }
-        .col-harga { width: 70px; }
-        .col-total { width: 80px; }
-        .col-upah { width: 70px; }
-        .col-borongan { width: 80px; }
-        .col-untung { width: 80px; }
-        .col-progress { width: 45px; }
+        .col-no { width: 4%; }
+        .col-uraian { width: 28%; }
+        .col-baku { width: 6%; }
+        .col-out { width: 5%; }
+        .col-harga { width: 10%; }
+        .col-total { width: 11%; }
+        .col-upah { width: 10%; }
+        .col-borongan { width: 11%; }
+        .col-untung { width: 10%; }
+        .col-progress { width: 5%; }
 
         .page-number {
             position: absolute;
@@ -116,28 +145,109 @@
         @media print {
             body {
                 background: white;
+                margin: 0;
+                padding: 0;
             }
             
             .page {
-                width: 100%;
-                padding: 5mm 10mm;
+                width: 215.9mm;
+                min-height: 330.2mm;
+                padding: 5mm 8mm;
                 margin: 0;
-                page-break-after: auto;
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+
+            /* Halaman pertama: tambahkan margin bottom */
+            .page:first-of-type,
+            .page.page-odd:first-of-type {
+                padding-bottom: 20mm;
+            }
+
+            /* Sembunyikan header di halaman genap (belakang) */
+            .page.page-even .page-header {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+
+            /* Alternatif: juga sembunyikan dengan nth-of-type */
+            .page:nth-of-type(even) .page-header {
+                display: none !important;
+            }
+
+            /* Sembunyikan thead (header tabel) di halaman genap (belakang) */
+            .page.page-even .main-table thead,
+            .page:nth-of-type(even) .main-table thead {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
             }
 
             .no-print {
                 display: none !important;
             }
 
+            .main-table {
+                font-size: 7px;
+                width: 100%;
+            }
+
             .main-table th,
             .main-table td {
+                font-size: 7px;
+                padding: 1px 2px;
+                line-height: 1.2;
+            }
+
+            .main-table thead th {
+                font-size: 7px;
+                padding: 2px 3px;
+            }
+
+            .main-table .category-row {
+                page-break-inside: avoid;
+            }
+
+            .main-table .summary-row {
+                page-break-inside: avoid;
+            }
+
+            .main-table .grand-total-row {
+                page-break-inside: avoid;
+            }
+
+            .main-table .total-bahan-hk-row {
+                page-break-inside: avoid;
+            }
+
+            .header {
+                margin-bottom: 5px;
+            }
+
+            .header-table td {
+                padding: 2px 3px;
                 font-size: 8px;
-                padding: 1px 3px;
             }
 
             @page {
-                size: A4;
-                margin: 5mm;
+                size: Legal;
+                margin: 0;
+            }
+
+            @page :first {
+                margin-top: 0;
+            }
+
+            @page {
+                margin-left: 0;
+                margin-right: 0;
             }
         }
 
@@ -184,9 +294,49 @@
     <a href="{{ route('rab.type50', ['type_id' => $selectedType->id ?? '', 'unit_id' => $selectedUnit->id ?? '', 'location_id' => $selectedLocation->id ?? '']) }}" class="back-btn no-print">← Kembali</a>
     <button onclick="window.print()" class="print-btn no-print">🖨️ Print</button>
 
-    <div class="page">
+    @php
+        // Pisahkan kategori menjadi 2 grup: A-J dan K-selesai
+        $categoriesFirstPage = $categories->filter(function($cat) {
+            $kode = strtoupper($cat->kode);
+            return $kode >= 'A' && $kode <= 'J';
+        });
+        
+        $categoriesSecondPage = $categories->filter(function($cat) {
+            $kode = strtoupper($cat->kode);
+            return $kode >= 'K';
+        });
+        
+        // Hitung grand total untuk semua kategori
+        $grandTotalHarga = 0;
+        $grandTotalUpah = 0;
+        $grandTotalBorongan = 0;
+        $allProgress = [];
+        $categoryCount = 0;
+        
+        foreach($categories as $category) {
+            $categoryItems = $rabItems->where('rab_category_id', $category->id);
+            if ($categoryItems->isEmpty()) continue;
+            
+            $catBorongan = $categoryBorongans->get($category->id);
+            $catBoronganValue = $catBorongan ? $catBorongan->borongan : 0;
+            $catUpahValue = $catBorongan ? $catBorongan->upah : 0;
+            $catProgressValue = $catBorongan ? $catBorongan->progress : 0;
+            
+            $grandTotalHarga += $categoryItems->sum('total_harga');
+            $grandTotalUpah += $catUpahValue;
+            $grandTotalBorongan += $catBoronganValue;
+            $allProgress[] = $catProgressValue;
+            $categoryCount++;
+        }
+        
+        $grandUntungRugi = $grandTotalBorongan - $grandTotalUpah;
+        $avgProgress = $categoryCount > 0 ? round(array_sum($allProgress) / $categoryCount) : 0;
+    @endphp
+
+    {{-- HALAMAN PERTAMA: Kategori A-J --}}
+    <div class="page page-odd">
         {{-- Header --}}
-        <div class="header">
+        <div class="header page-header">
             <table class="header-table">
                 <tr>
                     <td class="header-left">
@@ -219,35 +369,27 @@
                 </tr>
             </thead>
             <tbody>
-                @php
-                    $grandTotalHarga = 0;
-                    $grandTotalUpah = 0;
-                    $grandTotalBorongan = 0;
-                    $grandUntungRugi = 0;
-                    $allProgress = [];
-                @endphp
-
-                @foreach($categories as $category)
+                @foreach($categoriesFirstPage as $category)
                     @php
                         $categoryItems = $rabItems->where('rab_category_id', $category->id);
                         if ($categoryItems->isEmpty()) continue;
                         
-                        // Calculate category totals
-                        $catTotalHarga = $categoryItems->sum('total_harga');
-                        $catTotalUpah = $categoryItems->sum('upah');
+                        // Get category data from borongans
                         $catBorongan = $categoryBorongans->get($category->id);
                         $catBoronganValue = $catBorongan ? $catBorongan->borongan : 0;
-                        $catUntungRugi = $catBoronganValue - $catTotalUpah;
-                        $catProgress = $categoryItems->count() > 0 ? round($categoryItems->avg('progres')) : 0;
+                        $catUpahValue = $catBorongan ? $catBorongan->upah : 0;
+                        $catProgressValue = $catBorongan ? $catBorongan->progress : 0;
+                        $catUntungRugi = $catBoronganValue - $catUpahValue;
+                        
+                        // Calculate total harga from items
+                        $catTotalHarga = $categoryItems->sum('total_harga');
                         
                         // Add to grand totals
                         $grandTotalHarga += $catTotalHarga;
-                        $grandTotalUpah += $catTotalUpah;
+                        $grandTotalUpah += $catUpahValue;
                         $grandTotalBorongan += $catBoronganValue;
-                        
-                        foreach($categoryItems as $item) {
-                            $allProgress[] = $item->progres;
-                        }
+                        $allProgress[] = $catProgressValue;
+                        $categoryCount++;
                         
                         $itemCounter = 0;
                     @endphp
@@ -268,33 +410,91 @@
                             <td class="text-center">{{ $item->bahan_out }}</td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
                             <td class="text-right">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
-                            <td class="text-right">{{ $item->upah > 0 ? 'Rp ' . number_format($item->upah, 0, ',', '.') : '-' }}</td>
-                            <td class="text-right">-</td>
-                            <td class="text-right">-</td>
-                            <td class="text-center">{{ $item->progres > 0 ? $item->progres . '%' : '-' }}</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
                         </tr>
                     @endforeach
 
-                    {{-- Category Summary --}}
+                    {{-- Category Summary with Upah, Borongan, Untung/Rugi, Progress --}}
                     <tr class="summary-row">
-                        <td colspan="5" class="text-right">Subtotal:</td>
+                        <td colspan="5" class="text-center"><strong>Subtotal {{ $category->nama }}:</strong></td>
                         <td class="text-right">Rp {{ number_format($catTotalHarga, 0, ',', '.') }}</td>
-                        <td class="text-right">Rp {{ number_format($catTotalUpah, 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($catUpahValue, 0, ',', '.') }}</td>
                         <td class="text-right">Rp {{ number_format($catBoronganValue, 0, ',', '.') }}</td>
                         <td class="text-right {{ $catUntungRugi < 0 ? 'text-danger' : '' }}">
                             Rp {{ number_format($catUntungRugi, 0, ',', '.') }}
                         </td>
-                        <td class="text-center">{{ $catProgress }}%</td>
+                        <td class="text-center">{{ $catProgressValue }}%</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    {{-- HALAMAN KEDUA: Kategori K-selesai --}}
+    <div class="page page-even">
+        {{-- Main Table (tanpa header utama dan tanpa thead) --}}
+        <table class="main-table">
+            <tbody>
+                @foreach($categoriesSecondPage as $category)
+                    @php
+                        $categoryItems = $rabItems->where('rab_category_id', $category->id);
+                        if ($categoryItems->isEmpty()) continue;
+                        
+                        // Get category data from borongans
+                        $catBorongan = $categoryBorongans->get($category->id);
+                        $catBoronganValue = $catBorongan ? $catBorongan->borongan : 0;
+                        $catUpahValue = $catBorongan ? $catBorongan->upah : 0;
+                        $catProgressValue = $catBorongan ? $catBorongan->progress : 0;
+                        $catUntungRugi = $catBoronganValue - $catUpahValue;
+                        
+                        // Calculate total harga from items
+                        $catTotalHarga = $categoryItems->sum('total_harga');
+                        
+                        $itemCounter = 0;
+                    @endphp
+
+                    {{-- Category Header --}}
+                    <tr class="category-row">
+                        <td class="text-center">{{ $category->kode }}</td>
+                        <td colspan="9"><strong>{{ strtoupper($category->nama) }}</strong></td>
+                    </tr>
+
+                    {{-- Category Items --}}
+                    @foreach($categoryItems as $item)
+                        @php $itemCounter++; @endphp
+                        <tr>
+                            <td class="text-center">{{ $itemCounter }}</td>
+                            <td>{{ $item->uraian }}</td>
+                            <td class="text-center">{{ $item->bahan_baku }}</td>
+                            <td class="text-center">{{ $item->bahan_out }}</td>
+                            <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
+                            <td class="text-right">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
+                        </tr>
+                    @endforeach
+
+                    {{-- Category Summary with Upah, Borongan, Untung/Rugi, Progress --}}
+                    <tr class="summary-row">
+                        <td colspan="5" class="text-center"><strong>Subtotal {{ $category->nama }}:</strong></td>
+                        <td class="text-right">Rp {{ number_format($catTotalHarga, 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($catUpahValue, 0, ',', '.') }}</td>
+                        <td class="text-right">Rp {{ number_format($catBoronganValue, 0, ',', '.') }}</td>
+                        <td class="text-right {{ $catUntungRugi < 0 ? 'text-danger' : '' }}">
+                            Rp {{ number_format($catUntungRugi, 0, ',', '.') }}
+                        </td>
+                        <td class="text-center">{{ $catProgressValue }}%</td>
                     </tr>
                 @endforeach
 
-                {{-- Grand Total --}}
-                @php
-                    $grandUntungRugi = $grandTotalBorongan - $grandTotalUpah;
-                    $avgProgress = count($allProgress) > 0 ? round(array_sum($allProgress) / count($allProgress)) : 0;
-                @endphp
+                {{-- Grand Total (hanya di halaman terakhir) --}}
                 <tr class="grand-total-row">
-                    <td colspan="5" class="text-right"><strong>JUMLAH TOTAL</strong></td>
+                    <td colspan="5" class="text-center"><strong>JUMLAH TOTAL</strong></td>
                     <td class="text-right"><strong>Rp {{ number_format($grandTotalHarga, 0, ',', '.') }}</strong></td>
                     <td class="text-right"><strong>Rp {{ number_format($grandTotalUpah, 0, ',', '.') }}</strong></td>
                     <td class="text-right"><strong>Rp {{ number_format($grandTotalBorongan, 0, ',', '.') }}</strong></td>
@@ -304,32 +504,59 @@
                     <td class="text-center"><strong>{{ $avgProgress }}%</strong></td>
                 </tr>
 
-                {{-- Breakdown Row --}}
-                <tr class="grand-total-row">
-                    <td colspan="5" class="text-right"><strong>(TOTAL HARGA BAHAN + TOTAL HK)</strong></td>
-                    <td class="text-right" colspan="2">
+                {{-- Total Harga Bahan + Total HK Row --}}
+                <tr class="total-bahan-hk-row">
+                    <td colspan="5" class="text-center"><strong>( TOTAL HARGA BAHAN + TOTAL HK )</strong></td>
+                    <td class="text-center" colspan="5">
                         <strong>Rp {{ number_format($grandTotalHarga + $grandTotalUpah, 0, ',', '.') }}</strong>
                     </td>
-                    <td colspan="3"></td>
                 </tr>
             </tbody>
         </table>
 
-        {{-- Footer Info --}}
-        <div style="margin-top: 20px; font-size: 9px;">
+        {{-- Footer Info Halaman 2 --}}
+        <div class="page-footer" style="margin-top: 10px; font-size: 8px;">
             <table style="width: 100%;">
                 <tr>
                     <td style="width: 50%;">
-                        <p><strong>Unit:</strong> {{ $selectedUnit->kode_unit ?? '-' }}</p>
-                        <p><strong>Tanggal Cetak:</strong> {{ now()->format('d/m/Y H:i') }}</p>
+                        <p style="margin: 2px 0;"><strong>Unit:</strong> {{ $selectedUnit->kode_unit ?? '-' }}</p>
+                        <p style="margin: 2px 0;"><strong>Tanggal Cetak:</strong> {{ now()->format('d/m/Y H:i') }}</p>
+                        <p style="margin: 2px 0;"><strong>Halaman 2/2</strong></p>
                     </td>
                     <td style="width: 50%; text-align: right;">
-                        <p><strong>Keterangan:</strong></p>
-                        <p style="color: #dc3545;">* Warna merah = Rugi</p>
+                        <p style="margin: 2px 0;"><strong>Keterangan:</strong></p>
+                        <p style="margin: 2px 0; color: #dc3545;">* Warna merah = Rugi</p>
                     </td>
                 </tr>
             </table>
         </div>
     </div>
+
+    <script>
+        // Tambahkan class khusus untuk halaman genap (belakang)
+        document.addEventListener('DOMContentLoaded', function() {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach((page, index) => {
+                // Index dimulai dari 0, jadi halaman 2, 4, 6, dst adalah genap
+                if ((index + 1) % 2 === 0) {
+                    page.classList.add('page-even');
+                } else {
+                    page.classList.add('page-odd');
+                }
+            });
+        });
+
+        // Saat print, pastikan class sudah ditambahkan
+        window.addEventListener('beforeprint', function() {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach((page, index) => {
+                if ((index + 1) % 2 === 0) {
+                    page.classList.add('page-even');
+                } else {
+                    page.classList.add('page-odd');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -14,10 +14,14 @@ class RabCategoryBorongan extends Model
         'unit_id',
         'location_id',
         'borongan',
+        'upah',
+        'progress',
     ];
 
     protected $casts = [
         'borongan' => 'decimal:2',
+        'upah' => 'decimal:2',
+        'progress' => 'integer',
     ];
 
     public function category()

@@ -90,7 +90,7 @@
 
     <div class="table-responsive">
         <table class="table table-bordered table-sm" id="rabTable">
-            <thead class="bg-primary text-white">
+            <thead class="thead-light-gray">
                 <tr>
                     <th class="text-center" style="width: 40px;">No</th>
                     <th>Uraian Pekerjaan</th>
@@ -98,8 +98,8 @@
                     <th class="text-center" style="width: 70px;">OUT</th>
                     <th class="text-center" style="width: 100px;">Harga Bahan<br>(Rp)</th>
                     <th class="text-center" style="width: 120px;">Total Harga<br>(Rp)</th>
-                    <th class="text-center" style="width: 100px;">Upah</th>
-                    <th class="text-center" style="width: 120px;">Borongan</th>
+                    <th class="text-center" style="width: 110px;">Upah</th>
+                    <th class="text-center" style="width: 110px;">Borongan</th>
                     <th class="text-center" style="width: 120px;">Untung/Rugi</th>
                     <th class="text-center" style="width: 80px;">Progress</th>
                 </tr>
@@ -123,17 +123,15 @@
                         
                         // Calculate category totals
                         $catTotalHarga = $categoryItems->sum('total_harga');
-                        $catTotalUpah = $categoryItems->sum('upah');
                         $catBorongan = $categoryBorongans->get($category->id);
                         $catBoronganValue = $catBorongan ? $catBorongan->borongan : 0;
-                        $catUntungRugi = $catBoronganValue - $catTotalUpah;
-                        
-                        // Calculate average progress
-                        $catProgress = $categoryItems->count() > 0 ? round($categoryItems->avg('progres')) : 0;
+                        $catUpahValue = $catBorongan ? $catBorongan->upah : 0;
+                        $catProgressValue = $catBorongan ? $catBorongan->progress : 0;
+                        $catUntungRugi = $catBoronganValue - $catUpahValue;
                     @endphp
 
                     {{-- Category Header Row --}}
-                    <tr class="bg-light font-weight-bold">
+                    <tr class="category-header font-weight-bold">
                         <td class="text-center">{{ $category->kode }}</td>
                         <td colspan="9"><strong>{{ $category->nama }}</strong></td>
                     </tr>
@@ -141,7 +139,7 @@
                     {{-- Items in Category --}}
                     @foreach($categoryItems as $item)
                         @php $itemCounter++; @endphp
-                        <tr data-item-id="{{ $item->id }}" data-category-id="{{ $category->id }}">
+                        <tr class="item-row" data-item-id="{{ $item->id }}" data-category-id="{{ $category->id }}">
                             <td class="text-center">{{ $itemCounter }}</td>
                             <td>{{ $item->uraian }}</td>
                             <td class="text-center">{{ $item->bahan_baku }}</td>
@@ -152,70 +150,84 @@
                                        data-harga="{{ $item->harga_bahan }}"
                                        min="0" step="1" style="width: 60px;">
                             </td>
-                            <td class="text-right">{{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
+                            <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
                             <td class="text-right total-harga" data-item-id="{{ $item->id }}">
-                                {{ number_format($item->total_harga, 0, ',', '.') }}
+                                Rp {{ number_format($item->total_harga, 0, ',', '.') }}
                             </td>
-                            <td class="text-right">
-                                <input type="number" class="form-control form-control-sm input-upah" 
-                                       value="{{ $item->upah }}" 
-                                       data-item-id="{{ $item->id }}"
-                                       min="0" step="1000" style="width: 90px;">
-                            </td>
-                            <td class="text-right">-</td>
-                            <td class="text-right">-</td>
-                            <td class="text-center">
-                                <input type="number" class="form-control form-control-sm input-progres" 
-                                       value="{{ $item->progres }}" 
-                                       data-item-id="{{ $item->id }}"
-                                       min="0" max="100" step="1" style="width: 60px;">
-                            </td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
                         </tr>
                     @endforeach
 
-                    {{-- Category Summary Row --}}
-                    <tr class="bg-info text-white category-summary" data-category-id="{{ $category->id }}">
-                        <td colspan="5" class="text-right"><strong>Subtotal {{ $category->nama }}:</strong></td>
+                    {{-- Category Summary Row with Inputs --}}
+                    <tr class="category-summary-row category-summary" data-category-id="{{ $category->id }}">
+                        <td colspan="5" class="text-center"><strong>Subtotal {{ $category->nama }}:</strong></td>
                         <td class="text-right cat-total-harga" data-category-id="{{ $category->id }}">
-                            <strong>{{ number_format($catTotalHarga, 0, ',', '.') }}</strong>
+                            <strong>Rp {{ number_format($catTotalHarga, 0, ',', '.') }}</strong>
                         </td>
-                        <td class="text-right cat-total-upah" data-category-id="{{ $category->id }}">
-                            <strong>{{ number_format($catTotalUpah, 0, ',', '.') }}</strong>
+                        <td class="text-center">
+                            <input type="number" class="form-control form-control-sm input-upah-cat" 
+                                   value="{{ $catUpahValue }}" 
+                                   data-category-id="{{ $category->id }}"
+                                   min="0" step="10000" style="width: 100px;">
                         </td>
-                        <td class="text-right">
+                        <td class="text-center">
                             <input type="number" class="form-control form-control-sm input-borongan" 
                                    value="{{ $catBoronganValue }}" 
                                    data-category-id="{{ $category->id }}"
                                    min="0" step="10000" style="width: 100px;">
                         </td>
-                        <td class="text-right cat-untung-rugi {{ $catUntungRugi < 0 ? 'text-danger' : '' }}" 
+                        <td class="text-center cat-untung-rugi {{ $catUntungRugi < 0 ? 'text-danger' : '' }}" 
                             data-category-id="{{ $category->id }}">
-                            <strong>{{ number_format($catUntungRugi, 0, ',', '.') }}</strong>
+                            <strong>Rp {{ number_format($catUntungRugi, 0, ',', '.') }}</strong>
                         </td>
-                        <td class="text-center cat-progress" data-category-id="{{ $category->id }}">
-                            <strong>{{ $catProgress }}%</strong>
+                        <td class="text-center">
+                            <div class="input-group input-group-sm" style="width: 85px; display: inline-flex;">
+                                <input type="number" class="form-control form-control-sm input-progress-cat" 
+                                       value="{{ $catProgressValue }}" 
+                                       data-category-id="{{ $category->id }}"
+                                       min="0" max="100" step="1">
+                                <div class="input-group-append">
+                                    <span class="input-group-text" style="padding: 2px 5px;">%</span>
+                                </div>
+                            </div>
                         </td>
                     </tr>
 
                 @endforeach
 
                 {{-- Grand Total Row --}}
-                <tr class="bg-dark text-white font-weight-bold">
-                    <td colspan="5" class="text-right"><strong>JUMLAH TOTAL</strong></td>
+                <tr class="grand-total-row font-weight-bold">
+                    <td colspan="5" class="text-center"><strong>JUMLAH TOTAL</strong></td>
                     <td class="text-right" id="grandTotalHarga">
-                        <strong>{{ number_format($rabItems->sum('total_harga'), 0, ',', '.') }}</strong>
+                        <strong>Rp {{ number_format($rabItems->sum('total_harga'), 0, ',', '.') }}</strong>
                     </td>
                     <td class="text-right" id="grandTotalUpah">
-                        <strong>{{ number_format($rabItems->sum('upah'), 0, ',', '.') }}</strong>
+                        <strong>Rp {{ number_format($categoryBorongans->sum('upah'), 0, ',', '.') }}</strong>
                     </td>
                     <td class="text-right" id="grandTotalBorongan">
-                        <strong>{{ number_format($categoryBorongans->sum('borongan'), 0, ',', '.') }}</strong>
+                        <strong>Rp {{ number_format($categoryBorongans->sum('borongan'), 0, ',', '.') }}</strong>
                     </td>
-                    <td class="text-right {{ ($categoryBorongans->sum('borongan') - $rabItems->sum('upah')) < 0 ? 'text-danger' : '' }}" id="grandTotalUntungRugi">
-                        <strong>{{ number_format($categoryBorongans->sum('borongan') - $rabItems->sum('upah'), 0, ',', '.') }}</strong>
+                    <td class="text-right {{ ($categoryBorongans->sum('borongan') - $categoryBorongans->sum('upah')) < 0 ? 'text-danger' : '' }}" id="grandTotalUntungRugi">
+                        <strong>Rp {{ number_format($categoryBorongans->sum('borongan') - $categoryBorongans->sum('upah'), 0, ',', '.') }}</strong>
                     </td>
                     <td class="text-center" id="grandTotalProgress">
                         <strong>{{ $rabItems->count() > 0 ? round($rabItems->avg('progres')) : 0 }}%</strong>
+                    </td>
+                </tr>
+
+                {{-- Total Harga Bahan + Total HK Row --}}
+                @php
+                    $totalHargaBahan = $rabItems->sum('total_harga');
+                    $totalHK = $categoryBorongans->sum('upah');
+                    $grandTotalBahanHK = $totalHargaBahan + $totalHK;
+                @endphp
+                <tr class="total-bahan-hk-row font-weight-bold">
+                    <td colspan="5" class="text-center"><strong>( TOTAL HARGA BAHAN + TOTAL HK )</strong></td>
+                    <td colspan="5" class="text-center" id="grandTotalBahanHK">
+                        <strong>Rp {{ number_format($grandTotalBahanHK, 0, ',', '.') }}</strong>
                     </td>
                 </tr>
             </tbody>
@@ -234,7 +246,7 @@
         padding: 0.3rem 0.5rem;
         font-size: 0.85rem;
     }
-    .input-out, .input-upah, .input-progres, .input-borongan {
+    .input-out, .input-upah-cat, .input-progress-cat, .input-borongan {
         text-align: right;
         padding: 2px 5px;
     }
@@ -244,6 +256,70 @@
     .category-summary {
         font-weight: bold;
     }
+    
+    /* Header tabel - Abu-abu Muda dengan tulisan Hitam */
+    .thead-light-gray {
+        background-color: #d5d8dc !important;
+        color: #000 !important;
+    }
+    .thead-light-gray th {
+        background-color: #d5d8dc !important;
+        color: #000 !important;
+        border-color: #b3b6b7 !important;
+        font-weight: bold;
+    }
+    
+    /* Category Header - Biru Terang dengan tulisan Hitam */
+    .category-header {
+        background-color: #3498db !important;
+        color: #000 !important;
+    }
+    .category-header td {
+        background-color: #3498db !important;
+        color: #000 !important;
+    }
+    .category-header strong {
+        color: #000 !important;
+    }
+    
+    /* Item Rows */
+    .item-row {
+        background-color: #fff !important;
+    }
+    .item-row td {
+        background-color: #fff !important;
+    }
+    
+    /* Subtotal Row - Biru Muda */
+    .category-summary-row {
+        background-color: #aed6f1 !important;
+        color: #000 !important;
+    }
+    .category-summary-row td {
+        background-color: #aed6f1 !important;
+        color: #000 !important;
+    }
+    
+    /* Grand Total - Hijau Pastel Soft */
+    .grand-total-row {
+        background-color: #a5d6a7 !important;
+        color: #000 !important;
+    }
+    .grand-total-row td {
+        background-color: #a5d6a7 !important;
+        color: #000 !important;
+    }
+    
+    /* Total Bahan + HK - Orange Pastel Soft */
+    .total-bahan-hk-row {
+        background-color: #ffccbc !important;
+        color: #000 !important;
+    }
+    .total-bahan-hk-row td {
+        background-color: #ffccbc !important;
+        color: #000 !important;
+    }
+    
     @media print {
         .no-print { display: none !important; }
     }
@@ -257,11 +333,11 @@ $(document).ready(function() {
     const unitId = '{{ $unit_id }}';
     const locationId = '{{ $location_id }}';
 
-    // Track modified items
+    // Track modified items and categories
     let modifiedItems = {};
-    let modifiedBorongans = {};
+    let modifiedCategories = {};
 
-    // Handle OUT input change
+    // Handle OUT input change (per item)
     $('.input-out').on('change', function() {
         const itemId = $(this).data('item-id');
         const harga = parseFloat($(this).data('harga')) || 0;
@@ -269,7 +345,7 @@ $(document).ready(function() {
         const totalHarga = out * harga;
 
         // Update display
-        $(`.total-harga[data-item-id="${itemId}"]`).text(formatNumber(totalHarga));
+        $(`.total-harga[data-item-id="${itemId}"]`).text(formatRupiah(totalHarga));
 
         // Track modification
         if (!modifiedItems[itemId]) modifiedItems[itemId] = {};
@@ -279,97 +355,78 @@ $(document).ready(function() {
         updateCategoryTotals($(this).closest('tr').data('category-id'));
     });
 
-    // Handle Upah input change
-    $('.input-upah').on('change', function() {
-        const itemId = $(this).data('item-id');
+    // Handle Upah input change (per category)
+    $('.input-upah-cat').on('change', function() {
+        const categoryId = $(this).data('category-id');
         const upah = parseFloat($(this).val()) || 0;
 
         // Track modification
-        if (!modifiedItems[itemId]) modifiedItems[itemId] = {};
-        modifiedItems[itemId].upah = upah;
+        if (!modifiedCategories[categoryId]) modifiedCategories[categoryId] = {};
+        modifiedCategories[categoryId].upah = upah;
 
-        // Update category total
-        updateCategoryTotals($(this).closest('tr').data('category-id'));
+        // Update displays
+        $(`.cat-total-upah[data-category-id="${categoryId}"]`).html(`<strong>${formatNumber(upah)}</strong>`);
+        updateCategoryUntungRugi(categoryId);
+        updateGrandTotals();
     });
 
-    // Handle Progress input change
-    $('.input-progres').on('change', function() {
-        const itemId = $(this).data('item-id');
-        const progres = parseFloat($(this).val()) || 0;
-
-        // Track modification
-        if (!modifiedItems[itemId]) modifiedItems[itemId] = {};
-        modifiedItems[itemId].progres = progres;
-
-        // Update category progress
-        updateCategoryProgress($(this).closest('tr').data('category-id'));
-    });
-
-    // Handle Borongan input change
+    // Handle Borongan input change (per category)
     $('.input-borongan').on('change', function() {
         const categoryId = $(this).data('category-id');
         const borongan = parseFloat($(this).val()) || 0;
 
         // Track modification
-        modifiedBorongans[categoryId] = borongan;
+        if (!modifiedCategories[categoryId]) modifiedCategories[categoryId] = {};
+        modifiedCategories[categoryId].borongan = borongan;
 
-        // Update untung/rugi
+        // Update displays
+        $(`.cat-total-borongan[data-category-id="${categoryId}"]`).html(`<strong>${formatNumber(borongan)}</strong>`);
         updateCategoryUntungRugi(categoryId);
         updateGrandTotals();
     });
 
-    // Update category totals
+    // Handle Progress input change (per category)
+    $('.input-progress-cat').on('change', function() {
+        const categoryId = $(this).data('category-id');
+        const progress = parseFloat($(this).val()) || 0;
+
+        // Track modification
+        if (!modifiedCategories[categoryId]) modifiedCategories[categoryId] = {};
+        modifiedCategories[categoryId].progress = progress;
+
+        // Update displays
+        $(`.cat-total-progress[data-category-id="${categoryId}"]`).html(`<strong>${progress}%</strong>`);
+        updateGrandTotals();
+    });
+
+    // Update category totals (Total Harga only from items)
     function updateCategoryTotals(categoryId) {
         let totalHarga = 0;
-        let totalUpah = 0;
 
-        $(`tr[data-category-id="${categoryId}"]`).not('.category-summary').each(function() {
-            const itemId = $(this).data('item-id');
+        $(`.item-row[data-category-id="${categoryId}"]`).each(function() {
             const harga = parseFloat($(this).find('.input-out').data('harga')) || 0;
             const out = parseFloat($(this).find('.input-out').val()) || 0;
-            const upah = parseFloat($(this).find('.input-upah').val()) || 0;
-
             totalHarga += out * harga;
-            totalUpah += upah;
         });
 
-        $(`.cat-total-harga[data-category-id="${categoryId}"]`).html(`<strong>${formatNumber(totalHarga)}</strong>`);
-        $(`.cat-total-upah[data-category-id="${categoryId}"]`).html(`<strong>${formatNumber(totalUpah)}</strong>`);
-
-        updateCategoryUntungRugi(categoryId);
+        $(`.cat-total-harga[data-category-id="${categoryId}"]`).html(`<strong>${formatRupiah(totalHarga)}</strong>`);
         updateGrandTotals();
     }
 
     // Update category untung/rugi
     function updateCategoryUntungRugi(categoryId) {
-        const totalUpah = parseUnformattedNumber($(`.cat-total-upah[data-category-id="${categoryId}"]`).text());
+        const upah = parseFloat($(`.input-upah-cat[data-category-id="${categoryId}"]`).val()) || 0;
         const borongan = parseFloat($(`.input-borongan[data-category-id="${categoryId}"]`).val()) || 0;
-        const untungRugi = borongan - totalUpah;
+        const untungRugi = borongan - upah;
 
+        // Update subtotal row
         const cell = $(`.cat-untung-rugi[data-category-id="${categoryId}"]`);
-        cell.html(`<strong>${formatNumber(untungRugi)}</strong>`);
-        
+        cell.html(`<strong>${formatRupiah(untungRugi)}</strong>`);
         if (untungRugi < 0) {
             cell.addClass('text-danger').css('color', '#dc3545');
         } else {
             cell.removeClass('text-danger').css('color', '');
         }
-    }
-
-    // Update category progress
-    function updateCategoryProgress(categoryId) {
-        let totalProgress = 0;
-        let count = 0;
-
-        $(`tr[data-category-id="${categoryId}"]`).not('.category-summary').each(function() {
-            totalProgress += parseFloat($(this).find('.input-progres').val()) || 0;
-            count++;
-        });
-
-        const avgProgress = count > 0 ? Math.round(totalProgress / count) : 0;
-        $(`.cat-progress[data-category-id="${categoryId}"]`).html(`<strong>${avgProgress}%</strong>`);
-        
-        updateGrandTotals();
     }
 
     // Update grand totals
@@ -384,15 +441,15 @@ $(document).ready(function() {
             grandTotalHarga += parseUnformattedNumber($(this).text());
         });
 
-        $('.cat-total-upah').each(function() {
-            grandTotalUpah += parseUnformattedNumber($(this).text());
+        $('.input-upah-cat').each(function() {
+            grandTotalUpah += parseFloat($(this).val()) || 0;
         });
 
         $('.input-borongan').each(function() {
             grandTotalBorongan += parseFloat($(this).val()) || 0;
         });
 
-        $('.input-progres').each(function() {
+        $('.input-progress-cat').each(function() {
             totalProgress += parseFloat($(this).val()) || 0;
             progressCount++;
         });
@@ -400,12 +457,12 @@ $(document).ready(function() {
         const grandUntungRugi = grandTotalBorongan - grandTotalUpah;
         const avgProgress = progressCount > 0 ? Math.round(totalProgress / progressCount) : 0;
 
-        $('#grandTotalHarga').html(`<strong>${formatNumber(grandTotalHarga)}</strong>`);
-        $('#grandTotalUpah').html(`<strong>${formatNumber(grandTotalUpah)}</strong>`);
-        $('#grandTotalBorongan').html(`<strong>${formatNumber(grandTotalBorongan)}</strong>`);
+        $('#grandTotalHarga').html(`<strong>${formatRupiah(grandTotalHarga)}</strong>`);
+        $('#grandTotalUpah').html(`<strong>${formatRupiah(grandTotalUpah)}</strong>`);
+        $('#grandTotalBorongan').html(`<strong>${formatRupiah(grandTotalBorongan)}</strong>`);
         
         const untungRugiCell = $('#grandTotalUntungRugi');
-        untungRugiCell.html(`<strong>${formatNumber(grandUntungRugi)}</strong>`);
+        untungRugiCell.html(`<strong>${formatRupiah(grandUntungRugi)}</strong>`);
         if (grandUntungRugi < 0) {
             untungRugiCell.addClass('text-danger').css('color', '#dc3545');
         } else {
@@ -413,6 +470,10 @@ $(document).ready(function() {
         }
 
         $('#grandTotalProgress').html(`<strong>${avgProgress}%</strong>`);
+        
+        // Update Total Harga Bahan + Total HK
+        const grandTotalBahanHK = grandTotalHarga + grandTotalUpah;
+        $('#grandTotalBahanHK').html(`<strong>${formatRupiah(grandTotalBahanHK)}</strong>`);
     }
 
     // Save all changes
@@ -420,26 +481,14 @@ $(document).ready(function() {
         const btn = $(this);
         btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
 
-        // Prepare items data
+        // Prepare items data (only OUT values now)
         const items = [];
-        for (const itemId in modifiedItems) {
+        $('.item-row').each(function() {
+            const itemId = $(this).data('item-id');
             items.push({
                 id: itemId,
-                ...modifiedItems[itemId]
+                bahan_out: parseFloat($(this).find('.input-out').val()) || 0
             });
-        }
-
-        // Also collect all items with current values (not just modified)
-        $('tr[data-item-id]').each(function() {
-            const itemId = $(this).data('item-id');
-            if (!modifiedItems[itemId]) {
-                items.push({
-                    id: itemId,
-                    bahan_out: parseFloat($(this).find('.input-out').val()) || 0,
-                    upah: parseFloat($(this).find('.input-upah').val()) || 0,
-                    progres: parseFloat($(this).find('.input-progres').val()) || 0
-                });
-            }
         });
 
         // Save items
@@ -453,9 +502,15 @@ $(document).ready(function() {
                 }
             }) : Promise.resolve();
 
-        // Save borongans
-        const boronganPromises = Object.keys(modifiedBorongans).map(categoryId => {
-            return $.ajax({
+        // Save category data (upah, borongan, progress)
+        const categoryPromises = [];
+        $('.category-summary').each(function() {
+            const categoryId = $(this).data('category-id');
+            const upah = parseFloat($(this).find('.input-upah-cat').val()) || 0;
+            const borongan = parseFloat($(this).find('.input-borongan').val()) || 0;
+            const progress = parseFloat($(this).find('.input-progress-cat').val()) || 0;
+
+            categoryPromises.push($.ajax({
                 url: '{{ route("rab.update-borongan") }}',
                 method: 'POST',
                 data: {
@@ -464,35 +519,18 @@ $(document).ready(function() {
                     type_id: typeId,
                     unit_id: unitId,
                     location_id: locationId,
-                    borongan: modifiedBorongans[categoryId]
+                    upah: upah,
+                    borongan: borongan,
+                    progress: progress
                 }
-            });
+            }));
         });
 
-        // Also save all borongans (not just modified)
-        $('.input-borongan').each(function() {
-            const categoryId = $(this).data('category-id');
-            if (!modifiedBorongans[categoryId]) {
-                boronganPromises.push($.ajax({
-                    url: '{{ route("rab.update-borongan") }}',
-                    method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        category_id: categoryId,
-                        type_id: typeId,
-                        unit_id: unitId,
-                        location_id: locationId,
-                        borongan: parseFloat($(this).val()) || 0
-                    }
-                }));
-            }
-        });
-
-        Promise.all([itemsPromise, ...boronganPromises])
+        Promise.all([itemsPromise, ...categoryPromises])
             .then(() => {
                 alert('Data berhasil disimpan!');
                 modifiedItems = {};
-                modifiedBorongans = {};
+                modifiedCategories = {};
             })
             .catch(err => {
                 console.error(err);
@@ -570,6 +608,10 @@ $(document).ready(function() {
     // Helper functions
     function formatNumber(num) {
         return new Intl.NumberFormat('id-ID').format(Math.round(num));
+    }
+    
+    function formatRupiah(num) {
+        return 'Rp ' + new Intl.NumberFormat('id-ID').format(Math.round(num));
     }
 
     function parseUnformattedNumber(str) {

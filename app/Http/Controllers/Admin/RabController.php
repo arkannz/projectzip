@@ -322,7 +322,7 @@ class RabController extends Controller
     }
 
     /**
-     * Update borongan per category
+     * Update borongan, upah, progress per category
      */
     public function updateCategoryBorongan(Request $request)
     {
@@ -331,23 +331,35 @@ class RabController extends Controller
             'type_id'      => 'required|exists:types,id',
             'unit_id'      => 'required|exists:units,id',
             'location_id'  => 'required|exists:locations,id',
-            'borongan'     => 'required|numeric|min:0',
+            'borongan'     => 'nullable|numeric|min:0',
+            'upah'         => 'nullable|numeric|min:0',
+            'progress'     => 'nullable|numeric|min:0|max:100',
         ]);
 
-        $borongan = RabCategoryBorongan::updateOrCreate(
+        $updateData = [];
+        
+        if ($request->has('borongan')) {
+            $updateData['borongan'] = $request->borongan;
+        }
+        if ($request->has('upah')) {
+            $updateData['upah'] = $request->upah;
+        }
+        if ($request->has('progress')) {
+            $updateData['progress'] = $request->progress;
+        }
+
+        $categoryBorongan = RabCategoryBorongan::updateOrCreate(
             [
                 'rab_category_id' => $request->category_id,
                 'type_id'         => $request->type_id,
                 'unit_id'         => $request->unit_id,
                 'location_id'     => $request->location_id,
             ],
-            [
-                'borongan' => $request->borongan,
-            ]
+            $updateData
         );
 
         // Hitung ulang untung/rugi untuk kategori ini
-        $this->recalculateCategoryUntungRugi(
+        $this->recalculateCategoryUntungRugiNew(
             $request->category_id,
             $request->type_id,
             $request->unit_id,
@@ -356,9 +368,39 @@ class RabController extends Controller
 
         return response()->json([
             'success' => true,
-            'borongan' => $borongan,
-            'message' => 'Borongan berhasil diupdate'
+            'data' => $categoryBorongan,
+            'message' => 'Data kategori berhasil diupdate'
         ]);
+    }
+
+    /**
+     * Recalculate untung/rugi for a category (new version - using category upah)
+     */
+    protected function recalculateCategoryUntungRugiNew($categoryId, $typeId, $unitId, $locationId)
+    {
+        // Get category borongan data
+        $categoryBorongan = RabCategoryBorongan::where('rab_category_id', $categoryId)
+            ->where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->first();
+
+        if (!$categoryBorongan) {
+            return;
+        }
+
+        $borongan = $categoryBorongan->borongan ?? 0;
+        $upah = $categoryBorongan->upah ?? 0;
+
+        // Untung/Rugi = Borongan - Upah
+        $untungRugi = $borongan - $upah;
+
+        // Update semua items di kategori ini dengan untung_rugi yang sama
+        RabItem::where('rab_category_id', $categoryId)
+            ->where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->update(['untung_rugi' => $untungRugi, 'borongan' => $borongan]);
     }
 
     /**
