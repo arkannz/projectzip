@@ -1,6 +1,7 @@
 *.log
 .DS_Store
-.env
+# Ignore .env but not .env.example
+/.env
 !.env.example
 .env.backup
 .env.production
