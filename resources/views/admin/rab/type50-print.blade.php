@@ -24,29 +24,39 @@
         }
 
         .page {
-            width: 215.9mm;
-            min-height: 330.2mm;
-            padding: 8mm 10mm;
-            margin: 0 auto;
+            width: 8.5in;
+            min-height: 13in;
+            padding: 2mm 1mm;
+            margin: 0;
             background: white;
         }
 
         .header {
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            padding: 2mm 0;
         }
 
         .header-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 13px;
+            font-weight: bold;
         }
 
         .header-table td {
-            padding: 3px 5px;
-            vertical-align: top;
+            padding: 2px 3px;
+            vertical-align: middle;
+        }
+
+        .header-label {
+            font-weight: bold;
+            display: inline-block;
+            min-width: 50px;
         }
 
         .header-left {
             width: 50%;
+            text-align: left;
         }
 
         .header-right {
@@ -59,6 +69,12 @@
             border-collapse: collapse;
             font-size: 8px;
             table-layout: fixed;
+        }
+
+        /* Pastikan lebar kolom konsisten di semua halaman */
+        .page.page-even .main-table,
+        .page:nth-of-type(even) .main-table {
+            table-layout: fixed !important;
         }
 
         .main-table th,
@@ -150,18 +166,18 @@
             }
             
             .page {
-                width: 215.9mm;
-                min-height: 330.2mm;
-                padding: 5mm 8mm;
+                width: 8.5in;
+                min-height: 13in;
+                padding: 2mm 1mm;
                 margin: 0;
                 page-break-after: always;
                 page-break-inside: avoid;
             }
 
-            /* Halaman pertama: tambahkan margin bottom */
+            /* Halaman pertama: tambahkan sedikit space di bawah */
             .page:first-of-type,
             .page.page-odd:first-of-type {
-                padding-bottom: 20mm;
+                padding-bottom: 3mm;
             }
 
             /* Sembunyikan header di halaman genap (belakang) */
@@ -179,15 +195,27 @@
                 display: none !important;
             }
 
-            /* Sembunyikan thead (header tabel) di halaman genap (belakang) */
+            /* Sembunyikan thead (header kolom) di halaman kedua tapi tetap pertahankan lebar kolom */
             .page.page-even .main-table thead,
             .page:nth-of-type(even) .main-table thead {
-                display: none !important;
-                visibility: hidden !important;
+                display: table-header-group !important;
                 height: 0 !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 overflow: hidden !important;
+            }
+
+            /* Sembunyikan konten header tapi pertahankan struktur untuk lebar kolom */
+            .page.page-even .main-table thead th,
+            .page:nth-of-type(even) .main-table thead th {
+                height: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+                overflow: hidden !important;
+                font-size: 0 !important;
+                line-height: 0 !important;
+                visibility: hidden !important;
             }
 
             .no-print {
@@ -195,20 +223,20 @@
             }
 
             .main-table {
-                font-size: 7px;
+                font-size: 6.5px;
                 width: 100%;
             }
 
             .main-table th,
             .main-table td {
-                font-size: 7px;
-                padding: 1px 2px;
-                line-height: 1.2;
+                font-size: 6.5px;
+                padding: 1px 1px;
+                line-height: 1.1;
             }
 
             .main-table thead th {
-                font-size: 7px;
-                padding: 2px 3px;
+                font-size: 6.5px;
+                padding: 1px 2px;
             }
 
             .main-table .category-row {
@@ -228,26 +256,33 @@
             }
 
             .header {
-                margin-bottom: 5px;
+                margin-bottom: 2px;
+                padding: 1mm 0;
+            }
+
+            .header-table {
+                font-size: 9px;
             }
 
             .header-table td {
-                padding: 2px 3px;
-                font-size: 8px;
+                padding: 1px 2px;
             }
 
             @page {
-                size: Legal;
+                size: 8.5in 13in;
                 margin: 0;
             }
 
             @page :first {
-                margin-top: 0;
+                margin: 0;
             }
 
-            @page {
-                margin-left: 0;
-                margin-right: 0;
+            @page :left {
+                margin: 0;
+            }
+
+            @page :right {
+                margin: 0;
             }
         }
 
@@ -295,15 +330,15 @@
     <button onclick="window.print()" class="print-btn no-print">🖨️ Print</button>
 
     @php
-        // Pisahkan kategori menjadi 2 grup: A-J dan K-selesai
+        // Pisahkan kategori menjadi 2 grup: A-K dan L-selesai
         $categoriesFirstPage = $categories->filter(function($cat) {
             $kode = strtoupper($cat->kode);
-            return $kode >= 'A' && $kode <= 'J';
+            return $kode >= 'A' && $kode <= 'K';
         });
         
         $categoriesSecondPage = $categories->filter(function($cat) {
             $kode = strtoupper($cat->kode);
-            return $kode >= 'K';
+            return $kode >= 'L';
         });
         
         // Hitung grand total untuk semua kategori
@@ -333,9 +368,9 @@
         $avgProgress = $categoryCount > 0 ? round(array_sum($allProgress) / $categoryCount) : 0;
     @endphp
 
-    {{-- HALAMAN PERTAMA: Kategori A-J --}}
+    {{-- HALAMAN PERTAMA: Kategori A-K --}}
     <div class="page page-odd">
-        {{-- Header --}}
+        {{-- Header LOKASI dan TYPE --}}
         <div class="header page-header">
             <table class="header-table">
                 <tr>
@@ -433,10 +468,27 @@
         </table>
     </div>
 
-    {{-- HALAMAN KEDUA: Kategori K-selesai --}}
+    {{-- HALAMAN KEDUA: Kategori L-selesai --}}
     <div class="page page-even">
-        {{-- Main Table (tanpa header utama dan tanpa thead) --}}
+        {{-- Main Table --}}
         <table class="main-table">
+            <thead>
+                <tr>
+                    <th class="col-no" rowspan="2">No</th>
+                    <th class="col-uraian" rowspan="2">URAIAN PEKERJAAN</th>
+                    <th colspan="2">BAHAN</th>
+                    <th class="col-harga" rowspan="2">HARGA BAHAN<br>(Rp)</th>
+                    <th class="col-total" rowspan="2">TOTAL HARGA<br>(Rp)</th>
+                    <th class="col-upah" rowspan="2">UPAH</th>
+                    <th class="col-borongan" rowspan="2">BORONGAN</th>
+                    <th class="col-untung" rowspan="2">UNTUNG/RUGI</th>
+                    <th class="col-progress" rowspan="2">PROGRES</th>
+                </tr>
+                <tr>
+                    <th class="col-baku">BAKU</th>
+                    <th class="col-out">OUT</th>
+                </tr>
+            </thead>
             <tbody>
                 @foreach($categoriesSecondPage as $category)
                     @php
