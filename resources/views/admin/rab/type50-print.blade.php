@@ -71,6 +71,12 @@
             table-layout: fixed;
         }
 
+        /* Pastikan lebar kolom konsisten di semua halaman */
+        .page.page-even .main-table,
+        .page:nth-of-type(even) .main-table {
+            table-layout: fixed !important;
+        }
+
         .main-table th,
         .main-table td {
             border: 1px solid #000;
@@ -187,6 +193,29 @@
             /* Alternatif: juga sembunyikan dengan nth-of-type */
             .page:nth-of-type(even) .page-header {
                 display: none !important;
+            }
+
+            /* Sembunyikan thead (header kolom) di halaman kedua tapi tetap pertahankan lebar kolom */
+            .page.page-even .main-table thead,
+            .page:nth-of-type(even) .main-table thead {
+                display: table-header-group !important;
+                height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+
+            /* Sembunyikan konten header tapi pertahankan struktur untuk lebar kolom */
+            .page.page-even .main-table thead th,
+            .page:nth-of-type(even) .main-table thead th {
+                height: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+                overflow: hidden !important;
+                font-size: 0 !important;
+                line-height: 0 !important;
+                visibility: hidden !important;
             }
 
             .no-print {
