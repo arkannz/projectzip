@@ -345,7 +345,7 @@ $(document).ready(function() {
         const totalHarga = out * harga;
 
         // Update display
-        $(.total-harga[data-item-id="${itemId}"]).text(formatRupiah(totalHarga));
+        $(`.total-harga[data-item-id="${itemId}"]`).text(formatRupiah(totalHarga));
 
         // Track modification
         if (!modifiedItems[itemId]) modifiedItems[itemId] = {};
@@ -365,7 +365,6 @@ $(document).ready(function() {
         modifiedCategories[categoryId].upah = upah;
 
         // Update displays
-        $(.cat-total-upah[data-category-id="${categoryId}"]).html(<strong>${formatNumber(upah)}</strong>);
         updateCategoryUntungRugi(categoryId);
         updateGrandTotals();
     });
@@ -380,7 +379,6 @@ $(document).ready(function() {
         modifiedCategories[categoryId].borongan = borongan;
 
         // Update displays
-        $(.cat-total-borongan[data-category-id="${categoryId}"]).html(<strong>${formatNumber(borongan)}</strong>);
         updateCategoryUntungRugi(categoryId);
         updateGrandTotals();
     });
@@ -395,7 +393,6 @@ $(document).ready(function() {
         modifiedCategories[categoryId].progress = progress;
 
         // Update displays
-        $(.cat-total-progress[data-category-id="${categoryId}"]).html(<strong>${progress}%</strong>);
         updateGrandTotals();
     });
 
@@ -403,25 +400,25 @@ $(document).ready(function() {
     function updateCategoryTotals(categoryId) {
         let totalHarga = 0;
 
-        $(.item-row[data-category-id="${categoryId}"]).each(function() {
+        $(`.item-row[data-category-id="${categoryId}"]`).each(function() {
             const harga = parseFloat($(this).find('.input-out').data('harga')) || 0;
             const out = parseFloat($(this).find('.input-out').val()) || 0;
             totalHarga += out * harga;
         });
 
-        $(.cat-total-harga[data-category-id="${categoryId}"]).html(<strong>${formatRupiah(totalHarga)}</strong>);
+        $(`.cat-total-harga[data-category-id="${categoryId}"]`).html(`<strong>${formatRupiah(totalHarga)}</strong>`);
         updateGrandTotals();
     }
 
     // Update category untung/rugi
     function updateCategoryUntungRugi(categoryId) {
-        const upah = parseFloat($(.input-upah-cat[data-category-id="${categoryId}"]).val()) || 0;
-        const borongan = parseFloat($(.input-borongan[data-category-id="${categoryId}"]).val()) || 0;
+        const upah = parseFloat($(`.input-upah-cat[data-category-id="${categoryId}"]`).val()) || 0;
+        const borongan = parseFloat($(`.input-borongan[data-category-id="${categoryId}"]`).val()) || 0;
         const untungRugi = borongan - upah;
 
         // Update subtotal row
-        const cell = $(.cat-untung-rugi[data-category-id="${categoryId}"]);
-        cell.html(<strong>${formatRupiah(untungRugi)}</strong>);
+        const cell = $(`.cat-untung-rugi[data-category-id="${categoryId}"]`);
+        cell.html(`<strong>${formatRupiah(untungRugi)}</strong>`);
         if (untungRugi < 0) {
             cell.addClass('text-danger').css('color', '#dc3545');
         } else {
@@ -457,23 +454,23 @@ $(document).ready(function() {
         const grandUntungRugi = grandTotalBorongan - grandTotalUpah;
         const avgProgress = progressCount > 0 ? Math.round(totalProgress / progressCount) : 0;
 
-        $('#grandTotalHarga').html(<strong>${formatRupiah(grandTotalHarga)}</strong>);
-        $('#grandTotalUpah').html(<strong>${formatRupiah(grandTotalUpah)}</strong>);
-        $('#grandTotalBorongan').html(<strong>${formatRupiah(grandTotalBorongan)}</strong>);
+        $('#grandTotalHarga').html(`<strong>${formatRupiah(grandTotalHarga)}</strong>`);
+        $('#grandTotalUpah').html(`<strong>${formatRupiah(grandTotalUpah)}</strong>`);
+        $('#grandTotalBorongan').html(`<strong>${formatRupiah(grandTotalBorongan)}</strong>`);
         
         const untungRugiCell = $('#grandTotalUntungRugi');
-        untungRugiCell.html(<strong>${formatRupiah(grandUntungRugi)}</strong>);
+        untungRugiCell.html(`<strong>${formatRupiah(grandUntungRugi)}</strong>`);
         if (grandUntungRugi < 0) {
             untungRugiCell.addClass('text-danger').css('color', '#dc3545');
         } else {
             untungRugiCell.removeClass('text-danger').css('color', '');
         }
 
-        $('#grandTotalProgress').html(<strong>${avgProgress}%</strong>);
+        $('#grandTotalProgress').html(`<strong>${avgProgress}%</strong>`);
         
         // Update Total Harga Bahan + Total HK
         const grandTotalBahanHK = grandTotalHarga + grandTotalUpah;
-        $('#grandTotalBahanHK').html(<strong>${formatRupiah(grandTotalBahanHK)}</strong>);
+        $('#grandTotalBahanHK').html(`<strong>${formatRupiah(grandTotalBahanHK)}</strong>`);
     }
 
     // Save all changes
@@ -496,6 +493,7 @@ $(document).ready(function() {
             $.ajax({
                 url: '{{ route("rab.batch-update") }}',
                 method: 'POST',
+                dataType: 'json',
                 data: {
                     _token: '{{ csrf_token() }}',
                     items: items
@@ -513,6 +511,7 @@ $(document).ready(function() {
             categoryPromises.push($.ajax({
                 url: '{{ route("rab.update-borongan") }}',
                 method: 'POST',
+                dataType: 'json',
                 data: {
                     _token: '{{ csrf_token() }}',
                     category_id: categoryId,
@@ -527,14 +526,22 @@ $(document).ready(function() {
         });
 
         Promise.all([itemsPromise, ...categoryPromises])
-            .then(() => {
+            .then((responses) => {
                 alert('Data berhasil disimpan!');
                 modifiedItems = {};
                 modifiedCategories = {};
             })
             .catch(err => {
                 console.error(err);
-                alert('Terjadi kesalahan saat menyimpan data');
+                let errorMessage = 'Terjadi kesalahan saat menyimpan data';
+                if (err.responseJSON && err.responseJSON.message) {
+                    errorMessage = err.responseJSON.message;
+                } else if (err.responseJSON && err.responseJSON.error) {
+                    errorMessage = err.responseJSON.error;
+                } else if (err.statusText) {
+                    errorMessage = err.statusText;
+                }
+                alert(errorMessage);
             })
             .finally(() => {
                 btn.prop('disabled', false).html('<i class="fas fa-save"></i> Simpan Semua');
@@ -553,6 +560,7 @@ $(document).ready(function() {
         $.ajax({
             url: '{{ route("rab.refresh-prices") }}',
             method: 'POST',
+            dataType: 'json',
             data: {
                 _token: '{{ csrf_token() }}',
                 type_id: typeId,
@@ -561,12 +569,18 @@ $(document).ready(function() {
             }
         })
         .then(response => {
-            alert(response.message);
+            alert(response.message || 'Harga berhasil di-refresh');
             location.reload();
         })
         .catch(err => {
             console.error(err);
-            alert('Terjadi kesalahan saat refresh harga');
+            let errorMessage = 'Terjadi kesalahan saat refresh harga';
+            if (err.responseJSON && err.responseJSON.message) {
+                errorMessage = err.responseJSON.message;
+            } else if (err.responseJSON && err.responseJSON.error) {
+                errorMessage = err.responseJSON.error;
+            }
+            alert(errorMessage);
         })
         .finally(() => {
             btn.prop('disabled', false).html('<i class="fas fa-sync"></i> Refresh Harga');
@@ -585,6 +599,7 @@ $(document).ready(function() {
         $.ajax({
             url: '{{ route("rab.regenerate") }}',
             method: 'POST',
+            dataType: 'json',
             data: {
                 _token: '{{ csrf_token() }}',
                 type_id: typeId,
@@ -593,12 +608,18 @@ $(document).ready(function() {
             }
         })
         .then(response => {
-            alert(response.message);
+            alert(response.message || 'RAB berhasil di-regenerate');
             location.reload();
         })
         .catch(err => {
             console.error(err);
-            alert('Terjadi kesalahan saat regenerate RAB');
+            let errorMessage = 'Terjadi kesalahan saat regenerate RAB';
+            if (err.responseJSON && err.responseJSON.message) {
+                errorMessage = err.responseJSON.message;
+            } else if (err.responseJSON && err.responseJSON.error) {
+                errorMessage = err.responseJSON.error;
+            }
+            alert(errorMessage);
         })
         .finally(() => {
             btn.prop('disabled', false).html('<i class="fas fa-redo"></i> Regenerate');
