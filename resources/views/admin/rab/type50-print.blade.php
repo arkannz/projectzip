@@ -12,9 +12,10 @@
         }
 
         html, body {
-            font-family: Arial, sans-serif;
+            font-family: Rockwell, sans-serif;
             font-size: 10px;
-            line-height: 1.3;
+            font-weight: semi bold;
+            line-height: 1.5;
             background: #fff;
             color: #000;
             margin: 0;
@@ -71,12 +72,6 @@
             table-layout: fixed;
         }
 
-        /* Pastikan lebar kolom konsisten di semua halaman */
-        .page.page-even .main-table,
-        .page:nth-of-type(even) .main-table {
-            table-layout: fixed !important;
-        }
-
         .main-table th,
         .main-table td {
             border: 1px solid #000;
@@ -99,21 +94,25 @@
             background-color: #3498db;
             color: #000;
             font-weight: bold;
+            font-size: 9px;
         }
 
         .main-table .category-row td {
             padding: 3px 5px;
             background-color: #3498db;
             color: #000;
+            font-size: 9px;
         }
 
         .main-table .summary-row {
             background-color: #aed6f1;
             font-weight: bold;
+            font-size: 8.5px;
         }
         
         .main-table .summary-row td {
             background-color: #aed6f1;
+            font-size: 8.5px;
         }
 
         .main-table .grand-total-row {
@@ -241,10 +240,20 @@
 
             .main-table .category-row {
                 page-break-inside: avoid;
+                font-size: 7.5px !important;
+            }
+
+            .main-table .category-row td {
+                font-size: 7.5px !important;
             }
 
             .main-table .summary-row {
                 page-break-inside: avoid;
+                font-size: 7px !important;
+            }
+
+            .main-table .summary-row td {
+                font-size: 7px !important;
             }
 
             .main-table .grand-total-row {
@@ -327,7 +336,7 @@
 </head>
 <body>
     <a href="{{ route('rab.type50', ['type_id' => $selectedType->id ?? '', 'unit_id' => $selectedUnit->id ?? '', 'location_id' => $selectedLocation->id ?? '']) }}" class="back-btn no-print">← Kembali</a>
-    <button onclick="window.print()" class="print-btn no-print">🖨️ Print</button>
+    <button onclick="window.print()" class="print-btn no-print">🖨 Print</button>
 
     @php
         // Pisahkan kategori menjadi 2 grup: A-K dan L-selesai

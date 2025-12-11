@@ -72,6 +72,9 @@
             — Unit {{ $selectedUnit->kode_unit ?? '' }}
         </h4>
         <div>
+            <button type="button" class="btn btn-primary mr-2" id="btnSyncBahanBaku" title="Sync bahan_baku dari seeder">
+                <i class="fas fa-database"></i> Sync Bahan Baku
+            </button>
             <button type="button" class="btn btn-warning mr-2" id="btnRefreshPrices" title="Refresh harga dari inventory">
                 <i class="fas fa-sync"></i> Refresh Harga
             </button>
@@ -145,10 +148,10 @@
                             <td class="text-center">{{ $item->bahan_baku }}</td>
                             <td class="text-center">
                                 <input type="number" class="form-control form-control-sm input-out" 
-                                       value="{{ $item->bahan_out }}" 
+                                       value="{{ $item->bahan_out ?? 0 }}" 
                                        data-item-id="{{ $item->id }}"
                                        data-harga="{{ $item->harga_bahan }}"
-                                       min="0" step="1" style="width: 60px;">
+                                       min="0" step="1" style="width: 60px;" placeholder="0">
                             </td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
                             <td class="text-right total-harga" data-item-id="{{ $item->id }}">
@@ -546,6 +549,45 @@ $(document).ready(function() {
             .finally(() => {
                 btn.prop('disabled', false).html('<i class="fas fa-save"></i> Simpan Semua');
             });
+    });
+
+    // Sync Bahan Baku from Seeder
+    $('#btnSyncBahanBaku').on('click', function() {
+        if (!confirm('Sync bahan_baku dari seeder? Data OUT yang sudah diinput akan di-update jika masih 0 atau sama dengan bahan_baku lama.')) {
+            return;
+        }
+
+        const btn = $(this);
+        btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Syncing...');
+
+        $.ajax({
+            url: '{{ route("rab.sync-bahan-baku") }}',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                _token: '{{ csrf_token() }}',
+                type_id: typeId,
+                unit_id: unitId,
+                location_id: locationId
+            }
+        })
+        .then(response => {
+            alert(response.message || 'Bahan baku berhasil di-sync dari seeder');
+            location.reload();
+        })
+        .catch(err => {
+            console.error(err);
+            let errorMessage = 'Terjadi kesalahan saat sync bahan baku';
+            if (err.responseJSON && err.responseJSON.message) {
+                errorMessage = err.responseJSON.message;
+            } else if (err.responseJSON && err.responseJSON.error) {
+                errorMessage = err.responseJSON.error;
+            }
+            alert(errorMessage);
+        })
+        .finally(() => {
+            btn.prop('disabled', false).html('<i class="fas fa-database"></i> Sync Bahan Baku');
+        });
     });
 
     // Refresh Prices from Inventory

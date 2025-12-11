@@ -98,8 +98,8 @@ class RabController extends Controller
             // Gunakan bahan_baku dari TypeValue jika ada, atau default
             $bahanBaku = $typeValue ? $typeValue->bahan_baku : ($tpl->default_bahan_baku ?? 0);
 
-            // Hitung total harga
-            $totalHarga = $bahanBaku * $harga;
+            // Total harga default 0 karena bahan_out default 0 (akan dihitung saat user input)
+            $totalHarga = 0;
 
             RabItem::create([
                 'type_id'          => $typeId,
@@ -108,9 +108,9 @@ class RabController extends Controller
                 'rab_category_id'  => $tpl->category_id,
                 'uraian'           => $tpl->item_name,
                 'bahan_baku'       => $bahanBaku,
-                'bahan_out'        => 0,
+                'bahan_out'        => 0, // Default 0, user input manual
                 'harga_bahan'      => $harga,
-                'total_harga'      => $totalHarga,
+                'total_harga'      => $totalHarga, // 0 karena bahan_out = 0
                 'upah'             => 0,
                 'borongan'         => 0,
                 'untung_rugi'      => 0,
@@ -120,6 +120,122 @@ class RabController extends Controller
 
         // Generate default borongan per kategori dari seeder data
         $this->generateDefaultBorongan($typeId, $unitId, $locationId, $typeName);
+    }
+
+    /**
+     * Sync/Update RAB items dari RabTypeValue (untuk update data dari seeder)
+     */
+    protected function syncRabFromTypeValue($typeId, $unitId, $locationId)
+    {
+        // Ambil semua RabTypeValue untuk type ini dengan relasi template
+        $typeValues = RabTypeValue::where('type_id', $typeId)
+            ->with('template')
+            ->get();
+
+        $updatedCount = 0;
+        $createdCount = 0;
+
+        // Loop melalui semua typeValues yang ada
+        foreach ($typeValues as $typeValue) {
+            $tpl = $typeValue->template;
+            
+            // Skip jika template tidak ditemukan
+            if (!$tpl) {
+                continue;
+            }
+
+            // Cari harga bahan di inventory
+            $inventory = InventoryItem::where('nama', $tpl->item_name)->first();
+            $harga = $inventory ? $inventory->harga : 0;
+
+            // Gunakan bahan_baku dari TypeValue (bisa 0, tetap proses)
+            $bahanBaku = $typeValue->bahan_baku;
+
+            // Cari RabItem berdasarkan kategori DAN uraian (item_name)
+            // PENTING: Beberapa item bisa punya nama sama di kategori berbeda
+            $rabItem = RabItem::where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->where('rab_category_id', $tpl->category_id) // TAMBAHKAN KATEGORI!
+                ->where('uraian', $tpl->item_name)
+                ->first();
+
+            // Jika tidak ditemukan dengan exact match, coba dengan trim
+            if (!$rabItem && $tpl->item_name) {
+                $rabItem = RabItem::where('type_id', $typeId)
+                    ->where('unit_id', $unitId)
+                    ->where('location_id', $locationId)
+                    ->where('rab_category_id', $tpl->category_id) // TAMBAHKAN KATEGORI!
+                    ->whereRaw('TRIM(uraian) = ?', [trim($tpl->item_name)])
+                    ->first();
+            }
+
+            if ($rabItem) {
+                // SELALU update bahan_baku dari seeder
+                $oldBahanBaku = $rabItem->bahan_baku;
+                $oldBahanOut = $rabItem->bahan_out;
+                
+                // Update bahan_baku - PASTIKAN SELALU UPDATE
+                $rabItem->bahan_baku = $bahanBaku;
+                
+                // Update harga_bahan jika ada perubahan
+                if ($rabItem->harga_bahan != $harga && $harga > 0) {
+                    $rabItem->harga_bahan = $harga;
+                }
+                
+                // Reset bahan_out menjadi 0 jika nilainya sama dengan bahan_baku lama
+                // (ini berarti belum diisi user, hanya copy dari bahan_baku)
+                if ($oldBahanOut == $oldBahanBaku || $oldBahanOut == 0) {
+                    $rabItem->bahan_out = 0;
+                    $rabItem->total_harga = 0;
+                } else {
+                    // Jika bahan_out sudah diisi user (berbeda dengan bahan_baku lama), 
+                    // tetap pertahankan nilai user, hanya update total_harga
+                    $rabItem->total_harga = $rabItem->bahan_out * $harga;
+                }
+                
+                $rabItem->save();
+                $updatedCount++;
+            } else {
+                // Jika item belum ada, buat baru dengan bahan_out = 0
+                $totalHarga = 0; // Default 0 karena bahan_out = 0
+                RabItem::create([
+                    'type_id'          => $typeId,
+                    'unit_id'          => $unitId,
+                    'location_id'      => $locationId,
+                    'rab_category_id'  => $tpl->category_id,
+                    'uraian'           => $tpl->item_name,
+                    'bahan_baku'       => $bahanBaku,
+                    'bahan_out'        => 0, // Default 0, user input manual
+                    'harga_bahan'      => $harga,
+                    'total_harga'      => $totalHarga, // 0 karena bahan_out = 0
+                    'upah'             => 0,
+                    'borongan'         => 0,
+                    'untung_rugi'      => 0,
+                    'progres'          => 0,
+                ]);
+                $createdCount++;
+            }
+        }
+
+        // Log hasil sync
+        \Log::info("Sync RAB Type {$typeId} Unit {$unitId} Location {$locationId}: Updated {$updatedCount} items, Created {$createdCount} items");
+        
+        // Debug: tampilkan beberapa item yang di-update
+        if ($updatedCount > 0 || $createdCount > 0) {
+            \Log::info("Sample updated items: " . json_encode([
+                'type_id' => $typeId,
+                'unit_id' => $unitId,
+                'location_id' => $locationId,
+                'updated' => $updatedCount,
+                'created' => $createdCount,
+            ]));
+        }
+        
+        return [
+            'updated' => $updatedCount,
+            'created' => $createdCount,
+        ];
     }
 
     /**
@@ -191,15 +307,19 @@ class RabController extends Controller
             // JIKA KOSONG → GENERATE BARU
             if ($rabItems->isEmpty()) {
                 $this->generateRabFromTemplate($typeId, $unitId, $locationId);
-
-                $rabItems = RabItem::with('category')
-                    ->where('type_id', $typeId)
-                    ->where('unit_id', $unitId)
-                    ->where('location_id', $locationId)
-                    ->orderBy('rab_category_id')
-                    ->orderBy('id')
-                    ->get();
+            } else {
+                // JIKA SUDAH ADA → SYNC DARI TYPE VALUE (update data dari seeder)
+                $this->syncRabFromTypeValue($typeId, $unitId, $locationId);
             }
+
+            // Ambil ulang data setelah sync
+            $rabItems = RabItem::with('category')
+                ->where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->orderBy('rab_category_id')
+                ->orderBy('id')
+                ->get();
 
             // Group items by category
             $categories = RabCategory::orderBy('id')->get();
@@ -578,6 +698,34 @@ class RabController extends Controller
             'success' => true,
             'message' => "Berhasil update harga untuk {$updated} item",
             'updated' => $updated,
+        ]);
+    }
+
+    /**
+     * Sync bahan_baku dari seeder (update tanpa hapus data)
+     */
+    public function syncBahanBaku(Request $request)
+    {
+        $typeId     = $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return response()->json(['error' => 'Missing parameters'], 400);
+        }
+
+        // Sync data dari seeder (akan reset bahan_out yang sama dengan bahan_baku lama menjadi 0)
+        $result = $this->syncRabFromTypeValue($typeId, $unitId, $locationId);
+
+        $message = "Data bahan_baku berhasil di-sync dari seeder. ";
+        $message .= "Updated: {$result['updated']} items, Created: {$result['created']} items. ";
+        $message .= "Bahan OUT yang belum diisi user telah di-reset menjadi 0.";
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'updated' => $result['updated'],
+            'created' => $result['created'],
         ]);
     }
 

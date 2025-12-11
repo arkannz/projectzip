@@ -68,6 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/rab/update-borongan', [RabController::class, 'updateCategoryBorongan'])->name('rab.update-borongan');
     Route::get('/rab/summary', [RabController::class, 'getSummary'])->name('rab.summary');
     Route::post('/rab/refresh-prices', [RabController::class, 'refreshPrices'])->name('rab.refresh-prices');
+    Route::post('/rab/sync-bahan-baku', [RabController::class, 'syncBahanBaku'])->name('rab.sync-bahan-baku');
     Route::post('/rab/regenerate', [RabController::class, 'regenerate'])->name('rab.regenerate');
 });
 
