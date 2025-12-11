@@ -277,6 +277,123 @@ class RabController extends Controller
     }
 
     /**
+     * RAB Type 55 - Halaman Laporan Printable
+     */
+    public function type55(Request $request)
+    {
+        $types     = Type::all();
+        $units     = Unit::with('location')->get();
+        $locations = Location::all();
+
+        $typeId     = $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        // nilai default kosong
+        $rabItems = collect();
+        $categories = collect();
+        $categoryBorongans = collect();
+
+        if ($typeId && $unitId && $locationId) {
+
+            // AMBIL DATA RAB YANG SUDAH ADA
+            $rabItems = RabItem::with('category')
+                ->where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->orderBy('rab_category_id')
+                ->orderBy('id')
+                ->get();
+
+            // JIKA KOSONG → GENERATE BARU
+            if ($rabItems->isEmpty()) {
+                $this->generateRabFromTemplate($typeId, $unitId, $locationId);
+
+                $rabItems = RabItem::with('category')
+                    ->where('type_id', $typeId)
+                    ->where('unit_id', $unitId)
+                    ->where('location_id', $locationId)
+                    ->orderBy('rab_category_id')
+                    ->orderBy('id')
+                    ->get();
+            }
+
+            // Group items by category
+            $categories = RabCategory::orderBy('id')->get();
+
+            // Get borongan per category
+            $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->get()
+                ->keyBy('rab_category_id');
+        }
+
+        // Get selected data for display
+        $selectedType = $typeId ? Type::find($typeId) : null;
+        $selectedUnit = $unitId ? Unit::find($unitId) : null;
+        $selectedLocation = $locationId ? Location::find($locationId) : null;
+
+        return view('admin.rab.type55', [
+            'types'             => $types,
+            'units'             => $units,
+            'locations'         => $locations,
+            'type_id'           => $typeId,
+            'unit_id'           => $unitId,
+            'location_id'       => $locationId,
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+        ]);
+    }
+
+    /**
+     * Print view untuk RAB Type 55
+     */
+    public function type55Print(Request $request)
+    {
+        $typeId     = $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return redirect()->route('rab.type55')->with('error', 'Silakan pilih Type, Lokasi, dan Unit terlebih dahulu');
+        }
+
+        $rabItems = RabItem::with('category')
+            ->where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->orderBy('rab_category_id')
+            ->orderBy('id')
+            ->get();
+
+        $categories = RabCategory::orderBy('id')->get();
+
+        $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->get()
+            ->keyBy('rab_category_id');
+
+        $selectedType = Type::find($typeId);
+        $selectedUnit = Unit::find($unitId);
+        $selectedLocation = Location::find($locationId);
+
+        return view('admin.rab.type55-print', [
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+        ]);
+    }
+
+    /**
      * Update single RAB item (bahan_out, upah, progres)
      */
     public function updateItem(Request $request, RabItem $item)
@@ -532,6 +649,7 @@ class RabController extends Controller
 
     /**
      * Refresh/Sync harga bahan dari inventory ke RAB items
+     * Juga update bahan_baku dari RabTypeValue jika masih 0
      */
     public function refreshPrices(Request $request)
     {
@@ -546,6 +664,17 @@ class RabController extends Controller
         // Ambil semua inventory items untuk lookup
         $inventoryItems = InventoryItem::all()->keyBy('nama');
 
+        // Ambil semua templates untuk lookup bahan_baku
+        $templates = RabTemplate::all()->keyBy('item_name');
+        
+        // Ambil semua type values untuk type ini
+        $typeValues = RabTypeValue::where('type_id', $typeId)
+            ->with('template')
+            ->get()
+            ->keyBy(function($tv) {
+                return $tv->template->item_name ?? null;
+            });
+
         // Ambil RAB items
         $rabItems = RabItem::where('type_id', $typeId)
             ->where('unit_id', $unitId)
@@ -553,7 +682,18 @@ class RabController extends Controller
             ->get();
 
         $updated = 0;
+        $updatedBahanBaku = 0;
         foreach ($rabItems as $item) {
+            $updatedItem = false;
+            
+            // Update bahan_baku jika masih 0 atau kosong
+            if (($item->bahan_baku == 0 || $item->bahan_baku == null) && isset($typeValues[$item->uraian])) {
+                $typeValue = $typeValues[$item->uraian];
+                $item->bahan_baku = $typeValue->bahan_baku;
+                $updatedBahanBaku++;
+                $updatedItem = true;
+            }
+            
             // Cari di inventory dengan exact match
             $inventory = $inventoryItems->get($item->uraian);
             
@@ -566,18 +706,29 @@ class RabController extends Controller
 
             if ($inventory && $inventory->harga > 0) {
                 $item->harga_bahan = $inventory->harga;
+                // Update total_harga: gunakan bahan_out jika ada, jika tidak gunakan bahan_baku
                 $item->total_harga = $item->bahan_out > 0 
                     ? $item->bahan_out * $inventory->harga 
                     : $item->bahan_baku * $inventory->harga;
+                $updatedItem = true;
+            }
+            
+            if ($updatedItem) {
                 $item->save();
                 $updated++;
             }
         }
 
+        $message = "Berhasil update harga untuk {$updated} item";
+        if ($updatedBahanBaku > 0) {
+            $message .= " dan update bahan_baku untuk {$updatedBahanBaku} item";
+        }
+
         return response()->json([
             'success' => true,
-            'message' => "Berhasil update harga untuk {$updated} item",
+            'message' => $message,
             'updated' => $updated,
+            'updated_bahan_baku' => $updatedBahanBaku,
         ]);
     }
 
@@ -593,6 +744,10 @@ class RabController extends Controller
         if (!$typeId || !$unitId || !$locationId) {
             return response()->json(['error' => 'Missing parameters'], 400);
         }
+
+        // Ambil type untuk mendapatkan nama type
+        $type = Type::find($typeId);
+        $typeName = $type ? $type->nama : '';
 
         // Hapus RAB items yang ada
         RabItem::where('type_id', $typeId)
@@ -611,7 +766,7 @@ class RabController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'RAB berhasil di-regenerate',
+            'message' => 'RAB berhasil di-regenerate dengan borongan terbaru',
         ]);
     }
 }

@@ -63,6 +63,12 @@ Route::middleware('auth')->group(function () {
     // RAB Type 50 Routes
     Route::get('/rab/type50', [RabController::class, 'type50'])->name('rab.type50');
     Route::get('/rab/type50/print', [RabController::class, 'type50Print'])->name('rab.type50.print');
+    
+    // RAB Type 55 Routes
+    Route::get('/rab/type55', [RabController::class, 'type55'])->name('rab.type55');
+    Route::get('/rab/type55/print', [RabController::class, 'type55Print'])->name('rab.type55.print');
+    
+    // Shared RAB Routes
     Route::put('/rab/item/{item}', [RabController::class, 'updateItem'])->name('rab.update-item');
     Route::post('/rab/batch-update', [RabController::class, 'batchUpdate'])->name('rab.batch-update');
     Route::post('/rab/update-borongan', [RabController::class, 'updateCategoryBorongan'])->name('rab.update-borongan');

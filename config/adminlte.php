@@ -336,6 +336,11 @@ return [
                     'url'  => 'rab/type50',
                     'icon' => 'fas fa-file-alt',
                 ],
+                [
+                    'text' => 'RAB Type 55',
+                    'url'  => 'rab/type55',
+                    'icon' => 'fas fa-file-alt',
+                ],
             ],
         ],
         // Tukang items:

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAB Type {{ $selectedType->nama ?? '50' }} - {{ $selectedLocation->nama ?? '' }} - Unit {{ $selectedUnit->kode_unit ?? '' }}</title>
+    <title>RAB Type {{ $selectedType->nama ?? '55' }} - {{ $selectedLocation->nama ?? '' }} - Unit {{ $selectedUnit->kode_unit ?? '' }}</title>
     <style>
         * {
             margin: 0;
@@ -335,7 +335,7 @@
     </style>
 </head>
 <body>
-    <a href="{{ route('rab.type50', ['type_id' => $selectedType->id ?? '', 'unit_id' => $selectedUnit->id ?? '', 'location_id' => $selectedLocation->id ?? '']) }}" class="back-btn no-print">← Kembali</a>
+    <a href="{{ route('rab.type55', ['type_id' => $selectedType->id ?? '', 'unit_id' => $selectedUnit->id ?? '', 'location_id' => $selectedLocation->id ?? '']) }}" class="back-btn no-print">← Kembali</a>
     <button onclick="window.print()" class="print-btn no-print">🖨️ Print</button>
 
     @php

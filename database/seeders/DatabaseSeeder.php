@@ -17,10 +17,13 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([   
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Create user hanya jika belum ada
+        if (!User::where('email', 'test@example.com')->exists()) {
+            User::factory()->create([   
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+            ]);
+        }
 
         // Memanggil Seeder
         $this->call([
@@ -34,6 +37,7 @@ class DatabaseSeeder extends Seeder
             
             // RAB Type Values (bahan_baku per type)
             RabType50Seeder::class,      // Data bahan_baku untuk type 50
+            RabType55Seeder::class,      // Data bahan_baku untuk type 55
             
             // RAB Borongan per Category per Type
             RabCategoryBoronganSeeder::class,  // Data borongan default per kategori per type
