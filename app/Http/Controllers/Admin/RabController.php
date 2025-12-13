@@ -83,8 +83,13 @@ class RabController extends Controller
 
         if ($hasTypeValues) {
             // Untuk type yang memiliki RabTypeValue (seperti type 55), hanya generate item yang ada di RabTypeValue
+            // Urutkan berdasarkan category_id dan rab_template_id agar sesuai urutan di template seeder
             $typeValues = RabTypeValue::where('type_id', $typeId)
                 ->with(['template.category'])
+                ->join('rab_templates', 'rab_type_values.rab_template_id', '=', 'rab_templates.id')
+                ->orderBy('rab_templates.category_id')
+                ->orderBy('rab_templates.id')
+                ->select('rab_type_values.*')
                 ->get();
 
             foreach ($typeValues as $typeValue) {
@@ -93,16 +98,14 @@ class RabController extends Controller
 
                 // Cari harga bahan di inventory
                 $inventory = InventoryItem::where('nama', $tpl->item_name)->first();
-                $harga = $inventory ? $inventory->harga : 0;
+                $harga = $inventory ? (float)$inventory->harga : 0;
 
-                // Gunakan bahan_baku dari TypeValue
-                $bahanBaku = $typeValue->bahan_baku ?? 0;
+                // Gunakan bahan_baku dari TypeValue (bisa desimal seperti 1.5)
+                $bahanBaku = (float)($typeValue->bahan_baku ?? 0);
 
-                // Skip jika bahan_baku = 0 (tidak perlu generate item dengan nilai 0)
-                if ($bahanBaku == 0) continue;
-
-                // Hitung total harga
-                $totalHarga = $bahanBaku * $harga;
+                // Jangan skip item dengan bahan_baku = 0, tetap tampilkan
+                // Hitung total harga dengan mendukung desimal
+                $totalHarga = round($bahanBaku * $harga, 2);
 
                 RabItem::create([
                     'type_id'          => $typeId,
@@ -130,13 +133,13 @@ class RabController extends Controller
             foreach ($templates as $tpl) {
                 // Cari harga bahan di inventory
                 $inventory = InventoryItem::where('nama', $tpl->item_name)->first();
-                $harga = $inventory ? $inventory->harga : 0;
+                $harga = $inventory ? (float)$inventory->harga : 0;
 
-                // Gunakan default bahan_baku dari template
-                $bahanBaku = $tpl->default_bahan_baku ?? 0;
+                // Gunakan default bahan_baku dari template (bisa desimal)
+                $bahanBaku = (float)($tpl->default_bahan_baku ?? 0);
 
-                // Hitung total harga
-                $totalHarga = $bahanBaku * $harga;
+                // Hitung total harga dengan mendukung desimal
+                $totalHarga = round($bahanBaku * $harga, 2);
 
                 RabItem::create([
                     'type_id'          => $typeId,
@@ -744,10 +747,10 @@ class RabController extends Controller
 
             if ($inventory && $inventory->harga > 0) {
                 $item->harga_bahan = $inventory->harga;
-                // Update total_harga: gunakan bahan_out jika ada, jika tidak gunakan bahan_baku
-                $item->total_harga = $item->bahan_out > 0 
-                    ? $item->bahan_out * $inventory->harga 
-                    : $item->bahan_baku * $inventory->harga;
+                // Update total_harga: gunakan bahan_out jika ada, jika tidak gunakan bahan_baku (mendukung desimal)
+                $item->total_harga = round($item->bahan_out > 0 
+                    ? (float)$item->bahan_out * (float)$inventory->harga 
+                    : (float)$item->bahan_baku * (float)$inventory->harga, 2);
                 $updatedItem = true;
             }
             

@@ -142,7 +142,7 @@
                         <tr class="item-row" data-item-id="{{ $item->id }}" data-category-id="{{ $category->id }}">
                             <td class="text-center">{{ $itemCounter }}</td>
                             <td>{{ $item->uraian }}</td>
-                            <td class="text-center">{{ $item->bahan_baku }}</td>
+                            <td class="text-center">{{ $item->bahan_baku == (int)$item->bahan_baku ? number_format($item->bahan_baku, 0, ',', '.') : number_format($item->bahan_baku, 1, ',', '.') }}</td>
                             <td class="text-center">
                                 <input type="number" class="form-control form-control-sm input-out" 
                                        value="{{ $item->bahan_out }}" 
@@ -355,7 +355,8 @@
         const itemId = $(this).data('item-id');
         const harga = parseFloat($(this).data('harga')) || 0;
         const out = parseFloat($(this).val()) || 0;
-        const totalHarga = out * harga;
+        // Hitung total harga dengan mendukung desimal
+        const totalHarga = Math.round((out * harga) * 100) / 100;
 
         // Update display
         $(`.total-harga[data-item-id="${itemId}"]`).text(formatRupiah(totalHarga));
@@ -419,9 +420,12 @@
         $(`.item-row[data-category-id="${categoryId}"]`).each(function() {
             const harga = parseFloat($(this).find('.input-out').data('harga')) || 0;
             const out = parseFloat($(this).find('.input-out').val()) || 0;
-            totalHarga += out * harga;
+            // Hitung dengan mendukung desimal
+            totalHarga += Math.round((out * harga) * 100) / 100;
         });
 
+        // Bulatkan total untuk menghindari floating point error
+        totalHarga = Math.round(totalHarga * 100) / 100;
         $(`.cat-total-harga[data-category-id="${categoryId}"]`).html(`<strong>${formatRupiah(totalHarga)}</strong>`);
         updateGrandTotals();
     }
