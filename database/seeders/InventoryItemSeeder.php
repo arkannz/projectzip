@@ -16,15 +16,15 @@ class InventoryItemSeeder extends Seeder
             ['nama' => 'Besi ø6', 'harga' => 22000, 'satuan' => 'Batang'],
             ['nama' => 'Besi ø8 Ulir', 'harga' => 49000, 'satuan' => 'Batang'],
             ['nama' => 'Kayu 3/5', 'harga' => 11000, 'satuan' => 'Batang'],
-            ['nama' => 'Cerucuk', 'harga' => 11000, 'satuan' => 'Batang'],
-            ['nama' => 'Papan Mal', 'harga' => 150000, 'satuan' => 'Lembar'],
+            ['nama' => 'Cerucuk', 'harga' => 8000, 'satuan' => 'Batang'],
+            ['nama' => 'Papan Mal', 'harga' => 11000, 'satuan' => 'Lembar'],
             ['nama' => 'Pasir', 'harga' => 150000, 'satuan' => 'Kubik'],
             ['nama' => 'Batu', 'harga' => 500000, 'satuan' => 'Truk'],
             ['nama' => 'Semen PCC 40 Kg Tiga Roda', 'harga' => 60700, 'satuan' => 'Sak'],
 
             // B — URUG
-            ['nama' => 'Pipa 4"', 'harga' => 48000, 'satuan' => 'Batang'],
-            ['nama' => 'Pipa 2"', 'harga' => 22000, 'satuan' => 'Batang'],
+            ['nama' => 'Pipa 4"', 'harga' => 133500, 'satuan' => 'Batang'],
+            ['nama' => 'Pipa 2"', 'harga' => 48000, 'satuan' => 'Batang'],
 
             // C — COR LANTAI
             ['nama' => 'Plastik cor', 'harga' => 15000, 'satuan' => 'Meter'],
@@ -68,7 +68,7 @@ class InventoryItemSeeder extends Seeder
             ['nama' => 'Paku 3 inch', 'harga' => 130000, 'satuan' => 'Kg'],
 
             // I — DEK
-            ['nama' => 'Gypsum', 'harga' => 11000, 'satuan' => 'Lembar'],
+            ['nama' => 'Gypsum', 'harga' => 60000, 'satuan' => 'Lembar'],
             ['nama' => 'Baut', 'harga' => 60000, 'satuan' => 'Kotak'],
             ['nama' => 'Paku Beton 4 inch', 'harga' => 37000, 'satuan' => 'Kg'],
             // Paku 3 inch & 2 inch sudah ada di atas
@@ -80,14 +80,14 @@ class InventoryItemSeeder extends Seeder
             // Items already exist above
 
             // L — KERAMIK
-            ['nama' => 'Keramik 60 x 60 Cream', 'harga' => 165000, 'satuan' => 'Dus'],
+            ['nama' => 'Keramik 60 x 60 Cream', 'harga' => 118000, 'satuan' => 'Dus'],
             ['nama' => 'Oker', 'harga' => 15000, 'satuan' => 'Kg'],
 
             // M — WC
             ['nama' => 'Keramik 30 x 30', 'harga' => 60000, 'satuan' => 'Dus'],
-            ['nama' => 'Keramik 25 x 40', 'harga' => 270000, 'satuan' => 'Dus'],
-            ['nama' => 'Closed jongkok Ina', 'harga' => 780000, 'satuan' => 'Unit'],
-            ['nama' => 'Closed Duduk Volk', 'harga' => 5000, 'satuan' => 'Unit'],
+            ['nama' => 'Keramik 25 x 40', 'harga' => 60000, 'satuan' => 'Dus'],
+            ['nama' => 'Closed jongkok Ina', 'harga' => 270000, 'satuan' => 'Unit'],
+            ['nama' => 'Closed Duduk Volk', 'harga' => 780000, 'satuan' => 'Unit'],
             ['nama' => 'Floor drain', 'harga' => 5000, 'satuan' => 'Pcs'],
             ['nama' => 'Bak Air', 'harga' => 140000, 'satuan' => 'Unit'],
             ['nama' => 'Pipa 1/2"', 'harga' => 18000, 'satuan' => 'Batang'],
@@ -111,6 +111,7 @@ class InventoryItemSeeder extends Seeder
 
             // R — TALANG AIR
             ['nama' => 'Pipa 3"', 'harga' => 82000, 'satuan' => 'Batang'],
+            ['nama' => 'Pipa 2 "', 'harga' => 50000, 'satuan' => 'Batang'],
             ['nama' => 'Cekakan pipa 2"', 'harga' => 4000, 'satuan' => 'Pcs'],
             ['nama' => 'Lbow 3" ke 2"', 'harga' => 15000, 'satuan' => 'Pcs'],
             ['nama' => 'Sambungan 3" ke 2"', 'harga' => 12000, 'satuan' => 'Pcs'],

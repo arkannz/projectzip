@@ -32,13 +32,13 @@ class RabType55Seeder extends Seeder
             // A — PONDASI
             'A' => [
                 'Besi ø6' => 13,
-                'Besi ø8 Ulir' => 48,
-                'Kayu 3/5' => 41,
+                'Besi ø8 Ulir' => 45,
+                'Kayu 3/5' => 38,
                 'Cerucuk' => 81,
-                'Papan Mal' => 144,
+                'Papan Mal' => 180,
                 'Pasir' => 14,
                 'Batu' => 2,
-                'Semen PCC 40 Kg Tiga Roda' => 40,
+                'Semen PCC 40 Kg Tiga Roda' => 42,
             ],
 
             // B — URUG
@@ -51,14 +51,14 @@ class RabType55Seeder extends Seeder
             // C — COR LANTAI
             'C' => [
                 'Besi ø6' => 17,
-                'Pasir' => 7,
-                'Semen PCC 40 Kg Tiga Roda' => 16,
+                'Pasir' => 5,
+                'Semen PCC 40 Kg Tiga Roda' => 15,
                 'Plastik cor' => 7,
             ],
 
             // D — PINTU
             'D' => [
-                'Pintu Kayu 120 x 220' => 2,
+                'Pintu Kayu 120 x 220' => 1,
                 'Pintu Kayu 80 x 220' => 3,
                 'Pintu WC PVC Biru' => 2,
                 'Pintu WC Edenjoice Putih' => 1,
@@ -74,46 +74,45 @@ class RabType55Seeder extends Seeder
 
             // E — BATA
             'E' => [
-                'Papan' => 29,
-                'Kayu 3/5' => 30,
-                'Besi ø6' => 6,
+                'Papan' => 26,
+                'Kayu 3/5' => 28,
+                'Besi ø6' => 5,
                 'Besi ø8 ' => 9,
                 'Kusen Pintu (2 Daun)' => 1,
                 'Kusen Pintu (1 Daun)' => 3,
                 'Bata' => 2562,
-                'Semen PCC 40 Kg Tiga Roda' => 17,
-                'Pasir' => 4,
-                'Besi ø6 ' => 4,
+                'Semen PCC 40 Kg Tiga Roda' => 21,
+                'Pasir' => 5,
             ],
 
             // F — COR TIANG DEPAN
             'F' => [
-                'Semen PCC 40 Kg Tiga Roda' => 4,
+                'Semen PCC 40 Kg Tiga Roda' => 5,
                 'Pasir' => 1,
-                'Batu' => 1,
-                'Besi ø6 ' => 2,
-                'Besi ø8' => 3,
+                'Batu' => 2,
+                'Besi ø6 ' => 3,
+                'Besi ø8' => 4,
                 'Multiplek' => 1,
-                'Kayu 3/5' => 16,
-                'Bata' => 59,
-                'Cerucuk' => 6,
-                'Papan Mal' => 5,
+                'Kayu 3/5' => 22,
+                'Bata' => 81,
+                'Cerucuk' => 8,
+                'Papan Mal' => 7,
             ],
 
             // G — PLASTER
             'G' => [
-                'Semen PCC 40 Kg Tiga Roda' => 28,
-                'Pasir' => 6,
-                'Pipa 5/8' => 5,
+                'Semen PCC 40 Kg Tiga Roda' => 38,
+                'Pasir' => 8,
+                'Pipa 5/8' => 7,
             ],
 
             // H — ATAP
             'H' => [
                 'Kayu 3/5' => 66,
                 'Kayu 4/6' => 44,
-                'Kayu 5/7' => 23,
+                'Kayu 5/7' => 32,
                 'Lisplank' => 10,
-                'Seng Metal 4 Susun (merah)' => 74,
+                'Seng Metal 4 Susun (merah)' => 75,
                 'Seng Metal 2 Susun (hitam)' => 0,
                 'Perabung Hitam' => 0,
                 'Perabung Merah' => 1.5,
@@ -124,8 +123,8 @@ class RabType55Seeder extends Seeder
             // I — DEK
             'I' => [
                 'Kayu 3/5' => 95,
-                'Gypsum' => 14,
-                'Baut' => 3,
+                'Gypsum' => 25,
+                'Baut' => 4,
                 'Paku Beton 4 inch' => 1,
                 'Paku 3 inch' => 1,
                 'Paku 2 inch' => 1,
@@ -133,29 +132,29 @@ class RabType55Seeder extends Seeder
 
             // J — MINIMALIS
             'J' => [
-                'Bata' => 124,
+                'Bata' => 120,
                 'Pasir' => 3,
                 'Semen PCC 40 Kg Tiga Roda' => 10,
-                'Keramik 60 x 60 Blackmatt' => 8,
+                'Keramik 60 x 60 Blackmatt' => 7,
             ],
 
             // K — CARPORT
             'K' => [
-                'Semen PCC 40 Kg Tiga Roda' => 26,
-                'Kayu 3/5' => 10,
+                'Semen PCC 40 Kg Tiga Roda' => 22,
+                'Kayu 3/5' => 8,
                 'Cerucuk' => 5,
-                'Papan Mal' => 12,
+                'Papan Mal' => 10,
                 'Plastik cor' => 7,
-                'Besi ø6' => 3,
-                'Besi ø8' => 17,
+                'Besi ø6' => 2,
+                'Besi ø8' => 15,
                 'Batu' => 1,
-                'Pasir' => 7,
+                'Pasir' => 6,
                 'Keramik 60 x 60 Blackmatt' => 31,
             ],
 
             // L — KERAMIK
             'L' => [
-                'Keramik 60 x 60 Cream' => 28,
+                'Keramik 60 x 60 Cream' => 35,
                 'Keramik 60 x 60 Blackmatt' => 14,
                 'Pasir' => 5,
                 'Semen PCC 40 Kg Tiga Roda' => 24,
@@ -165,7 +164,7 @@ class RabType55Seeder extends Seeder
             // M — WC
             'M' => [
                 'Keramik 30 x 30 ' => 6,
-                'Keramik 25 x 40' => 13,
+                'Keramik 25 x 40' => 22,
                 'Closed jongkok Ina' => 2,
                 'Closed Duduk Volk' => 1,
                 'Floor drain' => 2,
@@ -187,33 +186,33 @@ class RabType55Seeder extends Seeder
             'O' => [
                 'Mowilex weathercoat' => 1,
                 'Nippon paint Q-LUC' => 3,
-                'Semen TR-30 40 Kg Tiga Roda' => 10,
+                'Semen TR-30 40 Kg Tiga Roda' => 13,
                 'Semen Aci Putih 25 kg' => 1,
             ],
 
             // P — PAGAR
             'P' => [
-                'Bata' => 74,
-                'Pasir' => 2,
-                'Semen PCC 40 Kg Tiga Roda' => 4,
+                'Bata' => 100,
+                'Pasir' => 1,
+                'Semen PCC 40 Kg Tiga Roda' => 3,
                 'Besi ø6 ' => 2,
                 'Besi ø8' => 4,
             ],
 
             // Q — MINIMALIS CARPORT
             'Q' => [
-                'Semen PCC 40 Kg Tiga Roda' => 10,
+                'Semen PCC 40 Kg Tiga Roda' => 9,
                 'Pasir' => 2,
             ],
 
             // R — TALANG AIR
             'R' => [
-                'Pipa 3"' => 1,
+                'Pipa 3"' => 4,
                 'Pipa 2"' => 2,
-                'Cekakan pipa 2"' => 1,
+                'Cekakan pipa 2"' => 2,
                 'Lbow 3" ke 2"' => 1,
                 'Sambungan 3" ke 2"' => 1,
-                'Lbow 2"' => 2,
+                'Lbow 2"' => 3,
                 'Penutup pipa 3"' => 1,
                 'Lem pipa fox' => 1,
             ],

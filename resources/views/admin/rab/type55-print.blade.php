@@ -351,9 +351,13 @@
         });
         
         // Hitung grand total untuk semua kategori
-        $grandTotalHarga = 0;
-        $grandTotalUpah = 0;
-        $grandTotalBorongan = 0;
+        // Hitung grand total langsung dari items (sama seperti di view input)
+        $grandTotalHarga = $rabItems->filter(function($item) {
+            return $item->bahan_out > 0;
+        })->sum('total_harga');
+        
+        $grandTotalUpah = $categoryBorongans->sum('upah');
+        $grandTotalBorongan = $categoryBorongans->sum('borongan');
         $allProgress = [];
         $categoryCount = 0;
         
@@ -365,15 +369,12 @@
             $catBoronganValue = $catBorongan ? $catBorongan->borongan : 0;
             $catUpahValue = $catBorongan ? $catBorongan->upah : 0;
             $catProgressValue = $catBorongan ? $catBorongan->progress : 0;
-            
-            $grandTotalHarga += $categoryItems->sum('total_harga');
-            $grandTotalUpah += $catUpahValue;
-            $grandTotalBorongan += $catBoronganValue;
             $allProgress[] = $catProgressValue;
             $categoryCount++;
         }
         
         $grandUntungRugi = $grandTotalBorongan - $grandTotalUpah;
+        // Progress dihitung dari semua kategori yang sudah diinput (tidak peduli nilainya 0 atau tidak)
         $avgProgress = $categoryCount > 0 ? round(array_sum($allProgress) / $categoryCount) : 0;
     @endphp
 
@@ -425,13 +426,12 @@
                         $catProgressValue = $catBorongan ? $catBorongan->progress : 0;
                         $catUntungRugi = $catBoronganValue - $catUpahValue;
                         
-                        // Calculate total harga from items
-                        $catTotalHarga = $categoryItems->sum('total_harga');
+                        // Calculate total harga from items (HANYA dari item dengan bahan_out > 0)
+                        $catTotalHarga = $categoryItems->filter(function($item) {
+                            return $item->bahan_out > 0;
+                        })->sum('total_harga');
                         
-                        // Add to grand totals
-                        $grandTotalHarga += $catTotalHarga;
-                        $grandTotalUpah += $catUpahValue;
-                        $grandTotalBorongan += $catBoronganValue;
+                        // Grand totals sudah dihitung di awal, tidak perlu ditambahkan lagi
                         $allProgress[] = $catProgressValue;
                         $categoryCount++;
                         
@@ -453,7 +453,13 @@
                             <td class="text-center">{{ $item->bahan_baku == (int)$item->bahan_baku ? number_format($item->bahan_baku, 0, ',', '.') : number_format($item->bahan_baku, 1, ',', '.') }}</td>
                             <td class="text-center">{{ $item->bahan_out == (int)$item->bahan_out ? number_format($item->bahan_out, 0, ',', '.') : number_format($item->bahan_out, 1, ',', '.') }}</td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
-                            <td class="text-right">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
+                            <td class="text-right">
+                                @if($item->total_harga == 0 || $item->bahan_out == 0)
+                                    -
+                                @else
+                                    Rp {{ number_format($item->total_harga, 0, ',', '.') }}
+                                @endif
+                            </td>
                             <td class="text-center">-</td>
                             <td class="text-center">-</td>
                             <td class="text-center">-</td>
@@ -464,7 +470,13 @@
                     {{-- Category Summary with Upah, Borongan, Untung/Rugi, Progress --}}
                     <tr class="summary-row">
                         <td colspan="5" class="text-center"><strong>Subtotal {{ $category->nama }}:</strong></td>
-                        <td class="text-right">Rp {{ number_format($catTotalHarga, 0, ',', '.') }}</td>
+                        <td class="text-right">
+                            @if($catTotalHarga == 0)
+                                -
+                            @else
+                                Rp {{ number_format($catTotalHarga, 0, ',', '.') }}
+                            @endif
+                        </td>
                         <td class="text-right">Rp {{ number_format($catUpahValue, 0, ',', '.') }}</td>
                         <td class="text-right">Rp {{ number_format($catBoronganValue, 0, ',', '.') }}</td>
                         <td class="text-right {{ $catUntungRugi < 0 ? 'text-danger' : '' }}">
@@ -511,8 +523,10 @@
                         $catProgressValue = $catBorongan ? $catBorongan->progress : 0;
                         $catUntungRugi = $catBoronganValue - $catUpahValue;
                         
-                        // Calculate total harga from items
-                        $catTotalHarga = $categoryItems->sum('total_harga');
+                        // Calculate total harga from items (HANYA dari item dengan bahan_out > 0)
+                        $catTotalHarga = $categoryItems->filter(function($item) {
+                            return $item->bahan_out > 0;
+                        })->sum('total_harga');
                         
                         $itemCounter = 0;
                     @endphp
@@ -532,7 +546,13 @@
                             <td class="text-center">{{ $item->bahan_baku == (int)$item->bahan_baku ? number_format($item->bahan_baku, 0, ',', '.') : number_format($item->bahan_baku, 1, ',', '.') }}</td>
                             <td class="text-center">{{ $item->bahan_out == (int)$item->bahan_out ? number_format($item->bahan_out, 0, ',', '.') : number_format($item->bahan_out, 1, ',', '.') }}</td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
-                            <td class="text-right">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
+                            <td class="text-right">
+                                @if($item->total_harga == 0 || $item->bahan_out == 0)
+                                    -
+                                @else
+                                    Rp {{ number_format($item->total_harga, 0, ',', '.') }}
+                                @endif
+                            </td>
                             <td class="text-center">-</td>
                             <td class="text-center">-</td>
                             <td class="text-center">-</td>
@@ -543,7 +563,13 @@
                     {{-- Category Summary with Upah, Borongan, Untung/Rugi, Progress --}}
                     <tr class="summary-row">
                         <td colspan="5" class="text-center"><strong>Subtotal {{ $category->nama }}:</strong></td>
-                        <td class="text-right">Rp {{ number_format($catTotalHarga, 0, ',', '.') }}</td>
+                        <td class="text-right">
+                            @if($catTotalHarga == 0)
+                                -
+                            @else
+                                Rp {{ number_format($catTotalHarga, 0, ',', '.') }}
+                            @endif
+                        </td>
                         <td class="text-right">Rp {{ number_format($catUpahValue, 0, ',', '.') }}</td>
                         <td class="text-right">Rp {{ number_format($catBoronganValue, 0, ',', '.') }}</td>
                         <td class="text-right {{ $catUntungRugi < 0 ? 'text-danger' : '' }}">

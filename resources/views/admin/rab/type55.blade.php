@@ -15,14 +15,8 @@
 
         <div class="col-md-4">
             <label>Type Rumah</label>
-            <select name="type_id" class="form-control">
-                <option value="">Pilih Type</option>
-                @foreach($types as $t)
-                    <option value="{{ $t->id }}" {{ $type_id == $t->id ? 'selected' : '' }}>
-                        {{ $t->nama }}
-                    </option>
-                @endforeach
-            </select>
+            <input type="text" class="form-control" value="{{ $fixedType->nama }}" disabled style="background-color: #e9ecef; cursor: not-allowed;">
+            <input type="hidden" name="type_id" value="{{ $fixedType->id }}">
         </div>
 
         <div class="col-md-4">
@@ -121,8 +115,10 @@
                         $categoryCounter++;
                         $itemCounter = 0;
                         
-                        // Calculate category totals
-                        $catTotalHarga = $categoryItems->sum('total_harga');
+                        // Calculate category totals (HANYA dari item dengan bahan_out > 0)
+                        $catTotalHarga = $categoryItems->filter(function($item) {
+                            return $item->bahan_out > 0;
+                        })->sum('total_harga');
                         $catBorongan = $categoryBorongans->get($category->id);
                         $catBoronganValue = $catBorongan ? $catBorongan->borongan : 0;
                         $catUpahValue = $catBorongan ? $catBorongan->upah : 0;
@@ -152,7 +148,11 @@
                             </td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
                             <td class="text-right total-harga" data-item-id="{{ $item->id }}">
-                                Rp {{ number_format($item->total_harga, 0, ',', '.') }}
+                                @if($item->total_harga == 0 || $item->bahan_out == 0)
+                                    -
+                                @else
+                                    Rp {{ number_format($item->total_harga, 0, ',', '.') }}
+                                @endif
                             </td>
                             <td class="text-center">-</td>
                             <td class="text-center">-</td>
@@ -165,7 +165,11 @@
                     <tr class="category-summary-row category-summary" data-category-id="{{ $category->id }}">
                         <td colspan="5" class="text-center"><strong>Subtotal {{ $category->nama }}:</strong></td>
                         <td class="text-right cat-total-harga" data-category-id="{{ $category->id }}">
-                            <strong>Rp {{ number_format($catTotalHarga, 0, ',', '.') }}</strong>
+                            @if($catTotalHarga == 0)
+                                <strong>-</strong>
+                            @else
+                                <strong>Rp {{ number_format($catTotalHarga, 0, ',', '.') }}</strong>
+                            @endif
                         </td>
                         <td class="text-center">
                             <input type="number" class="form-control form-control-sm input-upah-cat" 
@@ -202,7 +206,16 @@
                 <tr class="grand-total-row font-weight-bold">
                     <td colspan="5" class="text-center"><strong>JUMLAH TOTAL</strong></td>
                     <td class="text-right" id="grandTotalHarga">
-                        <strong>Rp {{ number_format($rabItems->sum('total_harga'), 0, ',', '.') }}</strong>
+                        @php
+                            $grandTotalHarga = $rabItems->filter(function($item) {
+                                return $item->bahan_out > 0;
+                            })->sum('total_harga');
+                        @endphp
+                        @if($grandTotalHarga == 0)
+                            <strong>-</strong>
+                        @else
+                            <strong>Rp {{ number_format($grandTotalHarga, 0, ',', '.') }}</strong>
+                        @endif
                     </td>
                     <td class="text-right" id="grandTotalUpah">
                         <strong>Rp {{ number_format($categoryBorongans->sum('upah'), 0, ',', '.') }}</strong>
@@ -220,7 +233,9 @@
 
                 {{-- Total Harga Bahan + Total HK Row --}}
                 @php
-                    $totalHargaBahan = $rabItems->sum('total_harga');
+                    $totalHargaBahan = $rabItems->filter(function($item) {
+                        return $item->bahan_out > 0;
+                    })->sum('total_harga');
                     $totalHK = $categoryBorongans->sum('upah');
                     $grandTotalBahanHK = $totalHargaBahan + $totalHK;
                 @endphp
@@ -342,7 +357,7 @@
         
         // Jalankan script utama
         jQuery(document).ready(function($) {
-    const typeId = '{{ $type_id }}';
+    const typeId = '{{ $type_id ?: $fixedType->id }}';
     const unitId = '{{ $unit_id }}';
     const locationId = '{{ $location_id }}';
 
@@ -355,11 +370,19 @@
         const itemId = $(this).data('item-id');
         const harga = parseFloat($(this).data('harga')) || 0;
         const out = parseFloat($(this).val()) || 0;
-        // Hitung total harga dengan mendukung desimal
-        const totalHarga = Math.round((out * harga) * 100) / 100;
+        
+        // Total harga HANYA dihitung dari bahan_out * harga_bahan
+        let totalHarga = 0;
+        if (out > 0) {
+            totalHarga = Math.round((out * harga) * 100) / 100;
+        }
 
         // Update display
-        $(`.total-harga[data-item-id="${itemId}"]`).text(formatRupiah(totalHarga));
+        if (totalHarga == 0 || out == 0) {
+            $(`.total-harga[data-item-id="${itemId}"]`).text('-');
+        } else {
+            $(`.total-harga[data-item-id="${itemId}"]`).text(formatRupiah(totalHarga));
+        }
 
         // Track modification
         if (!modifiedItems[itemId]) modifiedItems[itemId] = {};
@@ -420,13 +443,19 @@
         $(`.item-row[data-category-id="${categoryId}"]`).each(function() {
             const harga = parseFloat($(this).find('.input-out').data('harga')) || 0;
             const out = parseFloat($(this).find('.input-out').val()) || 0;
-            // Hitung dengan mendukung desimal
-            totalHarga += Math.round((out * harga) * 100) / 100;
+            // Hanya hitung jika bahan_out > 0
+            if (out > 0) {
+                totalHarga += Math.round((out * harga) * 100) / 100;
+            }
         });
 
         // Bulatkan total untuk menghindari floating point error
         totalHarga = Math.round(totalHarga * 100) / 100;
-        $(`.cat-total-harga[data-category-id="${categoryId}"]`).html(`<strong>${formatRupiah(totalHarga)}</strong>`);
+        if (totalHarga == 0) {
+            $(`.cat-total-harga[data-category-id="${categoryId}"]`).html(`<strong>-</strong>`);
+        } else {
+            $(`.cat-total-harga[data-category-id="${categoryId}"]`).html(`<strong>${formatRupiah(totalHarga)}</strong>`);
+        }
         updateGrandTotals();
     }
 
@@ -455,7 +484,10 @@
         let progressCount = 0;
 
         $('.cat-total-harga').each(function() {
-            grandTotalHarga += parseUnformattedNumber($(this).text());
+            const text = $(this).text().trim();
+            if (text !== '-' && text !== '') {
+                grandTotalHarga += parseUnformattedNumber(text);
+            }
         });
 
         $('.input-upah-cat').each(function() {
@@ -466,9 +498,14 @@
             grandTotalBorongan += parseFloat($(this).val()) || 0;
         });
 
+        // Progress dihitung dari semua kategori yang sudah diinput (tidak peduli nilainya 0 atau tidak)
         $('.input-progress-cat').each(function() {
-            totalProgress += parseFloat($(this).val()) || 0;
-            progressCount++;
+            const progressValue = $(this).val();
+            if (progressValue !== '' && progressValue !== null && progressValue !== undefined) {
+                const progress = parseFloat(progressValue) || 0;
+                totalProgress += progress;
+                progressCount++;
+            }
         });
 
         const grandUntungRugi = grandTotalBorongan - grandTotalUpah;
@@ -634,6 +671,9 @@
             function parseUnformattedNumber(str) {
                 return parseFloat(str.replace(/[^\d-]/g, '')) || 0;
             }
+            
+            // Initialize grand totals on page load
+            updateGrandTotals();
         });
     }
     

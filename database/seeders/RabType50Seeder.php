@@ -102,8 +102,8 @@ class RabType50Seeder extends Seeder
 
             // G — PLASTER
             'G' => [
-                'Semen PCC 40 Kg Tiga Roda' => 28,
-                'Pasir' => 6,
+                'Semen PCC 40 Kg Tiga Roda' => 35,
+                'Pasir' => 7,
                 'Pipa 5/8' => 6,
             ],
 
