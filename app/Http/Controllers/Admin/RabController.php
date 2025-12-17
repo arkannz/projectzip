@@ -213,7 +213,8 @@ class RabController extends Controller
         }
 
         // Get selected data for display
-        $selectedType = $typeId ? Type::find($typeId) : null;
+        $fixedType = Type::where('nama', '50')->first();
+        $selectedType = $typeId ? Type::find($typeId) : $fixedType;
         $selectedUnit = $unitId ? Unit::find($unitId) : null;
         $selectedLocation = $locationId ? Location::find($locationId) : null;
 
@@ -221,7 +222,7 @@ class RabController extends Controller
             'types'             => $types,
             'units'             => $units,
             'locations'         => $locations,
-            'type_id'           => $typeId,
+            'type_id'           => $typeId ?: $fixedType->id,
             'unit_id'           => $unitId,
             'location_id'       => $locationId,
             'rabItems'          => $rabItems,
@@ -230,6 +231,7 @@ class RabController extends Controller
             'selectedType'      => $selectedType,
             'selectedUnit'      => $selectedUnit,
             'selectedLocation'  => $selectedLocation,
+            'fixedType'         => $fixedType,
         ]);
     }
 
@@ -330,7 +332,8 @@ class RabController extends Controller
         }
 
         // Get selected data for display
-        $selectedType = $typeId ? Type::find($typeId) : null;
+        $fixedType = Type::where('nama', '55')->first();
+        $selectedType = $typeId ? Type::find($typeId) : $fixedType;
         $selectedUnit = $unitId ? Unit::find($unitId) : null;
         $selectedLocation = $locationId ? Location::find($locationId) : null;
 
@@ -338,7 +341,7 @@ class RabController extends Controller
             'types'             => $types,
             'units'             => $units,
             'locations'         => $locations,
-            'type_id'           => $typeId,
+            'type_id'           => $typeId ?: $fixedType->id,
             'unit_id'           => $unitId,
             'location_id'       => $locationId,
             'rabItems'          => $rabItems,
@@ -347,6 +350,7 @@ class RabController extends Controller
             'selectedType'      => $selectedType,
             'selectedUnit'      => $selectedUnit,
             'selectedLocation'  => $selectedLocation,
+            'fixedType'         => $fixedType,
         ]);
     }
 
@@ -384,6 +388,144 @@ class RabController extends Controller
         $selectedLocation = Location::find($locationId);
 
         return view('admin.rab.type55-print', [
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+        ]);
+    }
+
+    /**
+     * Dynamic method untuk RAB Type berdasarkan nomor type
+     */
+    public function typeByNumber(Request $request, $typeNumber)
+    {
+        // Cari type berdasarkan nama
+        $fixedType = Type::where('nama', $typeNumber)->first();
+        
+        if (!$fixedType) {
+            return redirect()->route('rab.index')->with('error', 'Type tidak ditemukan');
+        }
+
+        $types     = Type::all();
+        $units     = Unit::with('location')->get();
+        $locations = Location::all();
+
+        $typeId     = $request->type_id ?: $fixedType->id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        // nilai default kosong
+        $rabItems = collect();
+        $categories = collect();
+        $categoryBorongans = collect();
+
+        if ($typeId && $unitId && $locationId) {
+
+            // AMBIL DATA RAB YANG SUDAH ADA
+            $rabItems = RabItem::with('category')
+                ->where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->orderBy('rab_category_id')
+                ->orderBy('id')
+                ->get();
+
+            // JIKA KOSONG → GENERATE BARU
+            if ($rabItems->isEmpty()) {
+                $this->generateRabFromTemplate($typeId, $unitId, $locationId);
+
+                $rabItems = RabItem::with('category')
+                    ->where('type_id', $typeId)
+                    ->where('unit_id', $unitId)
+                    ->where('location_id', $locationId)
+                    ->orderBy('rab_category_id')
+                    ->orderBy('id')
+                    ->get();
+            }
+
+            // Group items by category
+            $categories = RabCategory::orderBy('id')->get();
+
+            // Get borongan per category
+            $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->get()
+                ->keyBy('rab_category_id');
+        }
+
+        // Get selected data for display
+        $selectedType = $typeId ? Type::find($typeId) : $fixedType;
+        $selectedUnit = $unitId ? Unit::find($unitId) : null;
+        $selectedLocation = $locationId ? Location::find($locationId) : null;
+
+        // Tentukan view berdasarkan type number
+        $viewName = 'admin.rab.type' . $typeNumber;
+
+        return view($viewName, [
+            'types'             => $types,
+            'units'             => $units,
+            'locations'         => $locations,
+            'type_id'           => $typeId,
+            'unit_id'           => $unitId,
+            'location_id'       => $locationId,
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+            'fixedType'         => $fixedType,
+        ]);
+    }
+
+    /**
+     * Dynamic print view untuk RAB Type berdasarkan nomor type
+     */
+    public function typeByNumberPrint(Request $request, $typeNumber)
+    {
+        // Cari type berdasarkan nama
+        $fixedType = Type::where('nama', $typeNumber)->first();
+        
+        if (!$fixedType) {
+            return redirect()->route('rab.index')->with('error', 'Type tidak ditemukan');
+        }
+
+        $typeId     = $request->type_id ?: $fixedType->id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return redirect()->route('rab.type' . $typeNumber)->with('error', 'Silakan pilih Type, Lokasi, dan Unit terlebih dahulu');
+        }
+
+        $rabItems = RabItem::with('category')
+            ->where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->orderBy('rab_category_id')
+            ->orderBy('id')
+            ->get();
+
+        $categories = RabCategory::orderBy('id')->get();
+
+        $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->get()
+            ->keyBy('rab_category_id');
+
+        $selectedType = Type::find($typeId);
+        $selectedUnit = Unit::find($unitId);
+        $selectedLocation = Location::find($locationId);
+
+        // Tentukan view berdasarkan type number
+        $viewName = 'admin.rab.type' . $typeNumber . '-print';
+
+        return view($viewName, [
             'rabItems'          => $rabItems,
             'categories'        => $categories,
             'categoryBorongans' => $categoryBorongans,

@@ -332,6 +332,16 @@ return [
                     'icon' => 'fas fa-list',
                 ],
                 [
+                    'text' => 'RAB Type 40',
+                    'url'  => 'rab/type40',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
+                    'text' => 'RAB Type 45',
+                    'url'  => 'rab/type45',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
                     'text' => 'RAB Type 50',
                     'url'  => 'rab/type50',
                     'icon' => 'fas fa-file-alt',
@@ -339,6 +349,26 @@ return [
                 [
                     'text' => 'RAB Type 55',
                     'url'  => 'rab/type55',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
+                    'text' => 'RAB Type 60',
+                    'url'  => 'rab/type60',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
+                    'text' => 'RAB Type 70',
+                    'url'  => 'rab/type70',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
+                    'text' => 'RAB Type 80',
+                    'url'  => 'rab/type80',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
+                    'text' => 'RAB Type 100',
+                    'url'  => 'rab/type100',
                     'icon' => 'fas fa-file-alt',
                 ],
             ],

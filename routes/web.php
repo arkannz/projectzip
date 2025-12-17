@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\RabController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return view('welcome');
@@ -60,13 +61,54 @@ Route::middleware('auth')->group(function () {
     Route::get('/rab', [RabController::class, 'index'])->name('rab.index');
     Route::post('/rab/store', [RabController::class, 'store'])->name('rab.store');
 
-    // RAB Type 50 Routes
+    // RAB Type Routes
+    Route::get('/rab/type40', function(Request $request) {
+        return app(RabController::class)->typeByNumber($request, '40');
+    })->name('rab.type40');
+    Route::get('/rab/type40/print', function(Request $request) {
+        return app(RabController::class)->typeByNumberPrint($request, '40');
+    })->name('rab.type40.print');
+    
+    Route::get('/rab/type45', function(Request $request) {
+        return app(RabController::class)->typeByNumber($request, '45');
+    })->name('rab.type45');
+    Route::get('/rab/type45/print', function(Request $request) {
+        return app(RabController::class)->typeByNumberPrint($request, '45');
+    })->name('rab.type45.print');
+    
     Route::get('/rab/type50', [RabController::class, 'type50'])->name('rab.type50');
     Route::get('/rab/type50/print', [RabController::class, 'type50Print'])->name('rab.type50.print');
     
-    // RAB Type 55 Routes
     Route::get('/rab/type55', [RabController::class, 'type55'])->name('rab.type55');
     Route::get('/rab/type55/print', [RabController::class, 'type55Print'])->name('rab.type55.print');
+    
+    Route::get('/rab/type60', function(Request $request) {
+        return app(RabController::class)->typeByNumber($request, '60');
+    })->name('rab.type60');
+    Route::get('/rab/type60/print', function(Request $request) {
+        return app(RabController::class)->typeByNumberPrint($request, '60');
+    })->name('rab.type60.print');
+    
+    Route::get('/rab/type70', function(Request $request) {
+        return app(RabController::class)->typeByNumber($request, '70');
+    })->name('rab.type70');
+    Route::get('/rab/type70/print', function(Request $request) {
+        return app(RabController::class)->typeByNumberPrint($request, '70');
+    })->name('rab.type70.print');
+    
+    Route::get('/rab/type80', function(Request $request) {
+        return app(RabController::class)->typeByNumber($request, '80');
+    })->name('rab.type80');
+    Route::get('/rab/type80/print', function(Request $request) {
+        return app(RabController::class)->typeByNumberPrint($request, '80');
+    })->name('rab.type80.print');
+    
+    Route::get('/rab/type100', function(Request $request) {
+        return app(RabController::class)->typeByNumber($request, '100');
+    })->name('rab.type100');
+    Route::get('/rab/type100/print', function(Request $request) {
+        return app(RabController::class)->typeByNumberPrint($request, '100');
+    })->name('rab.type100.print');
     
     // Shared RAB Routes
     Route::put('/rab/item/{item}', [RabController::class, 'updateItem'])->name('rab.update-item');

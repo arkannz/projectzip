@@ -15,14 +15,8 @@
 
         <div class="col-md-4">
             <label>Type Rumah</label>
-            <select name="type_id" class="form-control">
-                <option value="">Pilih Type</option>
-                @foreach($types as $t)
-                    <option value="{{ $t->id }}" {{ $type_id == $t->id ? 'selected' : '' }}>
-                        {{ $t->nama }}
-                    </option>
-                @endforeach
-            </select>
+            <input type="text" class="form-control" value="{{ $fixedType->nama }}" disabled style="background-color: #e9ecef; cursor: not-allowed;">
+            <input type="hidden" name="type_id" value="{{ $fixedType->id }}">
         </div>
 
         <div class="col-md-4">
@@ -342,7 +336,7 @@
         
         // Jalankan script utama
         jQuery(document).ready(function($) {
-    const typeId = '{{ $type_id }}';
+    const typeId = '{{ $type_id ?: $fixedType->id }}';
     const unitId = '{{ $unit_id }}';
     const locationId = '{{ $location_id }}';
 
