@@ -92,7 +92,7 @@
             <tr>
                 <td>{{ $i+1 }}</td>
                 <td>{{ $r->uraian }}</td>
-                <td>{{ $r->bahan_baku }}</td>
+                <td>{{ $r->bahan_baku == (int)$r->bahan_baku ? number_format($r->bahan_baku, 0, ',', '.') : number_format($r->bahan_baku, 1, ',', '.') }}</td>
                 <td>{{ $r->bahan_out }}</td>
                 <td>{{ number_format($r->harga_bahan) }}</td>
                 <td>{{ number_format($r->total_harga) }}</td>
