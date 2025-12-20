@@ -13,7 +13,7 @@ class InventoryItemSeeder extends Seeder
         $items = [
 
             // A — PONDASI
-            ['nama' => 'Besi ø6', 'harga' => 22000, 'satuan' => 'Batang'],
+            ['nama' => 'Besi ø6', 'harga' => 21500, 'satuan' => 'Batang'],
             ['nama' => 'Besi ø8 Ulir', 'harga' => 49000, 'satuan' => 'Batang'],
             ['nama' => 'Kayu 3/5', 'harga' => 11000, 'satuan' => 'Batang'],
             ['nama' => 'Cerucuk', 'harga' => 8000, 'satuan' => 'Batang'],

@@ -21,7 +21,7 @@
 
         <div class="col-md-4">
             <label>Lokasi Rumah</label>
-            <select name="location_id" class="form-control">
+            <select name="location_id" id="location_id" class="form-control">
                 <option value="">Pilih Lokasi</option>
                 @foreach($locations as $loc)
                     <option value="{{ $loc->id }}" {{ $location_id == $loc->id ? 'selected' : '' }}>
@@ -29,11 +29,14 @@
                     </option>
                 @endforeach
             </select>
+            <button type="button" class="btn btn-primary btn-sm mt-2" data-toggle="modal" data-target="#modalTambahLokasi">
+                + Tambah Lokasi Baru
+            </button>
         </div>
 
         <div class="col-md-4">
             <label>Unit Rumah</label>
-            <select name="unit_id" class="form-control">
+            <select name="unit_id" id="unit_id" class="form-control">
                 <option value="">Pilih Unit</option>
                 @foreach($units as $u)
                     <option value="{{ $u->id }}" {{ $unit_id == $u->id ? 'selected' : '' }}>
@@ -41,6 +44,9 @@
                     </option>
                 @endforeach
             </select>
+            <button type="button" class="btn btn-primary btn-sm mt-2" data-toggle="modal" data-target="#modalTambahUnit">
+                + Tambah Unit Baru
+            </button>
         </div>
 
         <div class="col-12 d-flex justify-content-center mt-3 mb-2">
@@ -231,6 +237,74 @@
 </div>
 
 @endif
+
+{{-- Modal Tambah Lokasi --}}
+<div class="modal fade" id="modalTambahLokasi" tabindex="-1" role="dialog" aria-labelledby="modalTambahLokasiLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTambahLokasiLabel">Tambah Lokasi Baru</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formTambahLokasi">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="nama_lokasi">Nama Lokasi</label>
+                        <input type="text" class="form-control" id="nama_lokasi" name="nama" required placeholder="Contoh: Perumahan XYZ">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{{-- Modal Tambah Unit --}}
+<div class="modal fade" id="modalTambahUnit" tabindex="-1" role="dialog" aria-labelledby="modalTambahUnitLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalTambahUnitLabel">Tambah Unit Baru</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formTambahUnit">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="unit_location_id">Pilih Lokasi</label>
+                        <select class="form-control" id="unit_location_id" name="location_id" required>
+                            <option value="">-- Pilih Lokasi --</option>
+                            @foreach($locations as $loc)
+                                <option value="{{ $loc->id }}">{{ $loc->nama }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="unit_type_id">Type Rumah</label>
+                        <input type="text" class="form-control" value="{{ $fixedType->nama }}" disabled>
+                        <input type="hidden" id="unit_type_id" name="type_id" value="{{ $fixedType->id }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="kode_unit">Kode Unit</label>
+                        <input type="text" class="form-control" id="kode_unit" name="kode_unit" required placeholder="Contoh: A1, B2, C3">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @stop
 
@@ -624,6 +698,65 @@
             function parseUnformattedNumber(str) {
                 return parseFloat(str.replace(/[^\d-]/g, '')) || 0;
             }
+
+            // ========== MODAL HANDLERS ==========
+            
+            // Handle Tambah Lokasi
+            $('#formTambahLokasi').on('submit', function(e) {
+                e.preventDefault();
+                const btn = $(this).find('button[type="submit"]');
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
+
+                $.ajax({
+                    url: '{{ route("inventory.add.location") }}',
+                    method: 'POST',
+                    data: $(this).serialize()
+                })
+                .then(response => {
+                    const newOption = `<option value="${response.id}">${response.nama}</option>`;
+                    $('#location_id').append(newOption);
+                    $('#unit_location_id').append(newOption);
+                    $('#location_id').val(response.id);
+                    $('#modalTambahLokasi').modal('hide');
+                    $('#formTambahLokasi')[0].reset();
+                    alert('Lokasi berhasil ditambahkan!');
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Terjadi kesalahan saat menambah lokasi');
+                })
+                .finally(() => {
+                    btn.prop('disabled', false).html('Simpan');
+                });
+            });
+
+            // Handle Tambah Unit
+            $('#formTambahUnit').on('submit', function(e) {
+                e.preventDefault();
+                const btn = $(this).find('button[type="submit"]');
+                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
+
+                $.ajax({
+                    url: '{{ route("inventory.addUnit") }}',
+                    method: 'POST',
+                    data: $(this).serialize()
+                })
+                .then(response => {
+                    const newOption = `<option value="${response.id}">${response.location_nama} - Unit ${response.kode_unit}</option>`;
+                    $('#unit_id').append(newOption);
+                    $('#unit_id').val(response.id);
+                    $('#modalTambahUnit').modal('hide');
+                    $('#formTambahUnit')[0].reset();
+                    alert('Unit berhasil ditambahkan!');
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Terjadi kesalahan saat menambah unit');
+                })
+                .finally(() => {
+                    btn.prop('disabled', false).html('Simpan');
+                });
+            });
         });
     }
     
