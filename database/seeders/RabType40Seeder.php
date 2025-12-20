@@ -25,234 +25,232 @@ class RabType40Seeder extends Seeder
         $categories = \App\Models\RabCategory::all()->keyBy('kode');
 
         // ========================================
-        // BAHAN BAKU TYPE 40
-        // Dikelompokkan per kategori untuk menghindari duplicate key overwrites
-        // ISI SENDIRI nilai bahan_baku untuk setiap item di bawah ini
+        // BAHAN BAKU TYPE 40 (skala 0.8x dari Type 50)
         // ========================================
         $valuesByCategory = [
             // A — PONDASI
             'A' => [
-                // 'Besi ø6' => 0,
-                // 'Besi ø8 Ulir' => 0,
-                // 'Kayu 3/5' => 0,
-                // 'Cerucuk' => 0,
-                // 'Papan Mal' => 0,
-                // 'Pasir' => 0,
-                // 'Batu' => 0,
-                // 'Semen PCC 40 Kg Tiga Roda' => 0,
+                'Besi ø6' => 10,
+                'Besi ø8 Ulir' => 33,
+                'Kayu 3/5' => 28,
+                'Cerucuk' => 59,
+                'Papan Mal' => 131,
+                'Pasir' => 10,
+                'Batu' => 2,
+                'Semen PCC 40 Kg Tiga Roda' => 30,
             ],
 
             // B — URUG
             'B' => [
-                // 'Pasir ' => 0,
-                // 'Pipa 4"' => 0,
-                // 'Pipa 2"' => 0,
+                'Pasir' => 26,
+                'Pipa 4"' => 2,
+                'Pipa 2"' => 2,
             ],
 
             // C — COR LANTAI
             'C' => [
-                // 'Besi ø6' => 0,
-                // 'Pasir' => 0,
-                // 'Semen PCC 40 Kg Tiga Roda' => 0,
-                // 'Plastik cor' => 0,
+                'Besi ø6' => 12,
+                'Pasir' => 4,
+                'Semen PCC 40 Kg Tiga Roda' => 11,
+                'Plastik cor' => 5,
             ],
 
-            // D — PINTU
+            // D — PINTU (fixed items - tidak diskala)
             'D' => [
-                // 'Pintu Kayu 120 x 220' => 0,
-                // 'Pintu Kayu 80 x 220' => 0,
-                // 'Pintu WC PVC Biru' => 0,
-                // 'Pintu WC Edenjoice Putih' => 0,
-                // 'Engsel Pintu 4"' => 0,
-                // 'Peganggan pintu 2 daun' => 0,
-                // 'Pengunci Pintu 2 daun' => 0,
-                // 'Pegangan kunci 1 daun' => 0,
-                // 'Avian' => 0,
-                // 'Tinner Nb Kaleng' => 0,
-                // 'Slot 6"' => 0,
-                // 'Slot 4"' => 0,
+                'Pintu Kayu 120 x 220' => 1,
+                'Pintu Kayu 80 x 220' => 2,
+                'Pintu WC PVC Biru' => 1,
+                'Pintu WC Edenjoice Putih' => 1,
+                'Engsel Pintu 4"' => 12,
+                'Peganggan pintu 2 daun' => 2,
+                'Pengunci Pintu 2 daun' => 1,
+                'Pegangan kunci 1 daun' => 2,
+                'Avian' => 3,
+                'Tinner Nb Kaleng' => 2,
+                'Slot 6"' => 1,
+                'Slot 4"' => 1,
             ],
 
             // E — BATA
             'E' => [
-                // 'Papan' => 0,
-                // 'Kayu 3/5' => 0,
-                // 'Besi ø6' => 0,
-                // 'Besi ø8 ' => 0,
-                // 'Kusen Pintu (2 Daun)' => 0,
-                // 'Kusen Pintu (1 Daun)' => 0,
-                // 'Bata' => 0,
-                // 'Semen PCC 40 Kg Tiga Roda' => 0,
-                // 'Pasir' => 0,
+                'Papan' => 19,
+                'Kayu 3/5' => 20,
+                'Besi ø6' => 8,
+                'Besi ø8' => 6,
+                'Kusen Pintu (2 Daun)' => 1,
+                'Kusen Pintu (1 Daun)' => 2,
+                'Bata' => 1863,
+                'Pasir' => 4,
+                'Semen PCC 40 Kg Tiga Roda' => 15,
             ],
 
             // F — COR TIANG DEPAN
             'F' => [
-                // 'Semen PCC 40 Kg Tiga Roda' => 0,
-                // 'Pasir' => 0,
-                // 'Batu' => 0,
-                // 'Besi ø6 ' => 0,
-                // 'Besi ø8' => 0,
-                // 'Multiplek' => 0,
-                // 'Kayu 3/5' => 0,
-                // 'Bata' => 0,
-                // 'Cerucuk' => 0,
-                // 'Papan Mal' => 0,
+                'Semen PCC 40 Kg Tiga Roda' => 4,
+                'Pasir' => 1,
+                'Batu' => 2,
+                'Besi ø6' => 2,
+                'Besi ø8' => 3,
+                'Multiplek' => 1,
+                'Kayu 3/5' => 16,
+                'Bata' => 59,
+                'Cerucuk' => 6,
+                'Papan Mal' => 5,
             ],
 
             // G — PLASTER
             'G' => [
-                // 'Semen PCC 40 Kg Tiga Roda' => 0,
-                // 'Pasir' => 0,
-                // 'Pipa 5/8' => 0,
+                'Semen PCC 40 Kg Tiga Roda' => 28,
+                'Pasir' => 6,
+                'Pipa 5/8' => 5,
             ],
 
             // H — ATAP
             'H' => [
-                // 'Kayu 3/5' => 0,
-                // 'Kayu 4/6' => 0,
-                // 'Kayu 5/7' => 0,
-                // 'Lisplank' => 0,
-                // 'Seng Metal 4 Susun (merah)' => 0,
-                // 'Seng Metal 2 Susun (hitam)' => 0,
-                // 'Perabung Hitam' => 0,
-                // 'Perabung Merah' => 0,
-                // 'Paku 2 inch' => 0,
-                // 'Paku 3 inch' => 0,
+                'Kayu 3/5' => 48,
+                'Kayu 4/6' => 32,
+                'Kayu 5/7' => 23,
+                'Lisplank' => 7,
+                'Seng Metal 4 Susun (merah)' => 54,
+                'Seng Metal 2 Susun (hitam)' => 0,
+                'Perabung Hitam' => 0,
+                'Perabung Merah' => 1.2,
+                'Paku 2 inch' => 1,
+                'Paku 3 inch' => 1,
             ],
 
             // I — DEK
             'I' => [
-                // 'Kayu 3/5' => 0,
-                // 'Gypsum' => 0,
-                // 'Baut' => 0,
-                // 'Paku Beton 4 inch' => 0,
-                // 'Paku 3 inch' => 0,
-                // 'Paku 2 inch' => 0,
+                'Kayu 3/5' => 69,
+                'Gypsum' => 18,
+                'Baut' => 3,
+                'Paku Beton 4 inch' => 1,
+                'Paku 3 inch' => 1,
+                'Paku 2 inch' => 1,
             ],
 
             // J — MINIMALIS
             'J' => [
-                // 'Bata' => 0,
-                // 'Pasir' => 0,
-                // 'Semen PCC 40 Kg Tiga Roda' => 0,
-                // 'Keramik 60 x 60 Blackmatt' => 0,
+                'Bata' => 87,
+                'Pasir' => 2,
+                'Semen PCC 40 Kg Tiga Roda' => 7,
+                'Keramik 60 x 60 Blackmatt' => 6,
             ],
 
             // K — CARPORT
             'K' => [
-                // 'Semen PCC 40 Kg Tiga Roda' => 0,
-                // 'Kayu 3/5' => 0,
-                // 'Cerucuk' => 0,
-                // 'Papan Mal' => 0,
-                // 'Plastik cor' => 0,
-                // 'Besi ø6' => 0,
-                // 'Besi ø8' => 0,
-                // 'Batu' => 0,
-                // 'Pasir' => 0,
-                // 'Keramik 60 x 60 Blackmatt' => 0,
+                'Semen PCC 40 Kg Tiga Roda' => 18,
+                'Kayu 3/5' => 6,
+                'Cerucuk' => 4,
+                'Papan Mal' => 8,
+                'Plastik cor' => 6,
+                'Besi ø6' => 2,
+                'Besi ø8' => 12,
+                'Batu' => 1,
+                'Pasir' => 5,
+                'Keramik 60 x 60 Blackmatt' => 25,
             ],
 
             // L — KERAMIK
             'L' => [
-                // 'Keramik 60 x 60 Cream' => 0,
-                // 'Keramik 60 x 60 Blackmatt' => 0,
-                // 'Pasir' => 0,
-                // 'Semen PCC 40 Kg Tiga Roda' => 0,
-                // 'Oker' => 0,
+                'Keramik 60 x 60 Cream' => 26,
+                'Keramik 60 x 60 Blackmatt' => 10,
+                'Pasir' => 4,
+                'Semen PCC 40 Kg Tiga Roda' => 18,
+                'Oker' => 4,
             ],
 
-            // M — WC
+            // M — WC (fixed items)
             'M' => [
-                // 'Keramik 30 x 30 ' => 0,
-                // 'Keramik 25 x 40' => 0,
-                // 'Closed jongkok Ina' => 0,
-                // 'Closed Duduk Volk' => 0,
-                // 'Floor drain' => 0,
-                // 'Pasir' => 0,
-                // 'Semen PCC 40 Kg Tiga Roda' => 0,
-                // 'Bak Air' => 0,
-                // 'Pipa 1/2"' => 0,
-                // 'Lbow 1/2"' => 0,
-                // 'Kran Air Plastik 1/2"' => 0,
-                // 'SDD 1/2"' => 0,
+                'Keramik 30 x 30' => 2,
+                'Keramik 25 x 40' => 9,
+                'Closed jongkok Ina' => 1,
+                'Closed Duduk Volk' => 1,
+                'Floor drain' => 1,
+                'Pasir' => 1,
+                'Semen PCC 40 Kg Tiga Roda' => 3,
+                'Bak Air' => 1,
+                'Pipa 1/2"' => 2,
+                'Lbow 1/2"' => 5,
+                'Kran Air Plastik 1/2"' => 2,
+                'SDD 1/2"' => 1,
             ],
 
             // N — ACI MINIMALIS
             'N' => [
-                // 'Semen TR-30 40 Kg Tiga Roda' => 0,
+                'Semen TR-30 40 Kg Tiga Roda' => 2,
             ],
 
             // O — CAT
             'O' => [
-                // 'Mowilex weathercoat' => 0,
-                // 'Nippon paint Q-LUC' => 0,
-                // 'Semen TR-30 40 Kg Tiga Roda' => 0,
-                // 'Semen Aci Putih 25 kg' => 0,
+                'Mowilex weathercoat' => 1,
+                'Nippon paint Q-LUC' => 2,
+                'Semen TR-30 40 Kg Tiga Roda' => 10,
+                'Semen Aci Putih 25 kg' => 1,
             ],
 
             // P — PAGAR
             'P' => [
-                // 'Bata' => 0,
-                // 'Pasir' => 0,
-                // 'Semen PCC 40 Kg Tiga Roda' => 0,
-                // 'Besi ø6 ' => 0,
-                // 'Besi ø8' => 0,
+                'Bata' => 80,
+                'Pasir' => 1,
+                'Semen PCC 40 Kg Tiga Roda' => 2,
+                'Besi ø6' => 2,
+                'Besi ø8' => 3,
             ],
 
             // Q — MINIMALIS CARPORT
             'Q' => [
-                // 'Semen PCC 40 Kg Tiga Roda' => 0,
-                // 'Pasir' => 2,
+                'Semen PCC 40 Kg Tiga Roda' => 7,
+                'Pasir' => 2,
             ],
 
             // R — TALANG AIR
             'R' => [
-                // 'Pipa 3"' => 0,
-                // 'Pipa 2"' => 0,
-                // 'Cekakan pipa 2"' => 0,
-                // 'Lbow 3" ke 2"' => 0,
-                // 'Sambungan 3" ke 2"' => 0,
-                // 'Lbow 2"' => 0,
-                // 'Penutup pipa 3"' => 0,
-                // 'Lem pipa fox' => 0,
+                'Pipa 3"' => 1,
+                'Pipa 2"' => 2,
+                'Cekakan pipa 2"' => 2,
+                'Lbow 3" ke 2"' => 1,
+                'Sambungan 3" ke 2"' => 1,
+                'Lbow 2"' => 2,
+                'Penutup pipa 3"' => 1,
+                'Lem pipa fox' => 1,
             ],
 
             // S — JENDELA
             'S' => [
-                // 'Aluminium white ink (openback)' => 0,
-                // 'Aluminium white ink (m)' => 0,
-                // 'Aluminium white ink (stoper casmen)' => 0,
-                // 'List ornamen 20 mm white' => 0,
-                // 'Klem sedang 13 x 26 x 1,4 mm' => 0,
-                // 'Karet C besar HTM' => 0,
-                // 'Karet cacing HTM' => 0,
-                // 'Rambuncis dks white kanan' => 0,
-                // 'Rambuncis dks white kiri' => 0,
-                // 'Engsel casment glatino 8 inch' => 0,
-                // 'Marks sosis black 620 ml' => 0,
-                // 'Sekrup 8 x 3 rata' => 0,
-                // 'Sekrup 8 x 1,5 rata @ 50 pcs' => 0,
-                // 'Sekrup 8 x 1 bulat' => 0,
-                // 'Sekrup 8 x 0,5 rata' => 0,
-                // 'Rivet GT 429' => 0,
-                // 'Fisher S6 vini star' => 0,
-                // 'Reben 5, 203 cm x 102 cm asahi' => 0,
-                // 'Marks sosis white 620 ml' => 0,
+                'Aluminium white ink (openback)' => 3,
+                'Aluminium white ink (m)' => 2,
+                'Aluminium white ink (stoper casmen)' => 5,
+                'List ornamen 20 mm white' => 5,
+                'Klem sedang 13 x 26 x 1,4 mm' => 1,
+                'Karet C besar HTM' => 2,
+                'Karet cacing HTM' => 2,
+                'Rambuncis dks white kanan' => 2,
+                'Rambuncis dks white kiri' => 2,
+                'Engsel casment glatino 8 inch' => 4,
+                'Marks sosis black 620 ml' => 3,
+                'Sekrup 8 x 3 rata' => 20,
+                'Sekrup 8 x 1,5 rata @ 50 pcs' => 32,
+                'Sekrup 8 x 1 bulat' => 32,
+                'Sekrup 8 x 0,5 rata' => 64,
+                'Rivet GT 429' => 1,
+                'Fisher S6 vini star' => 1,
+                'Reben 5, 203 cm x 102 cm asahi' => 5,
+                'Marks sosis white 620 ml' => 3,
             ],
 
             // T — ELEKTRICAL
             'T' => [
-                // 'Saklar tunggal broco' => 0,
-                // 'Saklar dobel broco' => 0,
-                // 'Stop kontak tunggal broco' => 0,
-                // 'Kabel NYA 1,5 Eterna (100m)' => 0,
-                // 'Kabel NYA 2,5 Eterna (100m)' => 0,
-                // 'Kabel NYM 2 x 1,5 Jumbo (50m)' => 0,
-                // 'Kabel NYM 2 x 2,5 Jumbo (50m)' => 0,
-                // 'Mcb 10A Powell' => 0,
-                // 'Box Mcb tanam 3 grup' => 0,
-                // 'Mcb Kwh 1300 amper' => 0,
+                'Saklar tunggal broco' => 5,
+                'Saklar dobel broco' => 1,
+                'Stop kontak tunggal broco' => 9,
+                'Kabel NYA 1,5 Eterna (100m)' => 1,
+                'Kabel NYA 2,5 Eterna (100m)' => 6,
+                'Kabel NYM 2 x 1,5 Jumbo (50m)' => 20,
+                'Kabel NYM 2 x 2,5 Jumbo (50m)' => 28,
+                'MCB 10A Powell' => 1,
+                'Box MCB tanam 3 grup' => 1,
+                'MCB Kwh 1300 amper' => 1,
             ],
         ];
 
@@ -268,7 +266,6 @@ class RabType40Seeder extends Seeder
             }
 
             foreach ($items as $itemName => $qty) {
-                // Cari template berdasarkan item_name DAN category_id untuk memastikan template yang benar
                 $tpl = RabTemplate::where('item_name', $itemName)
                     ->where('category_id', $category->id)
                     ->first();
@@ -293,4 +290,3 @@ class RabType40Seeder extends Seeder
         echo "✔ SELESAI — DATA TYPE 40 BERHASIL DIIMPORT\n";
     }
 }
-
