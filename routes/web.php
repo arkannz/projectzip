@@ -38,22 +38,15 @@ Route::middleware('auth')->group(function () {
 
     // transaksi keluar
     Route::post('/inventory/keluar', [InventoryController::class, 'storeOut'])->name('inventory.out.store');
+
+    // Tambah lokasi, type, unit
+    Route::post('/inventory/add-location', [InventoryController::class, 'addLocation'])->name('inventory.add.location');
+    Route::post('/inventory/add-type', [InventoryController::class, 'addType'])->name('inventory.add.type');
+    Route::post('/inventory/add-unit', [InventoryController::class, 'addUnit'])->name('inventory.addUnit');
+
+    // History
+    Route::get('/inventory/history', [InventoryController::class, 'history'])->name('inventory.history');
 });
-
-Route::put('/inventory/item/{item}/update', [InventoryController::class, 'updateItem'])
-    ->name('inventory.item.update');
-
-Route::post('/inventory/add-location', [App\Http\Controllers\Admin\InventoryController::class, 'addLocation'])
-    ->name('inventory.add.location');
-
-Route::post('/inventory/add-type', [App\Http\Controllers\Admin\InventoryController::class, 'addType'])
-    ->name('inventory.add.type');
-
-    // Tambah unit rumah
-Route::post('/inventory/add-unit', [App\Http\Controllers\Admin\InventoryController::class, 'addUnit'])
-    ->name('inventory.addUnit');
-
-Route::get('/inventory/history', [InventoryController::class, 'history'])->name('inventory.history');
 
 // RAB Routes
 Route::middleware('auth')->group(function () {

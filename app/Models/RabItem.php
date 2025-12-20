@@ -22,6 +22,17 @@ class RabItem extends Model
         'progres',
     ];
 
+    protected $casts = [
+        'bahan_baku' => 'decimal:2',
+        'bahan_out' => 'decimal:2',
+        'total_harga' => 'decimal:2',
+        'harga_bahan' => 'integer',
+        'upah' => 'integer',
+        'borongan' => 'integer',
+        'untung_rugi' => 'integer',
+        'progres' => 'integer',
+    ];
+
     public function category()
     {
         return $this->belongsTo(RabCategory::class, 'rab_category_id');

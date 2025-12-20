@@ -36,8 +36,15 @@ class DatabaseSeeder extends Seeder
             RabTemplateSeeder::class,    // Template RAB items
             
             // RAB Type Values (bahan_baku per type)
+            // Uncomment seeder di bawah jika data sudah diisi:
+            // RabType40Seeder::class,      // Data bahan_baku untuk type 40
+            // RabType45Seeder::class,      // Data bahan_baku untuk type 45
             RabType50Seeder::class,      // Data bahan_baku untuk type 50
             RabType55Seeder::class,      // Data bahan_baku untuk type 55
+            // RabType60Seeder::class,      // Data bahan_baku untuk type 60
+            // RabType70Seeder::class,      // Data bahan_baku untuk type 70
+            // RabType80Seeder::class,      // Data bahan_baku untuk type 80
+            // RabType100Seeder::class,     // Data bahan_baku untuk type 100
             
             // RAB Borongan per Category per Type
             RabCategoryBoronganSeeder::class,  // Data borongan default per kategori per type

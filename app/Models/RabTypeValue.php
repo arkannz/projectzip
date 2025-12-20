@@ -14,6 +14,10 @@ class RabTypeValue extends Model
         'bahan_baku',
     ];
 
+    protected $casts = [
+        'bahan_baku' => 'decimal:2',
+    ];
+
     public function template()
     {
         return $this->belongsTo(RabTemplate::class, 'rab_template_id');

@@ -466,8 +466,8 @@ class RabController extends Controller
         $selectedUnit = $unitId ? Unit::find($unitId) : null;
         $selectedLocation = $locationId ? Location::find($locationId) : null;
 
-        // Gunakan view yang sesuai dengan type (type50 atau type55 untuk yang sudah ada, atau view generic)
-        $viewName = in_array($typeNumber, ['50', '55']) ? "admin.rab.type{$typeNumber}" : "admin.rab.type50"; // Fallback ke type50 untuk type baru
+        // Gunakan view yang sesuai dengan type number
+        $viewName = "admin.rab.type{$typeNumber}";
 
         return view($viewName, [
             'units'             => $units,
@@ -518,8 +518,8 @@ class RabController extends Controller
         $selectedUnit = Unit::find($unitId);
         $selectedLocation = Location::find($locationId);
 
-        // Gunakan view print yang sesuai dengan type (type50-print atau type55-print untuk yang sudah ada, atau view generic)
-        $viewName = in_array($typeNumber, ['50', '55']) ? "admin.rab.type{$typeNumber}-print" : "admin.rab.type50-print"; // Fallback ke type50-print untuk type baru
+        // Gunakan view print yang sesuai dengan type number
+        $viewName = "admin.rab.type{$typeNumber}-print";
 
         return view($viewName, [
             'rabItems'          => $rabItems,

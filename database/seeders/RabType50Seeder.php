@@ -43,7 +43,7 @@ class RabType50Seeder extends Seeder
 
             // B — URUG
             'B' => [
-                'Pasir ' => 32,
+                'Pasir' => 32,
                 'Pipa 4"' => 2,
                 'Pipa 2"' => 2,
             ],
@@ -76,14 +76,13 @@ class RabType50Seeder extends Seeder
             'E' => [
                 'Papan' => 24,
                 'Kayu 3/5' => 25,
-                'Besi ø6' => 5,
-                'Besi ø8 ' => 8,
+                'Besi ø6' => 10,
+                'Besi ø8' => 8,
                 'Kusen Pintu (2 Daun)' => 1,
                 'Kusen Pintu (1 Daun)' => 3,
                 'Bata' => 2329,
                 'Pasir' => 5,
                 'Semen PCC 40 Kg Tiga Roda' => 19,
-                'Besi ø6 ' => 5,
             ],
 
             // F — COR TIANG DEPAN
@@ -91,7 +90,7 @@ class RabType50Seeder extends Seeder
                 'Semen PCC 40 Kg Tiga Roda' => 5,
                 'Pasir' => 1,
                 'Batu' => 2,
-                'Besi ø6 ' => 3,
+                'Besi ø6' => 3,
                 'Besi ø8' => 4,
                 'Multiplek' => 1,
                 'Kayu 3/5' => 20,
@@ -164,7 +163,7 @@ class RabType50Seeder extends Seeder
 
             // M — WC
             'M' => [
-                'Keramik 30 x 30 ' => 3,
+                'Keramik 30 x 30' => 3,
                 'Keramik 25 x 40' => 11,
                 'Closed jongkok Ina' => 2,
                 'Closed Duduk Volk' => 1,
@@ -196,7 +195,7 @@ class RabType50Seeder extends Seeder
                 'Bata' => 100,
                 'Pasir' => 1,
                 'Semen PCC 40 Kg Tiga Roda' => 3,
-                'Besi ø6 ' => 2,
+                'Besi ø6' => 2,
                 'Besi ø8' => 4,
             ],
 
@@ -250,9 +249,9 @@ class RabType50Seeder extends Seeder
                 'Kabel NYA 2,5 Eterna (100m)' => 7,
                 'Kabel NYM 2 x 1,5 Jumbo (50m)' => 25,
                 'Kabel NYM 2 x 2,5 Jumbo (50m)' => 35,
-                'Mcb 10A Powell' => 1,
-                'Box Mcb tanam 3 grup' => 1,
-                'Mcb Kwh 1300 amper' => 1,
+                'MCB 10A Powell' => 1,
+                'Box MCB tanam 3 grup' => 1,
+                'MCB Kwh 1300 amper' => 1,
             ],
         ];
 

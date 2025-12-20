@@ -43,7 +43,7 @@ class RabType55Seeder extends Seeder
 
             // B — URUG
             'B' => [
-                'Pasir ' => 35,
+                'Pasir' => 35,
                 'Pipa 4"' => 2,
                 'Pipa 2"' => 2,
             ],
@@ -77,7 +77,7 @@ class RabType55Seeder extends Seeder
                 'Papan' => 26,
                 'Kayu 3/5' => 28,
                 'Besi ø6' => 5,
-                'Besi ø8 ' => 9,
+                'Besi ø8' => 9,
                 'Kusen Pintu (2 Daun)' => 1,
                 'Kusen Pintu (1 Daun)' => 3,
                 'Bata' => 2562,
@@ -90,7 +90,7 @@ class RabType55Seeder extends Seeder
                 'Semen PCC 40 Kg Tiga Roda' => 5,
                 'Pasir' => 1,
                 'Batu' => 2,
-                'Besi ø6 ' => 3,
+                'Besi ø6' => 3,
                 'Besi ø8' => 4,
                 'Multiplek' => 1,
                 'Kayu 3/5' => 22,
@@ -163,7 +163,7 @@ class RabType55Seeder extends Seeder
 
             // M — WC
             'M' => [
-                'Keramik 30 x 30 ' => 6,
+                'Keramik 30 x 30' => 6,
                 'Keramik 25 x 40' => 22,
                 'Closed jongkok Ina' => 2,
                 'Closed Duduk Volk' => 1,
@@ -195,7 +195,7 @@ class RabType55Seeder extends Seeder
                 'Bata' => 100,
                 'Pasir' => 1,
                 'Semen PCC 40 Kg Tiga Roda' => 3,
-                'Besi ø6 ' => 2,
+                'Besi ø6' => 2,
                 'Besi ø8' => 4,
             ],
 
@@ -249,9 +249,9 @@ class RabType55Seeder extends Seeder
                 'Kabel NYA 2,5 Eterna (100m)' => 7,
                 'Kabel NYM 2 x 1,5 Jumbo (50m)' => 25,
                 'Kabel NYM 2 x 2,5 Jumbo (50m)' => 35,
-                'Mcb 10A Powell' => 1,
-                'Box Mcb tanam 3 grup' => 1,
-                'Mcb Kwh 1300 amper' => 1,
+                'MCB 10A Powell' => 1,
+                'Box MCB tanam 3 grup' => 1,
+                'MCB Kwh 1300 amper' => 1,
             ],
         ];
 
