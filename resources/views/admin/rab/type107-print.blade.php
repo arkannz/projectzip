@@ -446,7 +446,7 @@
                             <td class="text-center">{{ $itemCounter }}</td>
                             <td>{{ $item->uraian }}</td>
                             <td class="text-center">{{ number_format($item->bahan_baku, 0, ',', '.') }}</td>
-                            <td class="text-center">{{ $item->bahan_out }}</td>
+                            <td class="text-center">{{ number_format($item->bahan_out, 0, ',', '.') }}</td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
                             <td class="text-right">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
                             <td class="text-center">-</td>
@@ -525,7 +525,7 @@
                             <td class="text-center">{{ $itemCounter }}</td>
                             <td>{{ $item->uraian }}</td>
                             <td class="text-center">{{ number_format($item->bahan_baku, 0, ',', '.') }}</td>
-                            <td class="text-center">{{ $item->bahan_out }}</td>
+                            <td class="text-center">{{ number_format($item->bahan_out, 0, ',', '.') }}</td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
                             <td class="text-right">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
                             <td class="text-center">-</td>

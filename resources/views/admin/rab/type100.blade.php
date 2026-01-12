@@ -145,7 +145,7 @@
                             <td class="text-center">{{ number_format($item->bahan_baku, 0, ',', '.') }}</td>
                             <td class="text-center">
                                 <input type="number" class="form-control form-control-sm input-out" 
-                                       value="{{ $item->bahan_out }}" 
+                                       value="{{ (int)$item->bahan_out }}" 
                                        data-item-id="{{ $item->id }}"
                                        data-harga="{{ $item->harga_bahan }}"
                                        min="0" step="1" style="width: 60px;">
