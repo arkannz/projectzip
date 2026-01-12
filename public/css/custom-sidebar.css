@@ -1,0 +1,82 @@
+/* Custom CSS untuk indentasi submenu RAB */
+/* Geser submenu items ke kanan agar tidak sejajar dengan menu utama */
+.nav-sidebar .nav-treeview .nav-item .nav-link {
+    padding-left: 2.5rem !important;
+}
+
+.nav-sidebar .nav-treeview .nav-item .nav-link i {
+    margin-left: 0.5rem;
+}
+
+/* Pastikan icon juga ikut tergeser */
+.nav-sidebar .nav-treeview .nav-item .nav-link .fas,
+.nav-sidebar .nav-treeview .nav-item .nav-link .fa {
+    margin-left: 0.5rem;
+}
+
+/* Custom styling untuk logo brand - Fit tanpa space */
+.brand-link {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    background-color: transparent !important;
+    border: none !important;
+    line-height: 0 !important;
+}
+
+.brand-link * {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.brand-image {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    object-fit: cover !important;
+    display: block !important;
+    border: none !important;
+    outline: none !important;
+    /* Ubah warna logo menjadi merah maroon */
+    filter: brightness(0) saturate(100%) invert(15%) sepia(90%) saturate(5000%) hue-rotate(340deg) brightness(0.6) contrast(1.2);
+}
+
+.brand-text {
+    display: none !important;
+}
+
+/* Hide text when logo image is present */
+.brand-link:has(.brand-image) .brand-text {
+    display: none !important;
+}
+
+/* Ensure logo image fit perfectly - no space anywhere */
+.brand-link img,
+.brand-link .brand-image,
+.brand-link .brand-image img {
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    outline: none !important;
+    /* Ubah warna logo menjadi merah maroon */
+    filter: brightness(0) saturate(100%) invert(15%) sepia(90%) saturate(5000%) hue-rotate(340deg) brightness(0.6) contrast(1.2);
+}
+
+/* Override AdminLTE default styles */
+.sidebar .brand-link {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.sidebar .brand-image {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+

@@ -83,13 +83,8 @@ class RabController extends Controller
 
         if ($hasTypeValues) {
             // Untuk type yang memiliki RabTypeValue (seperti type 55), hanya generate item yang ada di RabTypeValue
-            // Urutkan berdasarkan category_id dan rab_template_id agar sesuai urutan di template seeder
             $typeValues = RabTypeValue::where('type_id', $typeId)
                 ->with(['template.category'])
-                ->join('rab_templates', 'rab_type_values.rab_template_id', '=', 'rab_templates.id')
-                ->orderBy('rab_templates.category_id')
-                ->orderBy('rab_templates.id')
-                ->select('rab_type_values.*')
                 ->get();
 
             foreach ($typeValues as $typeValue) {
@@ -98,14 +93,14 @@ class RabController extends Controller
 
                 // Cari harga bahan di inventory
                 $inventory = InventoryItem::where('nama', $tpl->item_name)->first();
-                $harga = $inventory ? (float)$inventory->harga : 0;
+                $harga = $inventory ? $inventory->harga : 0;
 
-                // Gunakan bahan_baku dari TypeValue (bisa desimal seperti 1.5)
-                $bahanBaku = (float)($typeValue->bahan_baku ?? 0);
+                // Gunakan bahan_baku dari TypeValue
+                $bahanBaku = $typeValue->bahan_baku ?? 0;
 
-                // Jangan skip item dengan bahan_baku = 0, tetap tampilkan
-                // Total harga HANYA dihitung dari bahan_out * harga_bahan
-                // Saat generate, bahan_out = 0, jadi total_harga = 0
+                // Tampilkan semua item termasuk yang bahan_baku = 0
+                // Total harga = 0 karena bahan_out belum diinput
+                // Total harga akan dihitung saat bahan_out diisi
                 $totalHarga = 0;
 
                 RabItem::create([
@@ -126,38 +121,38 @@ class RabController extends Controller
             }
         } else {
             // Untuk type yang tidak memiliki RabTypeValue (seperti type 50), generate semua template
-        $templates = RabTemplate::with(['category', 'inventoryItem'])
-            ->orderBy('category_id')
-            ->orderBy('id')
-            ->get();
+            $templates = RabTemplate::with(['category', 'inventoryItem'])
+                ->orderBy('category_id')
+                ->orderBy('id')
+                ->get();
 
-        foreach ($templates as $tpl) {
-            // Cari harga bahan di inventory
-            $inventory = InventoryItem::where('nama', $tpl->item_name)->first();
-                $harga = $inventory ? (float)$inventory->harga : 0;
+            foreach ($templates as $tpl) {
+                // Cari harga bahan di inventory
+                $inventory = InventoryItem::where('nama', $tpl->item_name)->first();
+                $harga = $inventory ? $inventory->harga : 0;
 
-                // Gunakan default bahan_baku dari template (bisa desimal)
-                $bahanBaku = (float)($tpl->default_bahan_baku ?? 0);
+                // Gunakan default bahan_baku dari template
+                $bahanBaku = $tpl->default_bahan_baku ?? 0;
 
-                // Total harga HANYA dihitung dari bahan_out * harga_bahan
-                // Saat generate, bahan_out = 0, jadi total_harga = 0
+                // Total harga = 0 karena bahan_out belum diinput
+                // Total harga akan dihitung saat bahan_out diisi
                 $totalHarga = 0;
 
-            RabItem::create([
-                'type_id'          => $typeId,
-                'unit_id'          => $unitId,
-                'location_id'      => $locationId,
-                'rab_category_id'  => $tpl->category_id,
-                'uraian'           => $tpl->item_name,
-                'bahan_baku'       => $bahanBaku,
-                'bahan_out'        => 0,
-                'harga_bahan'      => $harga,
-                'total_harga'      => $totalHarga,
-                'upah'             => 0,
-                'borongan'         => 0,
-                'untung_rugi'      => 0,
-                'progres'          => 0,
-            ]);
+                RabItem::create([
+                    'type_id'          => $typeId,
+                    'unit_id'          => $unitId,
+                    'location_id'      => $locationId,
+                    'rab_category_id'  => $tpl->category_id,
+                    'uraian'           => $tpl->item_name,
+                    'bahan_baku'       => $bahanBaku,
+                    'bahan_out'        => 0,
+                    'harga_bahan'      => $harga,
+                    'total_harga'      => $totalHarga,
+                    'upah'             => 0,
+                    'borongan'         => 0,
+                    'untung_rugi'      => 0,
+                    'progres'          => 0,
+                ]);
             }
         }
 
@@ -207,16 +202,13 @@ class RabController extends Controller
      */
     public function type50(Request $request)
     {
+        $types     = Type::all();
         $units     = Unit::with('location')->get();
         $locations = Location::all();
 
-        // Otomatis cari Type 50
-        $fixedType = Type::where('nama', '50')->first();
-        if (!$fixedType) {
-            return redirect()->route('rab.index')->with('error', 'Type 50 tidak ditemukan di database.');
-        }
-        
-        $typeId     = $request->type_id ?: $fixedType->id; // Gunakan fixedType jika tidak ada di request
+        // Force Type 50 untuk halaman ini
+        $type50 = Type::where('nama', '50')->first();
+        $typeId     = $type50 ? $type50->id : null;
         $unitId     = $request->unit_id;
         $locationId = $request->location_id;
 
@@ -264,8 +256,10 @@ class RabController extends Controller
         $selectedType = $typeId ? Type::find($typeId) : null;
         $selectedUnit = $unitId ? Unit::find($unitId) : null;
         $selectedLocation = $locationId ? Location::find($locationId) : null;
+        $fixedType = $type50; // Fixed type untuk halaman ini
 
         return view('admin.rab.type50', [
+            'types'             => $types,
             'units'             => $units,
             'locations'         => $locations,
             'type_id'           => $typeId,
@@ -274,7 +268,7 @@ class RabController extends Controller
             'rabItems'          => $rabItems,
             'categories'        => $categories,
             'categoryBorongans' => $categoryBorongans,
-            'selectedType'      => $selectedType ?: $fixedType,
+            'selectedType'      => $selectedType,
             'selectedUnit'      => $selectedUnit,
             'selectedLocation'  => $selectedLocation,
             'fixedType'         => $fixedType,
@@ -286,7 +280,9 @@ class RabController extends Controller
      */
     public function type50Print(Request $request)
     {
-        $typeId     = $request->type_id;
+        // Force Type 50
+        $type50 = Type::where('nama', '50')->first();
+        $typeId     = $type50 ? $type50->id : $request->type_id;
         $unitId     = $request->unit_id;
         $locationId = $request->location_id;
 
@@ -329,16 +325,13 @@ class RabController extends Controller
      */
     public function type55(Request $request)
     {
+        $types     = Type::all();
         $units     = Unit::with('location')->get();
         $locations = Location::all();
 
-        // Otomatis cari Type 55
-        $fixedType = Type::where('nama', '55')->first();
-        if (!$fixedType) {
-            return redirect()->route('rab.index')->with('error', 'Type 55 tidak ditemukan di database.');
-        }
-        
-        $typeId     = $request->type_id ?: $fixedType->id; // Gunakan fixedType jika tidak ada di request
+        // Force Type 55 untuk halaman ini
+        $type55 = Type::where('nama', '55')->first();
+        $typeId     = $type55 ? $type55->id : null;
         $unitId     = $request->unit_id;
         $locationId = $request->location_id;
 
@@ -386,148 +379,22 @@ class RabController extends Controller
         $selectedType = $typeId ? Type::find($typeId) : null;
         $selectedUnit = $unitId ? Unit::find($unitId) : null;
         $selectedLocation = $locationId ? Location::find($locationId) : null;
+        $fixedType = $type55; // Fixed type untuk halaman ini
 
         return view('admin.rab.type55', [
+            'types'             => $types,
             'units'             => $units,
             'locations'         => $locations,
             'type_id'           => $typeId,
             'unit_id'           => $unitId,
             'location_id'       => $locationId,
-            'rabItems'          => $rabItems,
-            'categories'        => $categories,
-            'categoryBorongans' => $categoryBorongans,
-            'selectedType'      => $selectedType ?: $fixedType,
-            'selectedUnit'      => $selectedUnit,
-            'selectedLocation'  => $selectedLocation,
-            'fixedType'         => $fixedType,
-        ]);
-    }
-
-    /**
-     * RAB Type by Number - Method dinamis untuk semua type
-     */
-    public function typeByNumber(Request $request, $typeNumber)
-    {
-        $units     = Unit::with('location')->get();
-        $locations = Location::all();
-
-        // Otomatis cari Type berdasarkan nomor
-        $fixedType = Type::where('nama', $typeNumber)->first();
-        if (!$fixedType) {
-            return redirect()->route('rab.index')->with('error', "Type {$typeNumber} tidak ditemukan di database.");
-        }
-        
-        $typeId     = $request->type_id ?: $fixedType->id; // Gunakan fixedType jika tidak ada di request
-        $unitId     = $request->unit_id;
-        $locationId = $request->location_id;
-
-        // nilai default kosong
-        $rabItems = collect();
-        $categories = collect();
-        $categoryBorongans = collect();
-
-        if ($typeId && $unitId && $locationId) {
-
-            // AMBIL DATA RAB YANG SUDAH ADA
-            $rabItems = RabItem::with('category')
-                ->where('type_id', $typeId)
-                ->where('unit_id', $unitId)
-                ->where('location_id', $locationId)
-                ->orderBy('rab_category_id')
-                ->orderBy('id')
-                ->get();
-
-            // JIKA KOSONG → GENERATE BARU
-            if ($rabItems->isEmpty()) {
-                $this->generateRabFromTemplate($typeId, $unitId, $locationId);
-
-                $rabItems = RabItem::with('category')
-                    ->where('type_id', $typeId)
-                    ->where('unit_id', $unitId)
-                    ->where('location_id', $locationId)
-                    ->orderBy('rab_category_id')
-                    ->orderBy('id')
-                    ->get();
-            }
-
-            // Group items by category
-            $categories = RabCategory::orderBy('id')->get();
-
-            // Get borongan per category
-            $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
-                ->where('unit_id', $unitId)
-                ->where('location_id', $locationId)
-                ->get()
-                ->keyBy('rab_category_id');
-        }
-
-        // Get selected data for display
-        $selectedType = $typeId ? Type::find($typeId) : null;
-        $selectedUnit = $unitId ? Unit::find($unitId) : null;
-        $selectedLocation = $locationId ? Location::find($locationId) : null;
-
-        // Gunakan view yang sesuai dengan type number
-        $viewName = "admin.rab.type{$typeNumber}";
-
-        return view($viewName, [
-            'units'             => $units,
-            'locations'         => $locations,
-            'type_id'           => $typeId,
-            'unit_id'           => $unitId,
-            'location_id'       => $locationId,
-            'rabItems'          => $rabItems,
-            'categories'        => $categories,
-            'categoryBorongans' => $categoryBorongans,
-            'selectedType'      => $selectedType ?: $fixedType,
-            'selectedUnit'      => $selectedUnit,
-            'selectedLocation'  => $selectedLocation,
-            'fixedType'         => $fixedType,
-        ]);
-    }
-
-    /**
-     * Print view untuk RAB Type by Number - Method dinamis untuk semua type
-     */
-    public function typeByNumberPrint(Request $request, $typeNumber)
-    {
-        $typeId     = $request->type_id;
-        $unitId     = $request->unit_id;
-        $locationId = $request->location_id;
-
-        if (!$typeId || !$unitId || !$locationId) {
-            return redirect()->route("rab.type{$typeNumber}")->with('error', 'Silakan pilih Type, Lokasi, dan Unit terlebih dahulu');
-        }
-
-        $rabItems = RabItem::with('category')
-            ->where('type_id', $typeId)
-            ->where('unit_id', $unitId)
-            ->where('location_id', $locationId)
-            ->orderBy('rab_category_id')
-            ->orderBy('id')
-            ->get();
-
-        $categories = RabCategory::orderBy('id')->get();
-
-        $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
-            ->where('unit_id', $unitId)
-            ->where('location_id', $locationId)
-            ->get()
-            ->keyBy('rab_category_id');
-
-        $selectedType = Type::find($typeId);
-        $selectedUnit = Unit::find($unitId);
-        $selectedLocation = Location::find($locationId);
-
-        // Gunakan view print yang sesuai dengan type number
-        $viewName = "admin.rab.type{$typeNumber}-print";
-
-        return view($viewName, [
             'rabItems'          => $rabItems,
             'categories'        => $categories,
             'categoryBorongans' => $categoryBorongans,
             'selectedType'      => $selectedType,
             'selectedUnit'      => $selectedUnit,
             'selectedLocation'  => $selectedLocation,
+            'fixedType'         => $fixedType,
         ]);
     }
 
@@ -536,7 +403,9 @@ class RabController extends Controller
      */
     public function type55Print(Request $request)
     {
-        $typeId     = $request->type_id;
+        // Force Type 55
+        $type55 = Type::where('nama', '55')->first();
+        $typeId     = $type55 ? $type55->id : $request->type_id;
         $unitId     = $request->unit_id;
         $locationId = $request->location_id;
 
@@ -565,6 +434,867 @@ class RabController extends Controller
         $selectedLocation = Location::find($locationId);
 
         return view('admin.rab.type55-print', [
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+        ]);
+    }
+
+    /**
+     * RAB Type 40 - Halaman Laporan
+     */
+    public function type40(Request $request)
+    {
+        $types     = Type::all();
+        $units     = Unit::with('location')->get();
+        $locations = Location::all();
+
+        // Force Type 40 untuk halaman ini
+        $type40 = Type::where('nama', '40')->first();
+        $typeId     = $type40 ? $type40->id : null;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        // nilai default kosong
+        $rabItems = collect();
+        $categories = collect();
+        $categoryBorongans = collect();
+
+        if ($typeId && $unitId && $locationId) {
+
+            // AMBIL DATA RAB YANG SUDAH ADA
+            $rabItems = RabItem::with('category')
+                ->where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->orderBy('rab_category_id')
+                ->orderBy('id')
+                ->get();
+
+            // JIKA KOSONG → GENERATE BARU
+            if ($rabItems->isEmpty()) {
+                $this->generateRabFromTemplate($typeId, $unitId, $locationId);
+
+                $rabItems = RabItem::with('category')
+                    ->where('type_id', $typeId)
+                    ->where('unit_id', $unitId)
+                    ->where('location_id', $locationId)
+                    ->orderBy('rab_category_id')
+                    ->orderBy('id')
+                    ->get();
+            }
+
+            // Group items by category
+            $categories = RabCategory::orderBy('id')->get();
+
+            // Get borongan per category
+            $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->get()
+                ->keyBy('rab_category_id');
+        }
+
+        // Get selected data for display
+        $selectedType = $typeId ? Type::find($typeId) : null;
+        $selectedUnit = $unitId ? Unit::find($unitId) : null;
+        $selectedLocation = $locationId ? Location::find($locationId) : null;
+        $fixedType = $type40; // Fixed type untuk halaman ini
+
+        return view('admin.rab.type40', [
+            'types'             => $types,
+            'units'             => $units,
+            'locations'         => $locations,
+            'type_id'           => $typeId,
+            'unit_id'           => $unitId,
+            'location_id'       => $locationId,
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+            'fixedType'         => $fixedType,
+        ]);
+    }
+
+    /**
+     * Print view untuk RAB Type 40
+     */
+    public function type40Print(Request $request)
+    {
+        // Force Type 40
+        $type40 = Type::where('nama', '40')->first();
+        $typeId     = $type40 ? $type40->id : $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return redirect()->route('rab.type40')->with('error', 'Silakan pilih Type, Lokasi, dan Unit terlebih dahulu');
+        }
+
+        $rabItems = RabItem::with('category')
+            ->where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->orderBy('rab_category_id')
+            ->orderBy('id')
+            ->get();
+
+        $categories = RabCategory::orderBy('id')->get();
+
+        $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->get()
+            ->keyBy('rab_category_id');
+
+        $selectedType = Type::find($typeId);
+        $selectedUnit = Unit::find($unitId);
+        $selectedLocation = Location::find($locationId);
+
+        return view('admin.rab.type40-print', [
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+        ]);
+    }
+
+    /**
+     * RAB Type 45 - Halaman Laporan
+     */
+    public function type45(Request $request)
+    {
+        $types     = Type::all();
+        $units     = Unit::with('location')->get();
+        $locations = Location::all();
+
+        // Force Type 45 untuk halaman ini
+        $type45 = Type::where('nama', '45')->first();
+        $typeId     = $type45 ? $type45->id : null;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        // nilai default kosong
+        $rabItems = collect();
+        $categories = collect();
+        $categoryBorongans = collect();
+
+        if ($typeId && $unitId && $locationId) {
+
+            // AMBIL DATA RAB YANG SUDAH ADA
+            $rabItems = RabItem::with('category')
+                ->where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->orderBy('rab_category_id')
+                ->orderBy('id')
+                ->get();
+
+            // JIKA KOSONG → GENERATE BARU
+            if ($rabItems->isEmpty()) {
+                $this->generateRabFromTemplate($typeId, $unitId, $locationId);
+
+                $rabItems = RabItem::with('category')
+                    ->where('type_id', $typeId)
+                    ->where('unit_id', $unitId)
+                    ->where('location_id', $locationId)
+                    ->orderBy('rab_category_id')
+                    ->orderBy('id')
+                    ->get();
+            }
+
+            // Group items by category
+            $categories = RabCategory::orderBy('id')->get();
+
+            // Get borongan per category
+            $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->get()
+                ->keyBy('rab_category_id');
+        }
+
+        // Get selected data for display
+        $selectedType = $typeId ? Type::find($typeId) : null;
+        $selectedUnit = $unitId ? Unit::find($unitId) : null;
+        $selectedLocation = $locationId ? Location::find($locationId) : null;
+        $fixedType = $type45; // Fixed type untuk halaman ini
+
+        return view('admin.rab.type45', [
+            'types'             => $types,
+            'units'             => $units,
+            'locations'         => $locations,
+            'type_id'           => $typeId,
+            'unit_id'           => $unitId,
+            'location_id'       => $locationId,
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+            'fixedType'         => $fixedType,
+        ]);
+    }
+
+    /**
+     * Print view untuk RAB Type 45
+     */
+    public function type45Print(Request $request)
+    {
+        // Force Type 45
+        $type45 = Type::where('nama', '45')->first();
+        $typeId     = $type45 ? $type45->id : $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return redirect()->route('rab.type45')->with('error', 'Silakan pilih Type, Lokasi, dan Unit terlebih dahulu');
+        }
+
+        $rabItems = RabItem::with('category')
+            ->where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->orderBy('rab_category_id')
+            ->orderBy('id')
+            ->get();
+
+        $categories = RabCategory::orderBy('id')->get();
+
+        $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->get()
+            ->keyBy('rab_category_id');
+
+        $selectedType = Type::find($typeId);
+        $selectedUnit = Unit::find($unitId);
+        $selectedLocation = Location::find($locationId);
+
+        return view('admin.rab.type45-print', [
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+        ]);
+    }
+
+    /**
+     * RAB Type 60 - Halaman Laporan
+     */
+    public function type60(Request $request)
+    {
+        $types     = Type::all();
+        $units     = Unit::with('location')->get();
+        $locations = Location::all();
+
+        // Force Type 60 untuk halaman ini
+        $type60 = Type::where('nama', '60')->first();
+        $typeId     = $type60 ? $type60->id : null;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        // nilai default kosong
+        $rabItems = collect();
+        $categories = collect();
+        $categoryBorongans = collect();
+
+        if ($typeId && $unitId && $locationId) {
+
+            // AMBIL DATA RAB YANG SUDAH ADA
+            $rabItems = RabItem::with('category')
+                ->where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->orderBy('rab_category_id')
+                ->orderBy('id')
+                ->get();
+
+            // JIKA KOSONG → GENERATE BARU
+            if ($rabItems->isEmpty()) {
+                $this->generateRabFromTemplate($typeId, $unitId, $locationId);
+
+                $rabItems = RabItem::with('category')
+                    ->where('type_id', $typeId)
+                    ->where('unit_id', $unitId)
+                    ->where('location_id', $locationId)
+                    ->orderBy('rab_category_id')
+                    ->orderBy('id')
+                    ->get();
+            }
+
+            // Group items by category
+            $categories = RabCategory::orderBy('id')->get();
+
+            // Get borongan per category
+            $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->get()
+                ->keyBy('rab_category_id');
+        }
+
+        // Get selected data for display
+        $selectedType = $typeId ? Type::find($typeId) : null;
+        $selectedUnit = $unitId ? Unit::find($unitId) : null;
+        $selectedLocation = $locationId ? Location::find($locationId) : null;
+        $fixedType = $type60; // Fixed type untuk halaman ini
+
+        return view('admin.rab.type60', [
+            'types'             => $types,
+            'units'             => $units,
+            'locations'         => $locations,
+            'type_id'           => $typeId,
+            'unit_id'           => $unitId,
+            'location_id'       => $locationId,
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+            'fixedType'         => $fixedType,
+        ]);
+    }
+
+    /**
+     * Print view untuk RAB Type 60
+     */
+    public function type60Print(Request $request)
+    {
+        // Force Type 60
+        $type60 = Type::where('nama', '60')->first();
+        $typeId     = $type60 ? $type60->id : $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return redirect()->route('rab.type60')->with('error', 'Silakan pilih Type, Lokasi, dan Unit terlebih dahulu');
+        }
+
+        $rabItems = RabItem::with('category')
+            ->where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->orderBy('rab_category_id')
+            ->orderBy('id')
+            ->get();
+
+        $categories = RabCategory::orderBy('id')->get();
+
+        $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->get()
+            ->keyBy('rab_category_id');
+
+        $selectedType = Type::find($typeId);
+        $selectedUnit = Unit::find($unitId);
+        $selectedLocation = Location::find($locationId);
+
+        return view('admin.rab.type60-print', [
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+        ]);
+    }
+
+    /**
+     * RAB Type 70 - Halaman Laporan
+     */
+    public function type70(Request $request)
+    {
+        $types     = Type::all();
+        $units     = Unit::with('location')->get();
+        $locations = Location::all();
+
+        // Force Type 70 untuk halaman ini
+        $type70 = Type::where('nama', '70')->first();
+        $typeId     = $type70 ? $type70->id : null;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        // nilai default kosong
+        $rabItems = collect();
+        $categories = collect();
+        $categoryBorongans = collect();
+
+        if ($typeId && $unitId && $locationId) {
+
+            // AMBIL DATA RAB YANG SUDAH ADA
+            $rabItems = RabItem::with('category')
+                ->where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->orderBy('rab_category_id')
+                ->orderBy('id')
+                ->get();
+
+            // JIKA KOSONG → GENERATE BARU
+            if ($rabItems->isEmpty()) {
+                $this->generateRabFromTemplate($typeId, $unitId, $locationId);
+
+                $rabItems = RabItem::with('category')
+                    ->where('type_id', $typeId)
+                    ->where('unit_id', $unitId)
+                    ->where('location_id', $locationId)
+                    ->orderBy('rab_category_id')
+                    ->orderBy('id')
+                    ->get();
+            }
+
+            // Group items by category
+            $categories = RabCategory::orderBy('id')->get();
+
+            // Get borongan per category
+            $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->get()
+                ->keyBy('rab_category_id');
+        }
+
+        // Get selected data for display
+        $selectedType = $typeId ? Type::find($typeId) : null;
+        $selectedUnit = $unitId ? Unit::find($unitId) : null;
+        $selectedLocation = $locationId ? Location::find($locationId) : null;
+        $fixedType = $type70; // Fixed type untuk halaman ini
+
+        return view('admin.rab.type70', [
+            'types'             => $types,
+            'units'             => $units,
+            'locations'         => $locations,
+            'type_id'           => $typeId,
+            'unit_id'           => $unitId,
+            'location_id'       => $locationId,
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+            'fixedType'         => $fixedType,
+        ]);
+    }
+
+    /**
+     * Print view untuk RAB Type 70
+     */
+    public function type70Print(Request $request)
+    {
+        // Force Type 70
+        $type70 = Type::where('nama', '70')->first();
+        $typeId     = $type70 ? $type70->id : $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return redirect()->route('rab.type70')->with('error', 'Silakan pilih Type, Lokasi, dan Unit terlebih dahulu');
+        }
+
+        $rabItems = RabItem::with('category')
+            ->where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->orderBy('rab_category_id')
+            ->orderBy('id')
+            ->get();
+
+        $categories = RabCategory::orderBy('id')->get();
+
+        $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->get()
+            ->keyBy('rab_category_id');
+
+        $selectedType = Type::find($typeId);
+        $selectedUnit = Unit::find($unitId);
+        $selectedLocation = Location::find($locationId);
+
+        return view('admin.rab.type70-print', [
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+        ]);
+    }
+
+    /**
+     * RAB Type 80 - Halaman Laporan
+     */
+    public function type80(Request $request)
+    {
+        $types     = Type::all();
+        $units     = Unit::with('location')->get();
+        $locations = Location::all();
+
+        // Force Type 80 untuk halaman ini
+        $type80 = Type::where('nama', '80')->first();
+        $typeId     = $type80 ? $type80->id : null;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        // nilai default kosong
+        $rabItems = collect();
+        $categories = collect();
+        $categoryBorongans = collect();
+
+        if ($typeId && $unitId && $locationId) {
+
+            // AMBIL DATA RAB YANG SUDAH ADA
+            $rabItems = RabItem::with('category')
+                ->where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->orderBy('rab_category_id')
+                ->orderBy('id')
+                ->get();
+
+            // JIKA KOSONG → GENERATE BARU
+            if ($rabItems->isEmpty()) {
+                $this->generateRabFromTemplate($typeId, $unitId, $locationId);
+
+                $rabItems = RabItem::with('category')
+                    ->where('type_id', $typeId)
+                    ->where('unit_id', $unitId)
+                    ->where('location_id', $locationId)
+                    ->orderBy('rab_category_id')
+                    ->orderBy('id')
+                    ->get();
+            }
+
+            // Group items by category
+            $categories = RabCategory::orderBy('id')->get();
+
+            // Get borongan per category
+            $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->get()
+                ->keyBy('rab_category_id');
+        }
+
+        // Get selected data for display
+        $selectedType = $typeId ? Type::find($typeId) : null;
+        $selectedUnit = $unitId ? Unit::find($unitId) : null;
+        $selectedLocation = $locationId ? Location::find($locationId) : null;
+        $fixedType = $type80; // Fixed type untuk halaman ini
+
+        return view('admin.rab.type80', [
+            'types'             => $types,
+            'units'             => $units,
+            'locations'         => $locations,
+            'type_id'           => $typeId,
+            'unit_id'           => $unitId,
+            'location_id'       => $locationId,
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+            'fixedType'         => $fixedType,
+        ]);
+    }
+
+    /**
+     * Print view untuk RAB Type 80
+     */
+    public function type80Print(Request $request)
+    {
+        // Force Type 80
+        $type80 = Type::where('nama', '80')->first();
+        $typeId     = $type80 ? $type80->id : $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return redirect()->route('rab.type80')->with('error', 'Silakan pilih Type, Lokasi, dan Unit terlebih dahulu');
+        }
+
+        $rabItems = RabItem::with('category')
+            ->where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->orderBy('rab_category_id')
+            ->orderBy('id')
+            ->get();
+
+        $categories = RabCategory::orderBy('id')->get();
+
+        $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->get()
+            ->keyBy('rab_category_id');
+
+        $selectedType = Type::find($typeId);
+        $selectedUnit = Unit::find($unitId);
+        $selectedLocation = Location::find($locationId);
+
+        return view('admin.rab.type80-print', [
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+        ]);
+    }
+
+    /**
+     * RAB Type 100 - Halaman Laporan
+     */
+    public function type100(Request $request)
+    {
+        $types     = Type::all();
+        $units     = Unit::with('location')->get();
+        $locations = Location::all();
+
+        // Force Type 100 untuk halaman ini
+        $type100 = Type::where('nama', '100')->first();
+        $typeId     = $type100 ? $type100->id : null;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        // nilai default kosong
+        $rabItems = collect();
+        $categories = collect();
+        $categoryBorongans = collect();
+
+        if ($typeId && $unitId && $locationId) {
+
+            // AMBIL DATA RAB YANG SUDAH ADA
+            $rabItems = RabItem::with('category')
+                ->where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->orderBy('rab_category_id')
+                ->orderBy('id')
+                ->get();
+
+            // JIKA KOSONG → GENERATE BARU
+            if ($rabItems->isEmpty()) {
+                $this->generateRabFromTemplate($typeId, $unitId, $locationId);
+
+                $rabItems = RabItem::with('category')
+                    ->where('type_id', $typeId)
+                    ->where('unit_id', $unitId)
+                    ->where('location_id', $locationId)
+                    ->orderBy('rab_category_id')
+                    ->orderBy('id')
+                    ->get();
+            }
+
+            // Group items by category
+            $categories = RabCategory::orderBy('id')->get();
+
+            // Get borongan per category
+            $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->get()
+                ->keyBy('rab_category_id');
+        }
+
+        // Get selected data for display
+        $selectedType = $typeId ? Type::find($typeId) : null;
+        $selectedUnit = $unitId ? Unit::find($unitId) : null;
+        $selectedLocation = $locationId ? Location::find($locationId) : null;
+        $fixedType = $type100; // Fixed type untuk halaman ini
+
+        return view('admin.rab.type100', [
+            'types'             => $types,
+            'units'             => $units,
+            'locations'         => $locations,
+            'type_id'           => $typeId,
+            'unit_id'           => $unitId,
+            'location_id'       => $locationId,
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+            'fixedType'         => $fixedType,
+        ]);
+    }
+
+    /**
+     * Print view untuk RAB Type 100
+     */
+    public function type100Print(Request $request)
+    {
+        // Force Type 100
+        $type100 = Type::where('nama', '100')->first();
+        $typeId     = $type100 ? $type100->id : $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return redirect()->route('rab.type100')->with('error', 'Silakan pilih Type, Lokasi, dan Unit terlebih dahulu');
+        }
+
+        $rabItems = RabItem::with('category')
+            ->where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->orderBy('rab_category_id')
+            ->orderBy('id')
+            ->get();
+
+        $categories = RabCategory::orderBy('id')->get();
+
+        $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->get()
+            ->keyBy('rab_category_id');
+
+        $selectedType = Type::find($typeId);
+        $selectedUnit = Unit::find($unitId);
+        $selectedLocation = Location::find($locationId);
+
+        return view('admin.rab.type100-print', [
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+        ]);
+    }
+
+    /**
+     * RAB Type 107 - Halaman Laporan
+     */
+    public function type107(Request $request)
+    {
+        $types     = Type::all();
+        $units     = Unit::with('location')->get();
+        $locations = Location::all();
+
+        // Force Type 107 untuk halaman ini
+        $type107 = Type::where('nama', '107')->first();
+        $typeId     = $type107 ? $type107->id : null;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        // nilai default kosong
+        $rabItems = collect();
+        $categories = collect();
+        $categoryBorongans = collect();
+
+        if ($typeId && $unitId && $locationId) {
+
+            // AMBIL DATA RAB YANG SUDAH ADA
+            $rabItems = RabItem::with('category')
+                ->where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->orderBy('rab_category_id')
+                ->orderBy('id')
+                ->get();
+
+            // JIKA KOSONG → GENERATE BARU
+            if ($rabItems->isEmpty()) {
+                $this->generateRabFromTemplate($typeId, $unitId, $locationId);
+
+                $rabItems = RabItem::with('category')
+                    ->where('type_id', $typeId)
+                    ->where('unit_id', $unitId)
+                    ->where('location_id', $locationId)
+                    ->orderBy('rab_category_id')
+                    ->orderBy('id')
+                    ->get();
+            }
+
+            // Group items by category
+            $categories = RabCategory::orderBy('id')->get();
+
+            // Get borongan per category
+            $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+                ->where('unit_id', $unitId)
+                ->where('location_id', $locationId)
+                ->get()
+                ->keyBy('rab_category_id');
+        }
+
+        // Get selected data for display
+        $selectedType = $typeId ? Type::find($typeId) : null;
+        $selectedUnit = $unitId ? Unit::find($unitId) : null;
+        $selectedLocation = $locationId ? Location::find($locationId) : null;
+        $fixedType = $type107; // Fixed type untuk halaman ini
+
+        return view('admin.rab.type107', [
+            'types'             => $types,
+            'units'             => $units,
+            'locations'         => $locations,
+            'type_id'           => $typeId,
+            'unit_id'           => $unitId,
+            'location_id'       => $locationId,
+            'rabItems'          => $rabItems,
+            'categories'        => $categories,
+            'categoryBorongans' => $categoryBorongans,
+            'selectedType'      => $selectedType,
+            'selectedUnit'      => $selectedUnit,
+            'selectedLocation'  => $selectedLocation,
+            'fixedType'         => $fixedType,
+        ]);
+    }
+
+    /**
+     * Print view untuk RAB Type 107
+     */
+    public function type107Print(Request $request)
+    {
+        // Force Type 107
+        $type107 = Type::where('nama', '107')->first();
+        $typeId     = $type107 ? $type107->id : $request->type_id;
+        $unitId     = $request->unit_id;
+        $locationId = $request->location_id;
+
+        if (!$typeId || !$unitId || !$locationId) {
+            return redirect()->route('rab.type107')->with('error', 'Silakan pilih Type, Lokasi, dan Unit terlebih dahulu');
+        }
+
+        $rabItems = RabItem::with('category')
+            ->where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->orderBy('rab_category_id')
+            ->orderBy('id')
+            ->get();
+
+        $categories = RabCategory::orderBy('id')->get();
+
+        $categoryBorongans = RabCategoryBorongan::where('type_id', $typeId)
+            ->where('unit_id', $unitId)
+            ->where('location_id', $locationId)
+            ->get()
+            ->keyBy('rab_category_id');
+
+        $selectedType = Type::find($typeId);
+        $selectedUnit = Unit::find($unitId);
+        $selectedLocation = Location::find($locationId);
+
+        return view('admin.rab.type107-print', [
             'rabItems'          => $rabItems,
             'categories'        => $categories,
             'categoryBorongans' => $categoryBorongans,
@@ -754,12 +1484,7 @@ class RabController extends Controller
             
             if (isset($itemData['bahan_out'])) {
                 $item->bahan_out = $itemData['bahan_out'];
-                // Total harga HANYA dihitung dari bahan_out * harga_bahan
-                if ($itemData['bahan_out'] == 0) {
-                    $item->total_harga = 0;
-                } else {
-                    $item->total_harga = round($item->bahan_out * $item->harga_bahan, 2);
-                }
+                $item->total_harga = $item->bahan_out * $item->harga_bahan;
             }
             
             if (isset($itemData['upah'])) {
@@ -835,7 +1560,17 @@ class RabController extends Controller
 
     /**
      * Refresh/Sync harga bahan dari inventory ke RAB items
-     * Juga update bahan_baku dari RabTypeValue jika masih 0
+     * 
+     * LOGIKA:
+     * 1. Update harga_bahan dari inventory (jika ada perubahan)
+     * 2. Update total_harga = bahan_out × harga_bahan (menggunakan OUT yang sudah diinput)
+     * 3. Update bahan_baku dari RabTypeValue jika masih 0 atau kosong
+     * 
+     * DATA YANG TIDAK AKAN BERUBAH:
+     * - bahan_out (OUT) - tetap menggunakan nilai yang sudah diinput user
+     * - upah - tidak diubah (disimpan di rab_category_borongans)
+     * - progress - tidak diubah (disimpan di rab_category_borongans)
+     * - borongan - tidak diubah (disimpan di rab_category_borongans)
      */
     public function refreshPrices(Request $request)
     {
@@ -847,18 +1582,18 @@ class RabController extends Controller
             return response()->json(['error' => 'Missing parameters'], 400);
         }
 
-        // Ambil semua inventory items untuk lookup
+        // Ambil semua inventory items untuk lookup (lebih efisien)
         $inventoryItems = InventoryItem::all()->keyBy('nama');
 
-        // Ambil semua templates untuk lookup bahan_baku
-        $templates = RabTemplate::all()->keyBy('item_name');
-        
-        // Ambil semua type values untuk type ini
+        // Ambil semua type values untuk type ini (untuk update bahan_baku jika perlu)
         $typeValues = RabTypeValue::where('type_id', $typeId)
             ->with('template')
-            ->get();
+            ->get()
+            ->keyBy(function($tv) {
+                return $tv->template->item_name ?? null;
+            });
 
-        // Ambil RAB items
+        // Ambil RAB items yang akan di-update
         $rabItems = RabItem::where('type_id', $typeId)
             ->where('unit_id', $unitId)
             ->where('location_id', $locationId)
@@ -866,53 +1601,72 @@ class RabController extends Controller
 
         $updated = 0;
         $updatedBahanBaku = 0;
+        $notFound = [];
+
         foreach ($rabItems as $item) {
             $updatedItem = false;
+            $oldHargaBahan = $item->harga_bahan;
             
-            // Update bahan_baku dari type values (selalu update jika ada di type values)
-            // Cari type value berdasarkan uraian dan category untuk lebih akurat
-            $typeValue = $typeValues->first(function($tv) use ($item) {
-                return $tv->template && 
-                       $tv->template->item_name === $item->uraian &&
-                       $tv->template->category_id === $item->rab_category_id;
-            });
-            
-            if ($typeValue) {
-                $item->bahan_baku = (float)$typeValue->bahan_baku;
+            // ========================================
+            // 1. UPDATE BAHAN_BAKU (jika masih 0 atau kosong)
+            // ========================================
+            if (($item->bahan_baku == 0 || $item->bahan_baku == null) && isset($typeValues[$item->uraian])) {
+                $typeValue = $typeValues[$item->uraian];
+                $item->bahan_baku = $typeValue->bahan_baku;
                 $updatedBahanBaku++;
                 $updatedItem = true;
             }
             
-            // Cari di inventory dengan exact match
+            // ========================================
+            // 2. CARI HARGA DI INVENTORY
+            // ========================================
+            // Coba exact match dulu
             $inventory = $inventoryItems->get($item->uraian);
             
-            // Jika tidak ketemu, coba cari dengan LIKE
+            // Jika tidak ketemu, coba dengan LIKE (untuk handle perbedaan spasi/kecil-besar)
             if (!$inventory) {
                 $inventory = InventoryItem::where('nama', 'LIKE', '%' . $item->uraian . '%')
                     ->orWhere('nama', 'LIKE', '%' . str_replace(' ', '', $item->uraian) . '%')
                     ->first();
             }
 
+            // ========================================
+            // 3. UPDATE HARGA BAHAN DAN TOTAL HARGA
+            // ========================================
             if ($inventory && $inventory->harga > 0) {
+                // Update harga_bahan dari inventory
                 $item->harga_bahan = $inventory->harga;
-                // Total harga HANYA dihitung dari bahan_out * harga_bahan
-                if ($item->bahan_out == 0) {
-                    $item->total_harga = 0;
-                } else {
-                    $item->total_harga = round((float)$item->bahan_out * (float)$inventory->harga, 2);
-                }
+                
+                // Update total_harga = bahan_out × harga_bahan
+                // PENTING: Menggunakan bahan_out yang sudah diinput user (tidak diubah)
+                $item->total_harga = $item->bahan_out * $inventory->harga;
+                
                 $updatedItem = true;
+            } else {
+                // Item tidak ditemukan di inventory
+                $notFound[] = $item->uraian;
             }
             
+            // ========================================
+            // 4. SIMPAN JIKA ADA PERUBAHAN
+            // ========================================
+            // Hanya save jika ada perubahan harga atau bahan_baku
+            // bahan_out, upah, progress TIDAK DIUBAH
             if ($updatedItem) {
                 $item->save();
                 $updated++;
             }
         }
 
+        // ========================================
+        // 5. RESPONSE MESSAGE
+        // ========================================
         $message = "Berhasil update harga untuk {$updated} item";
         if ($updatedBahanBaku > 0) {
             $message .= " dan update bahan_baku untuk {$updatedBahanBaku} item";
+        }
+        if (count($notFound) > 0) {
+            $message .= ". " . count($notFound) . " item tidak ditemukan di inventory";
         }
 
         return response()->json([
@@ -920,64 +1674,7 @@ class RabController extends Controller
             'message' => $message,
             'updated' => $updated,
             'updated_bahan_baku' => $updatedBahanBaku,
-        ]);
-    }
-
-    /**
-     * Update bahan_baku di rab_items berdasarkan rab_type_values terbaru
-     * Tanpa menghapus data yang sudah ada (bahan_out, dll)
-     */
-    public function updateBahanBaku(Request $request)
-    {
-        $typeId     = $request->type_id;
-        $unitId     = $request->unit_id;
-        $locationId = $request->locationId;
-
-        if (!$typeId || !$unitId || !$locationId) {
-            return response()->json(['error' => 'Missing parameters'], 400);
-        }
-
-        // Ambil semua type values untuk type ini
-        $typeValues = RabTypeValue::where('type_id', $typeId)
-            ->with('template')
-            ->get()
-            ->keyBy(function($tv) {
-                return $tv->template ? $tv->template->item_name : null;
-            });
-
-        // Ambil RAB items
-        $rabItems = RabItem::where('type_id', $typeId)
-            ->where('unit_id', $unitId)
-            ->where('location_id', $locationId)
-            ->get();
-
-        $updated = 0;
-        foreach ($rabItems as $item) {
-            // Cari type value berdasarkan uraian dan category
-            $typeValue = $typeValues->first(function($tv) use ($item) {
-                return $tv->template && 
-                       $tv->template->item_name === $item->uraian &&
-                       $tv->template->category_id === $item->rab_category_id;
-            });
-
-            if ($typeValue) {
-                // Update bahan_baku dari type value
-                $item->bahan_baku = (float)$typeValue->bahan_baku;
-                
-                // Update total_harga jika bahan_out = 0 (belum digunakan)
-                if ($item->bahan_out == 0) {
-                    $item->total_harga = round($item->bahan_baku * $item->harga_bahan, 2);
-                }
-                
-                $item->save();
-                $updated++;
-            }
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => "Berhasil update {$updated} item dengan bahan_baku terbaru",
-            'updated' => $updated,
+            'not_found' => $notFound,
         ]);
     }
 

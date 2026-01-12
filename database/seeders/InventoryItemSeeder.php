@@ -69,8 +69,8 @@ class InventoryItemSeeder extends Seeder
 
             // I — DEK
             ['nama' => 'Gypsum', 'harga' => 60000, 'satuan' => 'Lembar'],
-            ['nama' => 'Baut', 'harga' => 60000, 'satuan' => 'Kotak'],
-            ['nama' => 'Paku Beton 4 inch', 'harga' => 37000, 'satuan' => 'Kg'],
+            ['nama' => 'Baut', 'harga' => 37000, 'satuan' => 'Kotak'],
+            ['nama' => 'Paku Beton 4 inch', 'harga' => 5000, 'satuan' => 'Kg'],
             // Paku 3 inch & 2 inch sudah ada di atas
 
             // J — MINIMALIS

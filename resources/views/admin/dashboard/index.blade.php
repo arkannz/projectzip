@@ -214,16 +214,24 @@
         <h5 class="mb-3 font-weight-bold">📊 Informasi</h5>
 
         <div class="dashboard-card">
-            <h6 class="font-weight-bold mb-3">
-                <i class="fas fa-clock text-primary mr-2"></i>
-                Aktivitas Terakhir
-            </h6>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="font-weight-bold mb-0">
+                    <i class="fas fa-clock text-primary mr-2"></i>
+                    Aktivitas Terakhir
+                </h6>
+                <a href="{{ route('admin.activities') }}" class="btn btn-sm btn-primary">
+                    Lihat Semua
+                </a>
+            </div>
             <ul class="list-unstyled mb-0">
                 @if(isset($recentActivities) && count($recentActivities) > 0)
                     @foreach($recentActivities as $activity)
                         <li class="mb-2 pb-2 border-bottom">
                             <small class="text-muted">{{ $activity->created_at->diffForHumans() }}</small>
                             <div>{{ $activity->description }}</div>
+                            @if($activity->user)
+                                <small class="text-muted">oleh {{ $activity->user->name }}</small>
+                            @endif
                         </li>
                     @endforeach
                 @else

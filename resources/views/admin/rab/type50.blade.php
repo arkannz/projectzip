@@ -21,7 +21,7 @@
 
         <div class="col-md-4">
             <label>Lokasi Rumah</label>
-            <select name="location_id" id="location_id" class="form-control">
+            <select name="location_id" class="form-control" id="selectLocationRAB">
                 <option value="">Pilih Lokasi</option>
                 @foreach($locations as $loc)
                     <option value="{{ $loc->id }}" {{ $location_id == $loc->id ? 'selected' : '' }}>
@@ -29,14 +29,14 @@
                     </option>
                 @endforeach
             </select>
-            <button type="button" class="btn btn-primary btn-sm mt-2" data-toggle="modal" data-target="#modalTambahLokasi">
+            <button type="button" class="btn btn-primary btn-sm mt-1" data-toggle="modal" data-target="#modalTambahLokasi">
                 + Tambah Lokasi Baru
             </button>
         </div>
 
         <div class="col-md-4">
             <label>Unit Rumah</label>
-            <select name="unit_id" id="unit_id" class="form-control">
+            <select name="unit_id" class="form-control" id="selectUnitRAB">
                 <option value="">Pilih Unit</option>
                 @foreach($units as $u)
                     <option value="{{ $u->id }}" {{ $unit_id == $u->id ? 'selected' : '' }}>
@@ -44,7 +44,7 @@
                     </option>
                 @endforeach
             </select>
-            <button type="button" class="btn btn-primary btn-sm mt-2" data-toggle="modal" data-target="#modalTambahUnit">
+            <button type="button" class="btn btn-primary btn-sm mt-1" data-toggle="modal" data-target="#modalTambahUnit">
                 + Tambah Unit Baru
             </button>
         </div>
@@ -121,10 +121,8 @@
                         $categoryCounter++;
                         $itemCounter = 0;
                         
-                        // Calculate category totals (HANYA dari item dengan bahan_out > 0)
-                        $catTotalHarga = $categoryItems->filter(function($item) {
-                            return $item->bahan_out > 0;
-                        })->sum('total_harga');
+                        // Calculate category totals
+                        $catTotalHarga = $categoryItems->sum('total_harga');
                         $catBorongan = $categoryBorongans->get($category->id);
                         $catBoronganValue = $catBorongan ? $catBorongan->borongan : 0;
                         $catUpahValue = $catBorongan ? $catBorongan->upah : 0;
@@ -144,7 +142,7 @@
                         <tr class="item-row" data-item-id="{{ $item->id }}" data-category-id="{{ $category->id }}">
                             <td class="text-center">{{ $itemCounter }}</td>
                             <td>{{ $item->uraian }}</td>
-                            <td class="text-center">{{ $item->bahan_baku == (int)$item->bahan_baku ? number_format($item->bahan_baku, 0, ',', '.') : number_format($item->bahan_baku, 1, ',', '.') }}</td>
+                            <td class="text-center">{{ $item->bahan_baku }}</td>
                             <td class="text-center">
                                 <input type="number" class="form-control form-control-sm input-out" 
                                        value="{{ $item->bahan_out }}" 
@@ -154,11 +152,7 @@
                             </td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
                             <td class="text-right total-harga" data-item-id="{{ $item->id }}">
-                                @if($item->total_harga == 0 || $item->bahan_out == 0)
-                                    -
-                                @else
-                                    Rp {{ number_format($item->total_harga, 0, ',', '.') }}
-                                @endif
+                                Rp {{ number_format($item->total_harga, 0, ',', '.') }}
                             </td>
                             <td class="text-center">-</td>
                             <td class="text-center">-</td>
@@ -171,11 +165,7 @@
                     <tr class="category-summary-row category-summary" data-category-id="{{ $category->id }}">
                         <td colspan="5" class="text-center"><strong>Subtotal {{ $category->nama }}:</strong></td>
                         <td class="text-right cat-total-harga" data-category-id="{{ $category->id }}">
-                            @if($catTotalHarga == 0)
-                                <strong>-</strong>
-                            @else
-                                <strong>Rp {{ number_format($catTotalHarga, 0, ',', '.') }}</strong>
-                            @endif
+                            <strong>Rp {{ number_format($catTotalHarga, 0, ',', '.') }}</strong>
                         </td>
                         <td class="text-center">
                             <input type="number" class="form-control form-control-sm input-upah-cat" 
@@ -212,16 +202,7 @@
                 <tr class="grand-total-row font-weight-bold">
                     <td colspan="5" class="text-center"><strong>JUMLAH TOTAL</strong></td>
                     <td class="text-right" id="grandTotalHarga">
-                        @php
-                            $grandTotalHarga = $rabItems->filter(function($item) {
-                                return $item->bahan_out > 0;
-                            })->sum('total_harga');
-                        @endphp
-                        @if($grandTotalHarga == 0)
-                            <strong>-</strong>
-                        @else
-                            <strong>Rp {{ number_format($grandTotalHarga, 0, ',', '.') }}</strong>
-                        @endif
+                        <strong>Rp {{ number_format($rabItems->sum('total_harga'), 0, ',', '.') }}</strong>
                     </td>
                     <td class="text-right" id="grandTotalUpah">
                         <strong>Rp {{ number_format($categoryBorongans->sum('upah'), 0, ',', '.') }}</strong>
@@ -239,9 +220,7 @@
 
                 {{-- Total Harga Bahan + Total HK Row --}}
                 @php
-                    $totalHargaBahan = $rabItems->filter(function($item) {
-                        return $item->bahan_out > 0;
-                    })->sum('total_harga');
+                    $totalHargaBahan = $rabItems->sum('total_harga');
                     $totalHK = $categoryBorongans->sum('upah');
                     $grandTotalBahanHK = $totalHargaBahan + $totalHK;
                 @endphp
@@ -260,69 +239,59 @@
 @endif
 
 {{-- Modal Tambah Lokasi --}}
-<div class="modal fade" id="modalTambahLokasi" tabindex="-1" role="dialog" aria-labelledby="modalTambahLokasiLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="modalTambahLokasi">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalTambahLokasiLabel">Tambah Lokasi Baru</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Lokasi Baru</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-            <form id="formTambahLokasi">
-                @csrf
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="nama_lokasi">Nama Lokasi</label>
-                        <input type="text" class="form-control" id="nama_lokasi" name="nama" required placeholder="Contoh: Perumahan XYZ">
-                    </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nama Lokasi</label>
+                    <input type="text" id="inputNamaLokasi" class="form-control" required placeholder="Contoh: ILALANG 02">
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
-            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btnSimpanLokasi">Simpan</button>
+            </div>
         </div>
     </div>
 </div>
 
 {{-- Modal Tambah Unit --}}
-<div class="modal fade" id="modalTambahUnit" tabindex="-1" role="dialog" aria-labelledby="modalTambahUnitLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="modalTambahUnit">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="modalTambahUnitLabel">Tambah Unit Baru</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Unit Rumah Baru</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
-            <form id="formTambahUnit">
-                @csrf
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="unit_location_id">Pilih Lokasi</label>
-                        <select class="form-control" id="unit_location_id" name="location_id" required>
-                            <option value="">-- Pilih Lokasi --</option>
-                            @foreach($locations as $loc)
-                                <option value="{{ $loc->id }}">{{ $loc->nama }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="unit_type_id">Type Rumah</label>
-                        <input type="text" class="form-control" value="{{ $fixedType->nama }}" disabled>
-                        <input type="hidden" id="unit_type_id" name="type_id" value="{{ $fixedType->id }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="kode_unit">Kode Unit</label>
-                        <input type="text" class="form-control" id="kode_unit" name="kode_unit" required placeholder="Contoh: A1, B2, C3">
-                    </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Lokasi Rumah</label>
+                    <select id="selectLokasiUnit" class="form-control" required>
+                        <option value="">-- pilih lokasi --</option>
+                        @foreach($locations as $loc)
+                            <option value="{{ $loc->id }}">{{ $loc->nama }}</option>
+                        @endforeach
+                    </select>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <div class="form-group">
+                    <label>Type Rumah</label>
+                    <input type="text" class="form-control" value="{{ $fixedType->nama }}" disabled style="background-color: #e9ecef; cursor: not-allowed;">
+                    <input type="hidden" id="selectTypeUnit" value="{{ $fixedType->id }}">
                 </div>
-            </form>
+                <div class="form-group">
+                    <label>Kode Unit</label>
+                    <input type="text" id="inputKodeUnit" class="form-control" placeholder="01 / 02 / 03" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btnSimpanUnit">Simpan</button>
+            </div>
         </div>
     </div>
 </div>
@@ -431,7 +400,7 @@
         
         // Jalankan script utama
         jQuery(document).ready(function($) {
-    const typeId = '{{ $type_id ?: $fixedType->id }}';
+    const typeId = '{{ $type_id }}';
     const unitId = '{{ $unit_id }}';
     const locationId = '{{ $location_id }}';
 
@@ -444,19 +413,10 @@
         const itemId = $(this).data('item-id');
         const harga = parseFloat($(this).data('harga')) || 0;
         const out = parseFloat($(this).val()) || 0;
-        
-        // Total harga HANYA dihitung dari bahan_out * harga_bahan
-        let totalHarga = 0;
-        if (out > 0) {
-            totalHarga = Math.round((out * harga) * 100) / 100;
-        }
+        const totalHarga = out * harga;
 
         // Update display
-        if (totalHarga == 0 || out == 0) {
-            $(`.total-harga[data-item-id="${itemId}"]`).text('-');
-        } else {
-            $(`.total-harga[data-item-id="${itemId}"]`).text(formatRupiah(totalHarga));
-        }
+        $(`.total-harga[data-item-id="${itemId}"]`).text(formatRupiah(totalHarga));
 
         // Track modification
         if (!modifiedItems[itemId]) modifiedItems[itemId] = {};
@@ -510,26 +470,17 @@
         updateGrandTotals();
     });
 
-    // Update category totals (Total Harga HANYA dari bahan_out * harga_bahan)
+    // Update category totals (Total Harga only from items)
     function updateCategoryTotals(categoryId) {
         let totalHarga = 0;
 
         $(`.item-row[data-category-id="${categoryId}"]`).each(function() {
             const harga = parseFloat($(this).find('.input-out').data('harga')) || 0;
             const out = parseFloat($(this).find('.input-out').val()) || 0;
-            // Hanya hitung jika bahan_out > 0
-            if (out > 0) {
-                totalHarga += Math.round((out * harga) * 100) / 100;
-            }
+            totalHarga += out * harga;
         });
 
-        // Bulatkan total untuk menghindari floating point error
-        totalHarga = Math.round(totalHarga * 100) / 100;
-        if (totalHarga == 0) {
-            $(`.cat-total-harga[data-category-id="${categoryId}"]`).html(`<strong>-</strong>`);
-        } else {
-            $(`.cat-total-harga[data-category-id="${categoryId}"]`).html(`<strong>${formatRupiah(totalHarga)}</strong>`);
-        }
+        $(`.cat-total-harga[data-category-id="${categoryId}"]`).html(`<strong>${formatRupiah(totalHarga)}</strong>`);
         updateGrandTotals();
     }
 
@@ -558,10 +509,7 @@
         let progressCount = 0;
 
         $('.cat-total-harga').each(function() {
-            const text = $(this).text().trim();
-            if (text !== '-' && text !== '') {
-                grandTotalHarga += parseUnformattedNumber(text);
-            }
+            grandTotalHarga += parseUnformattedNumber($(this).text());
         });
 
         $('.input-upah-cat').each(function() {
@@ -572,14 +520,9 @@
             grandTotalBorongan += parseFloat($(this).val()) || 0;
         });
 
-        // Progress dihitung dari semua kategori yang sudah diinput (tidak peduli nilainya 0 atau tidak)
         $('.input-progress-cat').each(function() {
-            const progressValue = $(this).val();
-            if (progressValue !== '' && progressValue !== null && progressValue !== undefined) {
-                const progress = parseFloat(progressValue) || 0;
-                totalProgress += progress;
-                progressCount++;
-            }
+            totalProgress += parseFloat($(this).val()) || 0;
+            progressCount++;
         });
 
         const grandUntungRugi = grandTotalBorongan - grandTotalUpah;
@@ -745,79 +688,84 @@
             function parseUnformattedNumber(str) {
                 return parseFloat(str.replace(/[^\d-]/g, '')) || 0;
             }
-            
-            // Initialize grand totals on page load
-            updateGrandTotals();
 
-            // ========== MODAL HANDLERS ==========
-            
-            // Handle Tambah Lokasi
-            $('#formTambahLokasi').on('submit', function(e) {
-                e.preventDefault();
-                const btn = $(this).find('button[type="submit"]');
-                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
+            // ===== TAMBAH LOKASI BARU (AJAX) =====
+            $('#btnSimpanLokasi').click(function() {
+                var namaLokasi = $('#inputNamaLokasi').val().trim();
+
+                if (namaLokasi === '') {
+                    alert('Nama lokasi tidak boleh kosong!');
+                    return;
+                }
 
                 $.ajax({
                     url: '{{ route("inventory.add.location") }}',
-                    method: 'POST',
-                    data: $(this).serialize()
-                })
-                .then(response => {
-                    // Add new option to location selects
-                    const newOption = `<option value="${response.id}">${response.nama}</option>`;
-                    $('#location_id').append(newOption);
-                    $('#unit_location_id').append(newOption);
-                    
-                    // Select the new location
-                    $('#location_id').val(response.id);
-                    
-                    // Close modal and reset form
-                    $('#modalTambahLokasi').modal('hide');
-                    $('#formTambahLokasi')[0].reset();
-                    
-                    alert('Lokasi berhasil ditambahkan!');
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Terjadi kesalahan saat menambah lokasi');
-                })
-                .finally(() => {
-                    btn.prop('disabled', false).html('Simpan');
+                    type: 'POST',
+                    data: { 
+                        _token: '{{ csrf_token() }}',
+                        nama: namaLokasi 
+                    },
+                    success: function(response) {
+                        $('#selectLocationRAB').append(
+                            '<option value="' + response.id + '">' + response.nama + '</option>'
+                        );
+                        $('#selectLokasiUnit').append(
+                            '<option value="' + response.id + '">' + response.nama + '</option>'
+                        );
+                        $('#selectLocationRAB').val(response.id);
+                        $('#inputNamaLokasi').val('');
+                        $('#modalTambahLokasi').modal('hide');
+                        alert('Lokasi "' + response.nama + '" berhasil ditambahkan!');
+                    },
+                    error: function(xhr) {
+                        alert('Gagal menambahkan lokasi. Silakan coba lagi.');
+                        console.log(xhr.responseText);
+                    }
                 });
             });
 
-            // Handle Tambah Unit
-            $('#formTambahUnit').on('submit', function(e) {
-                e.preventDefault();
-                const btn = $(this).find('button[type="submit"]');
-                btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Menyimpan...');
+            // ===== TAMBAH UNIT BARU (AJAX) =====
+            $('#btnSimpanUnit').click(function() {
+                var locationId = $('#selectLokasiUnit').val();
+                var typeId = $('#selectTypeUnit').val();
+                var kodeUnit = $('#inputKodeUnit').val().trim();
+
+                if (locationId === '') {
+                    alert('Pilih lokasi terlebih dahulu!');
+                    return;
+                }
+                if (kodeUnit === '') {
+                    alert('Kode unit tidak boleh kosong!');
+                    return;
+                }
 
                 $.ajax({
                     url: '{{ route("inventory.addUnit") }}',
-                    method: 'POST',
-                    data: $(this).serialize()
-                })
-                .then(response => {
-                    // Add new option to unit select
-                    const newOption = `<option value="${response.id}">${response.location_nama} - Unit ${response.kode_unit}</option>`;
-                    $('#unit_id').append(newOption);
-                    
-                    // Select the new unit
-                    $('#unit_id').val(response.id);
-                    
-                    // Close modal and reset form
-                    $('#modalTambahUnit').modal('hide');
-                    $('#formTambahUnit')[0].reset();
-                    
-                    alert('Unit berhasil ditambahkan!');
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert('Terjadi kesalahan saat menambah unit');
-                })
-                .finally(() => {
-                    btn.prop('disabled', false).html('Simpan');
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        location_id: locationId,
+                        type_id: typeId,
+                        kode_unit: kodeUnit
+                    },
+                    success: function(response) {
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Gagal menambahkan unit. Silakan coba lagi.');
+                        console.log(xhr.responseText);
+                    }
                 });
+            });
+
+            // Reset form modal saat modal ditutup
+            $('#modalTambahLokasi').on('hidden.bs.modal', function() {
+                $('#inputNamaLokasi').val('');
+            });
+
+            $('#modalTambahUnit').on('hidden.bs.modal', function() {
+                $('#selectLokasiUnit').val('');
+                $('#inputKodeUnit').val('');
             });
         });
     }

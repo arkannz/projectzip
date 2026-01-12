@@ -63,12 +63,12 @@ return [
     |
     */
 
-    'logo' => '<b>Admin</b>LTE',
-    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-    'logo_img_class' => 'brand-image img-circle elevation-3',
+    'logo' => '',
+    'logo_img' => 'images/logo_zip.png',
+    'logo_img_class' => 'brand-image',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'Admin Logo',
+    'logo_img_alt' => 'PT. Zhafran Insan Property',
 
     /*
     |--------------------------------------------------------------------------
@@ -371,20 +371,19 @@ return [
                     'url'  => 'rab/type100',
                     'icon' => 'fas fa-file-alt',
                 ],
+                [
+                    'text' => 'RAB Type 107',
+                    'url'  => 'rab/type107',
+                    'icon' => 'fas fa-file-alt',
+                ],
             ],
         ],
-        // Tukang items:
         [
-            'text' => 'Tukang',
-            'url'  => 'tukang',
-            'icon' => 'fas fa-hard-hat',
+            'text' => 'Angkutan',
+            'url'  => 'inventory/angkutan',
+            'icon' => 'fas fa-truck',
         ],
-        // Laporan items:
-        [
-            'text' => 'Laporan',
-            'url'  => 'laporan',
-            'icon' => 'fas fa-file-alt',
-        ],
+
     ],
 
     /*
@@ -489,6 +488,16 @@ return [
                     'type' => 'js',
                     'asset' => false,
                     'location' => '//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js',
+                ],
+            ],
+        ],
+        'CustomSidebar' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => 'css/custom-sidebar.css',
                 ],
             ],
         ],

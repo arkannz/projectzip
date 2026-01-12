@@ -10,6 +10,8 @@ use App\Models\InventoryOut;
 use App\Models\Location;
 use App\Models\Type;
 use App\Models\Unit;
+use App\Models\Angkutan;
+use App\Helpers\ActivityLogger;
 
 class InventoryController extends Controller
 {
@@ -231,5 +233,120 @@ class InventoryController extends Controller
         ));
 
         return back()->with('success', 'Transaksi keluar berhasil ditambahkan.');
+    }
+
+    /**
+     * Print view untuk inventory stock
+     */
+    public function print()
+    {
+        // Ambil semua item dengan stok awal dan stok akhir
+        $items = InventoryItem::all()->map(function($item) {
+            return [
+                'id' => $item->id,
+                'nama' => $item->nama,
+                'satuan' => $item->satuan,
+                'harga' => $item->harga,
+                'stok_awal' => $item->stok_awal,
+                'stok_akhir' => $item->stok_akhir, // Stock saat ini
+            ];
+        })->filter(function($item) {
+            // Hanya tampilkan item yang memiliki stok (stok_akhir > 0 atau ada di database)
+            return true; // Tampilkan semua item, termasuk yang stok 0
+        })->values();
+
+        return view('admin.inventory.print', compact('items'));
+    }
+
+    /**
+     * Menampilkan halaman data angkutan
+     */
+    public function angkutan()
+    {
+        $angkatans = Angkutan::orderBy('tanggal', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        return view('admin.angkutan.index', compact('angkatans'));
+    }
+
+    /**
+     * Menyimpan data angkutan baru
+     */
+    public function storeAngkutan(Request $request)
+    {
+        $request->validate([
+            'tanggal' => 'required|date',
+            'kode' => 'required|string|max:10',
+            'lokasi' => 'required|string|max:255',
+            'angkutan' => 'required|in:Pasir,Batu',
+            'jumlah' => 'required|integer|min:1',
+            'pangkalan' => 'required|string|max:255',
+        ]);
+
+        $angkutan = Angkutan::create($request->all());
+
+        // Log aktivitas
+        ActivityLogger::angkutan('create', "Menambah data angkutan {$angkutan->angkutan} {$angkutan->jumlah} di {$angkutan->lokasi}", $angkutan);
+
+        return redirect()->route('inventory.angkutan')
+            ->with('success', 'Data angkutan berhasil ditambahkan!');
+    }
+
+    /**
+     * Update data angkutan
+     */
+    public function updateAngkutan(Request $request, $id)
+    {
+        $request->validate([
+            'tanggal' => 'required|date',
+            'kode' => 'required|string|max:10',
+            'lokasi' => 'required|string|max:255',
+            'angkutan' => 'required|in:Pasir,Batu',
+            'jumlah' => 'required|integer|min:1',
+            'pangkalan' => 'required|string|max:255',
+        ]);
+
+        $angkutan = Angkutan::findOrFail($id);
+        $oldValues = $angkutan->toArray();
+        $angkutan->update($request->all());
+        $newValues = $angkutan->fresh()->toArray();
+
+        // Log aktivitas
+        ActivityLogger::angkutan('update', "Update data angkutan {$angkutan->angkutan} di {$angkutan->lokasi}", $angkutan, $oldValues, $newValues);
+
+        return redirect()->route('inventory.angkutan')
+            ->with('success', 'Data angkutan berhasil diupdate!');
+    }
+
+    /**
+     * Hapus data angkutan
+     */
+    public function destroyAngkutan($id)
+    {
+        $angkutan = Angkutan::findOrFail($id);
+        $description = "Menghapus data angkutan {$angkutan->angkutan} {$angkutan->jumlah} di {$angkutan->lokasi}";
+        $angkutan->delete();
+
+        // Log aktivitas
+        ActivityLogger::angkutan('delete', $description, null);
+
+        return redirect()->route('inventory.angkutan')
+            ->with('success', 'Data angkutan berhasil dihapus!');
+    }
+
+    /**
+     * Print/Export data angkutan
+     */
+    public function printAngkutan()
+    {
+        $angkatans = Angkutan::orderBy('tanggal', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        // Log aktivitas print
+        ActivityLogger::print('angkutan', 'Print/Export data angkutan');
+
+        return view('admin.angkutan.print', compact('angkatans'));
     }
 }

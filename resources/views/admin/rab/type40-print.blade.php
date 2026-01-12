@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAB Type {{ $selectedType->nama ?? '40' }} - {{ $selectedLocation->nama ?? '' }} - Unit {{ $selectedUnit->kode_unit ?? '' }}</title>
+    <title>RAB Type {{ $selectedType->nama ?? '55' }} - {{ $selectedLocation->nama ?? '' }} - Unit {{ $selectedUnit->kode_unit ?? '' }}</title>
     <style>
         * {
             margin: 0;
@@ -335,8 +335,8 @@
     </style>
 </head>
 <body>
-    <a href="{{ route('rab.type40', ['type_id' => $selectedType->id ?? '', 'unit_id' => $selectedUnit->id ?? '', 'location_id' => $selectedLocation->id ?? '']) }}" class="back-btn no-print">ΓåÉ Kembali</a>
-    <button onclick="window.print()" class="print-btn no-print">≡ƒû¿∩╕Å Print</button>
+    <a href="{{ route('rab.type40', ['type_id' => $selectedType->id ?? '', 'unit_id' => $selectedUnit->id ?? '', 'location_id' => $selectedLocation->id ?? '']) }}" class="back-btn no-print">← Kembali</a>
+    <button onclick="window.print()" class="print-btn no-print">🖨️ Print</button>
 
     @php
         // Pisahkan kategori menjadi 2 grup: A-K dan L-selesai
@@ -428,12 +428,7 @@
                         // Calculate total harga from items
                         $catTotalHarga = $categoryItems->sum('total_harga');
                         
-                        // Add to grand totals
-                        $grandTotalHarga += $catTotalHarga;
-                        $grandTotalUpah += $catUpahValue;
-                        $grandTotalBorongan += $catBoronganValue;
-                        $allProgress[] = $catProgressValue;
-                        $categoryCount++;
+                        // Grand total sudah dihitung di awal, tidak perlu dihitung lagi di sini
                         
                         $itemCounter = 0;
                     @endphp
@@ -450,7 +445,7 @@
                         <tr>
                             <td class="text-center">{{ $itemCounter }}</td>
                             <td>{{ $item->uraian }}</td>
-                            <td class="text-center">{{ $item->bahan_baku == (int)$item->bahan_baku ? number_format($item->bahan_baku, 0, ',', '.') : number_format($item->bahan_baku, 1, ',', '.') }}</td>
+                            <td class="text-center">{{ $item->bahan_baku }}</td>
                             <td class="text-center">{{ $item->bahan_out }}</td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
                             <td class="text-right">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
@@ -529,7 +524,7 @@
                         <tr>
                             <td class="text-center">{{ $itemCounter }}</td>
                             <td>{{ $item->uraian }}</td>
-                            <td class="text-center">{{ $item->bahan_baku == (int)$item->bahan_baku ? number_format($item->bahan_baku, 0, ',', '.') : number_format($item->bahan_baku, 1, ',', '.') }}</td>
+                            <td class="text-center">{{ $item->bahan_baku }}</td>
                             <td class="text-center">{{ $item->bahan_out }}</td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
                             <td class="text-right">Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>

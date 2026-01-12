@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\RabController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -22,21 +22,34 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/activities', [DashboardController::class, 'activities'])->name('admin.activities');
 });
 
 Route::middleware('auth')->group(function () {
-
+    // Inventory routes
     Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+    Route::get('/inventory/print', [InventoryController::class, 'print'])->name('inventory.print');
+    Route::get('/inventory/history', [InventoryController::class, 'history'])->name('inventory.history');
 
-    // master item
+    // Angkutan routes
+    Route::get('/inventory/angkutan', [InventoryController::class, 'angkutan'])->name('inventory.angkutan');
+    Route::get('/inventory/angkutan/print', [InventoryController::class, 'printAngkutan'])->name('inventory.angkutan.print');
+    Route::post('/inventory/angkutan', [InventoryController::class, 'storeAngkutan'])->name('inventory.angkutan.store');
+    Route::put('/inventory/angkutan/{id}', [InventoryController::class, 'updateAngkutan'])->name('inventory.angkutan.update');
+    Route::delete('/inventory/angkutan/{id}', [InventoryController::class, 'destroyAngkutan'])->name('inventory.angkutan.destroy');
+
+    // Master item routes
     Route::post('/inventory/item', [InventoryController::class, 'storeItem'])->name('inventory.item.store');
     Route::put('/inventory/item/{item}', [InventoryController::class, 'updateItem'])->name('inventory.item.update');
     Route::delete('/inventory/item/{item}', [InventoryController::class, 'destroyItem'])->name('inventory.item.destroy');
 
-    // transaksi masuk
-    Route::post('/inventory/masuk', [InventoryController::class, 'storeIn'])->name('inventory.in.store');
+    // Master data routes
+    Route::post('/inventory/add-location', [InventoryController::class, 'addLocation'])->name('inventory.add.location');
+    Route::post('/inventory/add-type', [InventoryController::class, 'addType'])->name('inventory.add.type');
+    Route::post('/inventory/add-unit', [InventoryController::class, 'addUnit'])->name('inventory.addUnit');
 
-    // transaksi keluar
+    // Transaksi routes
+    Route::post('/inventory/masuk', [InventoryController::class, 'storeIn'])->name('inventory.in.store');
     Route::post('/inventory/keluar', [InventoryController::class, 'storeOut'])->name('inventory.out.store');
 
     // Tambah lokasi, type, unit
@@ -77,6 +90,34 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/rab/type100', function() { return app(\App\Http\Controllers\Admin\RabController::class)->typeByNumber(request(), '100'); })->name('rab.type100');
     Route::get('/rab/type100/print', function() { return app(\App\Http\Controllers\Admin\RabController::class)->typeByNumberPrint(request(), '100'); })->name('rab.type100.print');
+    
+    // RAB Type 40 Routes
+    Route::get('/rab/type40', [RabController::class, 'type40'])->name('rab.type40');
+    Route::get('/rab/type40/print', [RabController::class, 'type40Print'])->name('rab.type40.print');
+    
+    // RAB Type 45 Routes
+    Route::get('/rab/type45', [RabController::class, 'type45'])->name('rab.type45');
+    Route::get('/rab/type45/print', [RabController::class, 'type45Print'])->name('rab.type45.print');
+    
+    // RAB Type 60 Routes
+    Route::get('/rab/type60', [RabController::class, 'type60'])->name('rab.type60');
+    Route::get('/rab/type60/print', [RabController::class, 'type60Print'])->name('rab.type60.print');
+    
+    // RAB Type 70 Routes
+    Route::get('/rab/type70', [RabController::class, 'type70'])->name('rab.type70');
+    Route::get('/rab/type70/print', [RabController::class, 'type70Print'])->name('rab.type70.print');
+    
+    // RAB Type 80 Routes
+    Route::get('/rab/type80', [RabController::class, 'type80'])->name('rab.type80');
+    Route::get('/rab/type80/print', [RabController::class, 'type80Print'])->name('rab.type80.print');
+    
+    // RAB Type 100 Routes
+    Route::get('/rab/type100', [RabController::class, 'type100'])->name('rab.type100');
+    Route::get('/rab/type100/print', [RabController::class, 'type100Print'])->name('rab.type100.print');
+    
+    // RAB Type 107 Routes
+    Route::get('/rab/type107', [RabController::class, 'type107'])->name('rab.type107');
+    Route::get('/rab/type107/print', [RabController::class, 'type107Print'])->name('rab.type107.print');
     
     // Shared RAB Routes
     Route::put('/rab/item/{item}', [RabController::class, 'updateItem'])->name('rab.update-item');

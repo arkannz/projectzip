@@ -335,7 +335,7 @@
     </style>
 </head>
 <body>
-    <a href="{{ route('rab.type80', ['type_id' => $selectedType->id ?? '', 'unit_id' => $selectedUnit->id ?? '', 'location_id' => $selectedLocation->id ?? '']) }}" class="back-btn no-print">← Kembali</a>
+    <a href="{{ route('rab.type107', ['type_id' => $selectedType->id ?? '', 'unit_id' => $selectedUnit->id ?? '', 'location_id' => $selectedLocation->id ?? '']) }}" class="back-btn no-print">← Kembali</a>
     <button onclick="window.print()" class="print-btn no-print">🖨️ Print</button>
 
     @php
