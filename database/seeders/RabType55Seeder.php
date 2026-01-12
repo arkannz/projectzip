@@ -142,10 +142,13 @@ class RabType55Seeder extends Seeder
             ['L', 'Oker', 5],
 
             // M — WC
+            ['M', 'Keramik 30 x 30', 0],
             ['M', 'Keramik 25 x 40', 22],
             ['M', 'Closed jongkok Ina', 2],
             ['M', 'Closed Duduk Volk', 1],
             ['M', 'Floor drain', 2],
+            ['M', 'Pasir', 0],
+            ['M', 'Semen PCC 40 Kg Tiga Roda', 0],
             ['M', 'Bak Air', 2],
             ['M', 'Pipa 1/2"', 2],
             ['M', 'Lbow 1/2"', 6],

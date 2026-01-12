@@ -113,7 +113,7 @@ class RabType50Seeder extends Seeder
             ['I', 'Gypsum', 23],
             ['I', 'Baut', 4],
             ['I', 'Paku Beton 4 inch', 1],
-            ['I', 'Paku 3 imch', 1],
+            ['I', 'Paku 3 inch', 1],
             ['I', 'paku 2 inch', 1],
 
             // J — MINIMALIS
@@ -160,7 +160,7 @@ class RabType50Seeder extends Seeder
 
             // O — CAT
             ['O', 'Mowilex weathercoat', 1],
-            ['O', 'Nippon pain  Q--luc', 3],
+            ['O', 'Nippon paint Q-LUC', 3],
             ['O', 'Semen TR-30 40 Kg Tiga Roda', 12],
             ['O', 'Semen Aci Putih 25 kg', 1],
 
@@ -189,22 +189,22 @@ class RabType50Seeder extends Seeder
             ['S', 'Aluminium white ink (openback)', 4],
             ['S', 'Aluminium white ink (m)', 2],
             ['S', 'Aluminium white ink (stoper casmen)', 6],
-            ['S', 'List ornamen 20 mm white(0117,4)', 6],
-            ['S', 'Klem sedang 13 x 26 x1,4 mm (KSD)', 1],
-            ['S', 'Karet C besar htm 35 m (0788)', 2],
-            ['S', 'Karet cacing htm 35 m (606lkh)', 2],
-            ['S', 'Rambuncis dks white kanan (425,4)', 3],
-            ['S', 'Rambuncis dks white kiri (425,4)', 2],
+            ['S', 'List ornamen 20 mm white', 6],
+            ['S', 'Klem sedang 13 x 26 x 1,4 mm', 1],
+            ['S', 'Karet C besar HTM', 2],
+            ['S', 'Karet cacing HTM', 2],
+            ['S', 'Rambuncis dks white kanan', 3],
+            ['S', 'Rambuncis dks white kiri', 2],
             ['S', 'Engsel casment glatino 8 inch', 5],
-            ['S', 'Marks sosis black 620 ml (msb)', 4],
+            ['S', 'Marks sosis black 620 ml', 4],
             ['S', 'Sekrup 8 x 3 rata', 25],
             ['S', 'Sekrup 8 x 1,5 rata @ 50 pcs', 40],
             ['S', 'Sekrup 8 x 1 bulat', 40],
             ['S', 'Sekrup 8 x 0,5 rata', 80],
             ['S', 'Rivet gt 429', 1],
             ['S', 'Fisher S6 vini star', 1],
-            ['S', 'Reben 5, 203 cm x 102 cm asahi (r8040)', 6],
-            ['S', 'Marks sosis white 620 ml (msw)', 4],
+            ['S', 'Reben 5, 203 cm x 102 cm asahi', 6],
+            ['S', 'Marks sosis white 620 ml', 4],
 
             // T — ELEKTICAL
             ['T', 'Saklar tunggal broco', 6],

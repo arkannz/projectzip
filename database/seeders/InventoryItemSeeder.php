@@ -71,7 +71,6 @@ class InventoryItemSeeder extends Seeder
             ['nama' => 'Gypsum', 'harga' => 60000, 'satuan' => 'Lembar'],
             ['nama' => 'Baut', 'harga' => 37000, 'satuan' => 'Kotak'],
             ['nama' => 'Paku Beton 4 inch', 'harga' => 5000, 'satuan' => 'Kg'],
-            // Paku 3 inch & 2 inch sudah ada di atas
 
             // J — MINIMALIS
             ['nama' => 'Keramik 60 x 60 Blackmatt', 'harga' => 165000, 'satuan' => 'Dus'],
