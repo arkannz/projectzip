@@ -142,7 +142,7 @@
                         <tr class="item-row" data-item-id="{{ $item->id }}" data-category-id="{{ $category->id }}">
                             <td class="text-center">{{ $itemCounter }}</td>
                             <td>{{ $item->uraian }}</td>
-                            <td class="text-center">{{ $item->bahan_baku }}</td>
+                            <td class="text-center">{{ number_format($item->bahan_baku, 0, ',', '.') }}</td>
                             <td class="text-center">
                                 <input type="number" class="form-control form-control-sm input-out" 
                                        value="{{ $item->bahan_out }}" 

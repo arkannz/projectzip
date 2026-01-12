@@ -452,7 +452,7 @@
                         <tr>
                             <td class="text-center">{{ $itemCounter }}</td>
                             <td>{{ $item->uraian }}</td>
-                            <td class="text-center">{{ $item->bahan_baku == (int)$item->bahan_baku ? number_format($item->bahan_baku, 0, ',', '.') : number_format($item->bahan_baku, 1, ',', '.') }}</td>
+                            <td class="text-center">{{ number_format($item->bahan_baku, 0, ',', '.') }}</td>
                             <td class="text-center">{{ $item->bahan_out == (int)$item->bahan_out ? number_format($item->bahan_out, 0, ',', '.') : number_format($item->bahan_out, 1, ',', '.') }}</td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
                             <td class="text-right">
@@ -545,7 +545,7 @@
                         <tr>
                             <td class="text-center">{{ $itemCounter }}</td>
                             <td>{{ $item->uraian }}</td>
-                            <td class="text-center">{{ $item->bahan_baku == (int)$item->bahan_baku ? number_format($item->bahan_baku, 0, ',', '.') : number_format($item->bahan_baku, 1, ',', '.') }}</td>
+                            <td class="text-center">{{ number_format($item->bahan_baku, 0, ',', '.') }}</td>
                             <td class="text-center">{{ $item->bahan_out == (int)$item->bahan_out ? number_format($item->bahan_out, 0, ',', '.') : number_format($item->bahan_out, 1, ',', '.') }}</td>
                             <td class="text-right">Rp {{ number_format($item->harga_bahan, 0, ',', '.') }}</td>
                             <td class="text-right">
