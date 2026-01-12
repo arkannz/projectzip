@@ -97,6 +97,9 @@
     <h1>Inventory</h1>
 
     <div>
+        <a href="{{ route('inventory.print') }}" class="btn btn-info" target="_blank">
+            🖨️ Print / Export
+        </a>
         <a href="{{ route('inventory.history') }}" class="btn btn-blue">
             📊 Riwayat Transaksi
         </a>

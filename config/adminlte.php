@@ -63,12 +63,12 @@ return [
     |
     */
 
-    'logo' => '<b>Admin</b>LTE',
-    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-    'logo_img_class' => 'brand-image img-circle elevation-3',
+    'logo' => '',
+    'logo_img' => 'images/logo_zip.png',
+    'logo_img_class' => 'brand-image',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'Admin Logo',
+    'logo_img_alt' => 'PT. Zhafran Insan Property',
 
     /*
     |--------------------------------------------------------------------------
@@ -332,6 +332,16 @@ return [
                     'icon' => 'fas fa-list',
                 ],
                 [
+                    'text' => 'RAB Type 40',
+                    'url'  => 'rab/type40',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
+                    'text' => 'RAB Type 45',
+                    'url'  => 'rab/type45',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
                     'text' => 'RAB Type 50',
                     'url'  => 'rab/type50',
                     'icon' => 'fas fa-file-alt',
@@ -341,20 +351,39 @@ return [
                     'url'  => 'rab/type55',
                     'icon' => 'fas fa-file-alt',
                 ],
+                [
+                    'text' => 'RAB Type 60',
+                    'url'  => 'rab/type60',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
+                    'text' => 'RAB Type 70',
+                    'url'  => 'rab/type70',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
+                    'text' => 'RAB Type 80',
+                    'url'  => 'rab/type80',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
+                    'text' => 'RAB Type 100',
+                    'url'  => 'rab/type100',
+                    'icon' => 'fas fa-file-alt',
+                ],
+                [
+                    'text' => 'RAB Type 107',
+                    'url'  => 'rab/type107',
+                    'icon' => 'fas fa-file-alt',
+                ],
             ],
         ],
-        // Tukang items:
         [
-            'text' => 'Tukang',
-            'url'  => 'tukang',
-            'icon' => 'fas fa-hard-hat',
+            'text' => 'Angkutan',
+            'url'  => 'inventory/angkutan',
+            'icon' => 'fas fa-truck',
         ],
-        // Laporan items:
-        [
-            'text' => 'Laporan',
-            'url'  => 'laporan',
-            'icon' => 'fas fa-file-alt',
-        ],
+
     ],
 
     /*
@@ -459,6 +488,16 @@ return [
                     'type' => 'js',
                     'asset' => false,
                     'location' => '//cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js',
+                ],
+            ],
+        ],
+        'CustomSidebar' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => 'css/custom-sidebar.css',
                 ],
             ],
         ],

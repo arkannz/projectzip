@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'RAB Type 55')
+@section('title', 'RAB Type 80')
 
 @section('content_header')
-    <h1>RAB Type 55</h1>
+    <h1>RAB Type 80</h1>
 @stop
 
 @section('content')
@@ -11,7 +11,7 @@
 <div class="card p-4">
 
     {{-- ===================== FILTER AREA ===================== --}}
-    <form method="GET" action="{{ route('rab.type55') }}" class="row g-3 mb-4">
+    <form method="GET" action="{{ route('rab.type80') }}" class="row g-3 mb-4">
 
         <div class="col-md-4">
             <label>Type Rumah</label>
@@ -60,8 +60,8 @@
 </div>
 
 
-{{-- ===================== TAMPILKAN TABEL HANYA JIKA LENGKAP ===================== --}}
-@if(!empty($type_id) && !empty($location_id) && !empty($unit_id))
+{{-- ===================== TAMPILKAN TABEL HANYA JIKA LOKASI DAN UNIT DIPILIH ===================== --}}
+@if(!empty($location_id) && !empty($unit_id))
 
 <div class="card p-4 mt-3">
 
@@ -81,7 +81,7 @@
             <button type="button" class="btn btn-success mr-2" id="btnSaveAll">
                 <i class="fas fa-save"></i> Simpan Semua
             </button>
-            <a href="{{ route('rab.type55.print', ['type_id' => $type_id, 'unit_id' => $unit_id, 'location_id' => $location_id]) }}" 
+            <a href="{{ route('rab.type80.print', ['type_id' => $type_id, 'unit_id' => $unit_id, 'location_id' => $location_id]) }}" 
                class="btn btn-info" target="_blank">
                 <i class="fas fa-print"></i> Print / Export
             </a>

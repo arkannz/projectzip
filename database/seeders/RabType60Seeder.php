@@ -8,49 +8,49 @@ use App\Models\RabTemplate;
 use App\Models\RabTypeValue;
 use App\Models\RabCategory;
 
-class RabType55Seeder extends Seeder
+class RabType60Seeder extends Seeder
 {
     public function run()
     {
-        // Cari type 55
-        $type = Type::where('nama', '55')->first();
-
+        // Cari type 60 dari database
+        $type = Type::where('nama', '60')->first();
+        
         if (!$type) {
-            echo "⚠ Type 55 tidak ditemukan! Pastikan TypeSeeder sudah dijalankan.\n";
+            echo "⚠ Type 60 tidak ditemukan! Jalankan TypeSeeder terlebih dahulu.\n";
             return;
         }
-
+        
         $typeId = $type->id;
 
         // Ambil kategori
         $categories = RabCategory::pluck('id', 'kode')->toArray();
 
-        // ========================================
-        // BAHAN BAKU TYPE 55
+        // -----------------------------------------------
+        // DAFTAR BAHAN BAKU TYPE 60
         // Format: [kode_kategori, nama_item, qty]
-        // ========================================
+        // -----------------------------------------------
         $data = [
 
             // A — PONDASI
-            ['A', 'Besi ø6', 13],
-            ['A', 'Besi ø8 Ulir', 45],
-            ['A', 'Kayu 3/5', 38],
-            ['A', 'Cerucuk', 81],
-            ['A', 'Papan Mal', 180],
-            ['A', 'Pasir ', 14],
-            ['A', 'Batu', 2],
-            ['A', 'Semen PCC 40 Kg Tiga Roda', 42],
+            ['A', 'Besi ø6', 15],
+            ['A', 'Besi ø8 Ulir', 50],
+            ['A', 'Kayu 3/5', 42],
+            ['A', 'Cerucuk', 89],
+            ['A', 'Papan Mal', 197],
+            ['A', 'Pasir ', 16],
+            ['A', 'Batu', 3],
+            ['A', 'Semen PCC 40 Kg Tiga Roda', 46],
 
             // B — URUG
-            ['B', 'Pasir', 35],
+            ['B', 'Pasir ', 39],
             ['B', 'Pipa 4"', 2],
             ['B', 'Pipa 2"', 2],
 
             // C — COR LANTAI
-            ['C', 'Besi ø6', 17],
-            ['C', 'Pasir', 5],
-            ['C', 'Semen PCC 40 Kg Tiga Roda', 15],
-            ['C', 'Plastik cor', 7],
+            ['C', 'Besi ø6', 19],
+            ['C', 'Pasir', 6],
+            ['C', 'Semen PCC 40 Kg Tiga Roda', 17],
+            ['C', 'Plastik cor', 8],
 
             // D — PINTU
             ['D', 'Pintu Kayu 120 x 220', 1],
@@ -67,59 +67,59 @@ class RabType55Seeder extends Seeder
             ['D', 'Slot 4"', 1],
 
             // E — BATA
-            ['E', 'Papan', 26],
-            ['E', 'Kayu 3/5', 28],
-            ['E', 'Besi ø6', 5],
-            ['E', 'Besi ø8', 9],
-            ['E', 'Besi ø6 ', 2],
+            ['E', 'Papan', 29],
+            ['E', 'Kayu 3/5', 31],
+            ['E', 'Besi ø6', 6],
+            ['E', 'Besi ø8', 10],
+            ['E', 'Besi ø6 ', 3],
             ['E', 'Kusen Pintu ( 2 Daun )', 1],
             ['E', 'Kusen Pintu ( 1 Daun )', 3],
-            ['E', 'Bata', 2562],
-            ['E', 'Semen PCC 40 Kg Tiga Roda', 21],
-            ['E', 'Pasir', 5],
-            ['E', 'Besi ø6', 12],
+            ['E', 'Bata', 2795],
+            ['E', 'Semen PCC 40 Kg Tiga Roda', 23],
+            ['E', 'Pasir', 6],
+            ['E', 'Besi ø6', 6],
 
             // F — COR TIANG DEPAN
-            ['F', 'Semen PCC 40 Kg Tiga Roda', 5],
-            ['F', 'Pasir', 1],
-            ['F', 'Batu', 2],
-            ['F', 'Besi ø6 ', 3],
-            ['F', 'Besi ø8', 4],
-            ['F', 'Multiplek', 1],
-            ['F', 'Kayu 3/5', 22],
-            ['F', 'Bata', 81],
-            ['F', 'Cerucuk', 8],
-            ['F', 'Papan Mal', 7],
+            ['F', 'Semen PCC 40 Kg Tiga Roda', 6],
+            ['F', 'Pasir', 2],
+            ['F', 'Batu', 3],
+            ['F', 'Besi ø6 ', 4],
+            ['F', 'Besi ø8', 5],
+            ['F', 'Multiplek', 2],
+            ['F', 'Kayu 3/5', 24],
+            ['F', 'Bata', 89],
+            ['F', 'Cerucuk', 9],
+            ['F', 'Papan Mal', 8],
 
             // G — PLASTER
-            ['G', 'Semen PCC 40 Kg Tiga Roda', 38],
-            ['G', 'Pasir', 8],
-            ['G', 'Pipa 5/8', 7],
+            ['G', 'Semen PCC 40 Kg Tiga Roda', 42],
+            ['G', 'Pasir', 9],
+            ['G', 'Pipa 5/8', 8],
 
             // H — ATAP
-            ['H', 'Kayu 3/5', 66],
-            ['H', 'Kayu 4/6', 44],
-            ['H', 'Kayu 5/7', 32],
-            ['H', 'Lisplank', 10],
-            ['H', 'Seng  Metal 4 Susun (merah)', 75],
+            ['H', 'Kayu 3/5', 72],
+            ['H', 'Kayu 4/6', 48],
+            ['H', 'Kayu 5/7', 35],
+            ['H', 'Lisplank', 11],
+            ['H', 'Seng  Metal 4 Susun (merah)', 82],
             ['H', 'Seng  Metal 2 Susun (hitam)', 0],
             ['H', 'Perabung Hitam', 0],
             ['H', 'Perabung Merah', 1.5],
-            ['H', 'Paku 2 inch', 1],
-            ['H', 'Paku 3 inch', 1],
+            ['H', 'Paku 2 inch', 2],
+            ['H', 'Paku 3 inch', 2],
 
             // I — DEK
-            ['I', 'Kayu 3/5', 95],
-            ['I', 'Gypsum', 25],
-            ['I', 'Baut', 4],
-            ['I', 'Paku Beton 4 inch', 1],
-            ['I', 'Paku 3 inch', 1],
-            ['I', 'paku 2 inch', 1],
+            ['I', 'Kayu 3/5', 104],
+            ['I', 'Gypsum', 28],
+            ['I', 'Baut', 5],
+            ['I', 'Paku Beton 4 inch', 2],
+            ['I', 'Paku 3 inch', 2],
+            ['I', 'paku 2 inch', 2],
 
             // J — MINIMALIS
-            ['J', 'Bata', 120],
-            ['J', 'Pasir', 3],
-            ['J', 'Semen PCC 40 Kg Tiga Roda', 10],
+            ['J', 'Bata', 131],
+            ['J', 'Pasir', 4],
+            ['J', 'Semen PCC 40 Kg Tiga Roda', 11],
             ['J', 'Keramik 60 x 60 Blackmatt', 7],
 
             // K — CARPORT
@@ -135,17 +135,20 @@ class RabType55Seeder extends Seeder
             ['K', 'Keramik 60 x 60 Blackmatt', 31],
 
             // L — KERAMIK
-            ['L', 'Keramik 60 x 60 Cream', 35],
-            ['L', 'Keramik 60 x 60 Blackmatt', 14],
-            ['L', 'Pasir', 5],
-            ['L', 'Semen PCC 40 Kg Tiga Roda', 24],
+            ['L', 'Keramik 60 x 60 Cream', 39],
+            ['L', 'Keramik 60 x 60 Blackmatt', 16],
+            ['L', 'Pasir', 6],
+            ['L', 'Semen PCC 40 Kg Tiga Roda', 27],
             ['L', 'Oker', 5],
 
             // M — WC
+            ['M', 'Keramik 30 x 30', 6],
             ['M', 'Keramik 25 x 40', 22],
             ['M', 'Closed jongkok Ina', 2],
             ['M', 'Closed Duduk Volk', 1],
             ['M', 'Floor drain', 2],
+            ['M', 'Pasir', 1],
+            ['M', 'Semen PCC 40 Kg Tiga Roda', 4],
             ['M', 'Bak Air', 2],
             ['M', 'Pipa 1/2"', 2],
             ['M', 'Lbow 1/2"', 6],
@@ -153,13 +156,13 @@ class RabType55Seeder extends Seeder
             ['M', 'SDD 1/2"', 1],
 
             // N — ACI MINIMALIS
-            ['N', 'Semen TR-30 40 Kg Tiga Roda', 3],
+            ['N', 'Semen TR-30 40 Kg Tiga Roda', 4],
 
             // O — CAT
-            ['O', 'Mowilex weathercoat', 1],
-            ['O', 'Nippon paint Q-LUC', 3],
-            ['O', 'Semen TR-30 40 Kg Tiga Roda', 13],
-            ['O', 'Semen Aci Putih 25 kg', 1],
+            ['O', 'Mowilex weathercoat', 2],
+            ['O', 'Nippon paint Q-LUC', 4],
+            ['O', 'Semen TR-30 40 Kg Tiga Roda', 15],
+            ['O', 'Semen Aci Putih 25 kg', 2],
 
             // P — PAGAR
             ['P', 'Bata', 100],
@@ -216,9 +219,9 @@ class RabType55Seeder extends Seeder
             ['T', 'Mcb Kwh 1300 amper', 1],
         ];
 
-        // ========================================
+        // ----------------------------------------------------
         // INSERT KE rab_type_values
-        // ========================================
+        // ----------------------------------------------------
         $inserted = 0;
         $notFound = [];
 
@@ -256,7 +259,7 @@ class RabType55Seeder extends Seeder
             $inserted++;
         }
 
-        echo "✔ SELESAI — DATA TYPE 55 BERHASIL DIIMPORT ($inserted item)\n";
+        echo "✔ SELESAI — DATA TYPE 60 BERHASIL DIIMPORT ($inserted item)\n";
         
         if (count($notFound) > 0) {
             echo "⚠ ITEM TIDAK DITEMUKAN DI TEMPLATE:\n";
@@ -266,3 +269,4 @@ class RabType55Seeder extends Seeder
         }
     }
 }
+

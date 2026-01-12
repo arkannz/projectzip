@@ -8,10 +8,17 @@ use App\Models\RabTemplate;
 
 class RabTemplateSeeder extends Seeder
 {
+    /**
+     * Seeder ini membuat DATA MASTER template item.
+     * Template ini digunakan oleh SEMUA TYPE (50, 55, dll).
+     * Nilai bahan_baku spesifik per type disimpan di RabTypeValue.
+     */
     public function run()
     {
         $categories = RabCategory::pluck('id', 'kode')->toArray();
 
+        // Data master item - digunakan untuk semua type
+        // Format: [kode_kategori, nama_item]
         $data = [
 
             // ============================
@@ -22,14 +29,14 @@ class RabTemplateSeeder extends Seeder
             ['A', 'Kayu 3/5'],
             ['A', 'Cerucuk'],
             ['A', 'Papan Mal'],
-            ['A', 'Pasir'],
+            ['A', 'Pasir '],
             ['A', 'Batu'],
             ['A', 'Semen PCC 40 Kg Tiga Roda'],
 
             // ============================
             // B — URUG
             // ============================
-            ['B', 'Pasir'],
+            ['B', 'Pasir '],
             ['B', 'Pipa 4"'],
             ['B', 'Pipa 2"'],
 
@@ -54,7 +61,7 @@ class RabTemplateSeeder extends Seeder
             ['D', 'Pegangan kunci 1 daun'],
             ['D', 'Avian'],
             ['D', 'Tinner Nb Kaleng'],
-            ['D', 'Slot 6"'],
+            ['D', 'Slot 6 "'],
             ['D', 'Slot 4"'],
 
             // ============================
@@ -64,11 +71,13 @@ class RabTemplateSeeder extends Seeder
             ['E', 'Kayu 3/5'],
             ['E', 'Besi ø6'],
             ['E', 'Besi ø8'],
-            ['E', 'Kusen Pintu (2 Daun)'],
-            ['E', 'Kusen Pintu (1 Daun)'],
+            ['E', 'Besi ø6 '],
+            ['E', 'Kusen Pintu ( 2 Daun )'],
+            ['E', 'Kusen Pintu ( 1 Daun )'],
             ['E', 'Bata'],
             ['E', 'Semen PCC 40 Kg Tiga Roda'],
             ['E', 'Pasir'],
+            ['E', 'Besi ø6'],
 
             // ============================
             // F — COR TIANG DEPAN
@@ -76,7 +85,7 @@ class RabTemplateSeeder extends Seeder
             ['F', 'Semen PCC 40 Kg Tiga Roda'],
             ['F', 'Pasir'],
             ['F', 'Batu'],
-            ['F', 'Besi ø6'],
+            ['F', 'Besi ø6 '],
             ['F', 'Besi ø8'],
             ['F', 'Multiplek'],
             ['F', 'Kayu 3/5'],
@@ -98,8 +107,8 @@ class RabTemplateSeeder extends Seeder
             ['H', 'Kayu 4/6'],
             ['H', 'Kayu 5/7'],
             ['H', 'Lisplank'],
-            ['H', 'Seng Metal 4 Susun (merah)'],
-            ['H', 'Seng Metal 2 Susun (hitam)'],
+            ['H', 'Seng  Metal 4 Susun (merah)'],
+            ['H', 'Seng  Metal 2 Susun (hitam)'],
             ['H', 'Perabung Hitam'],
             ['H', 'Perabung Merah'],
             ['H', 'Paku 2 inch'],
@@ -113,7 +122,7 @@ class RabTemplateSeeder extends Seeder
             ['I', 'Baut'],
             ['I', 'Paku Beton 4 inch'],
             ['I', 'Paku 3 inch'],
-            ['I', 'Paku 2 inch'],
+            ['I', 'paku 2 inch'],
 
             // ============================
             // J — MINIMALIS
@@ -181,7 +190,7 @@ class RabTemplateSeeder extends Seeder
             ['P', 'Bata'],
             ['P', 'Pasir'],
             ['P', 'Semen PCC 40 Kg Tiga Roda'],
-            ['P', 'Besi ø6'],
+            ['P', 'Besi ø6 '],
             ['P', 'Besi ø8'],
 
             // ============================
@@ -194,7 +203,7 @@ class RabTemplateSeeder extends Seeder
             // R — TALANG AIR
             // ============================
             ['R', 'Pipa 3"'],
-            ['R', 'Pipa 2"'],
+            ['R', 'Pipa 2 "'],
             ['R', 'Cekakan pipa 2"'],
             ['R', 'Lbow 3" ke 2"'],
             ['R', 'Sambungan 3" ke 2"'],
@@ -220,13 +229,13 @@ class RabTemplateSeeder extends Seeder
             ['S', 'Sekrup 8 x 1,5 rata @ 50 pcs'],
             ['S', 'Sekrup 8 x 1 bulat'],
             ['S', 'Sekrup 8 x 0,5 rata'],
-            ['S', 'Rivet GT 429'],
+            ['S', 'Rivet gt 429'],
             ['S', 'Fisher S6 vini star'],
             ['S', 'Reben 5, 203 cm x 102 cm asahi'],
             ['S', 'Marks sosis white 620 ml'],
 
             // ============================
-            // T — ELEKTRICAL
+            // T — ELEKTICAL
             // ============================
             ['T', 'Saklar tunggal broco'],
             ['T', 'Saklar dobel broco'],
@@ -235,18 +244,25 @@ class RabTemplateSeeder extends Seeder
             ['T', 'Kabel NYA 2,5 Eterna (100m)'],
             ['T', 'Kabel NYM 2 x 1,5 Jumbo (50m)'],
             ['T', 'Kabel NYM 2 x 2,5 Jumbo (50m)'],
-            ['T', 'MCB 10A Powell'],
-            ['T', 'Box MCB tanam 3 grup'],
-            ['T', 'MCB Kwh 1300 amper'],
+            ['T', 'Mcb 10A Powell'],
+            ['T', 'Box Mcb tanam 3 grup'],
+            ['T', 'Mcb Kwh 1300 amper'],
         ];
 
         foreach ($data as $d) {
-            RabTemplate::create([
-                'category_id'        => $categories[$d[0]],
-                'uraian'             => $d[1],
-                'item_name'          => $d[1],
-                'default_bahan_baku' => 0,
-            ]);
+            // Gunakan updateOrCreate agar tidak duplikat saat re-seed
+            RabTemplate::updateOrCreate(
+                [
+                    'category_id' => $categories[$d[0]],
+                    'item_name'   => $d[1],
+                ],
+                [
+                    'uraian'             => $d[1],
+                    'default_bahan_baku' => 0,
+                ]
+            );
         }
+
+        echo "✔ RabTemplate seeder selesai - Data master item berhasil dibuat\n";
     }
 }

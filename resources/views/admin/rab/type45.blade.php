@@ -1,9 +1,9 @@
 @extends('adminlte::page')
 
-@section('title', 'RAB Type 55')
+@section('title', 'RAB Type 45')
 
 @section('content_header')
-    <h1>RAB Type 55</h1>
+    <h1>RAB Type 45</h1>
 @stop
 
 @section('content')
@@ -11,7 +11,7 @@
 <div class="card p-4">
 
     {{-- ===================== FILTER AREA ===================== --}}
-    <form method="GET" action="{{ route('rab.type55') }}" class="row g-3 mb-4">
+    <form method="GET" action="{{ route('rab.type45') }}" class="row g-3 mb-4">
 
         <div class="col-md-4">
             <label>Type Rumah</label>
@@ -81,7 +81,7 @@
             <button type="button" class="btn btn-success mr-2" id="btnSaveAll">
                 <i class="fas fa-save"></i> Simpan Semua
             </button>
-            <a href="{{ route('rab.type55.print', ['type_id' => $type_id, 'unit_id' => $unit_id, 'location_id' => $location_id]) }}" 
+            <a href="{{ route('rab.type45.print', ['type_id' => $type_id, 'unit_id' => $unit_id, 'location_id' => $location_id]) }}" 
                class="btn btn-info" target="_blank">
                 <i class="fas fa-print"></i> Print / Export
             </a>
@@ -400,7 +400,7 @@
         
         // Jalankan script utama
         jQuery(document).ready(function($) {
-    const typeId = '{{ $type_id }}';
+    const typeId = '{{ $type_id ?: $fixedType->id }}';
     const unitId = '{{ $unit_id }}';
     const locationId = '{{ $location_id }}';
 
@@ -701,10 +701,7 @@
                 $.ajax({
                     url: '{{ route("inventory.add.location") }}',
                     type: 'POST',
-                    data: { 
-                        _token: '{{ csrf_token() }}',
-                        nama: namaLokasi 
-                    },
+                    data: { nama: namaLokasi },
                     success: function(response) {
                         $('#selectLocationRAB').append(
                             '<option value="' + response.id + '">' + response.nama + '</option>'
@@ -743,7 +740,6 @@
                     url: '{{ route("inventory.addUnit") }}',
                     type: 'POST',
                     data: {
-                        _token: '{{ csrf_token() }}',
                         location_id: locationId,
                         type_id: typeId,
                         kode_unit: kodeUnit

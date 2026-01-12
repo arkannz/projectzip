@@ -15,19 +15,13 @@
 
         <div class="col-md-4">
             <label>Type Rumah</label>
-            <select name="type_id" class="form-control">
-                <option value="">Pilih Type</option>
-                @foreach($types as $t)
-                    <option value="{{ $t->id }}" {{ $type_id == $t->id ? 'selected' : '' }}>
-                        {{ $t->nama }}
-                    </option>
-                @endforeach
-            </select>
+            <input type="text" class="form-control" value="{{ $fixedType->nama }}" disabled style="background-color: #e9ecef; cursor: not-allowed;">
+            <input type="hidden" name="type_id" value="{{ $fixedType->id }}">
         </div>
 
         <div class="col-md-4">
             <label>Lokasi Rumah</label>
-            <select name="location_id" class="form-control">
+            <select name="location_id" class="form-control" id="selectLocationRAB">
                 <option value="">Pilih Lokasi</option>
                 @foreach($locations as $loc)
                     <option value="{{ $loc->id }}" {{ $location_id == $loc->id ? 'selected' : '' }}>
@@ -35,11 +29,14 @@
                     </option>
                 @endforeach
             </select>
+            <button type="button" class="btn btn-primary btn-sm mt-1" data-toggle="modal" data-target="#modalTambahLokasi">
+                + Tambah Lokasi Baru
+            </button>
         </div>
 
         <div class="col-md-4">
             <label>Unit Rumah</label>
-            <select name="unit_id" class="form-control">
+            <select name="unit_id" class="form-control" id="selectUnitRAB">
                 <option value="">Pilih Unit</option>
                 @foreach($units as $u)
                     <option value="{{ $u->id }}" {{ $unit_id == $u->id ? 'selected' : '' }}>
@@ -47,6 +44,9 @@
                     </option>
                 @endforeach
             </select>
+            <button type="button" class="btn btn-primary btn-sm mt-1" data-toggle="modal" data-target="#modalTambahUnit">
+                + Tambah Unit Baru
+            </button>
         </div>
 
         <div class="col-12 d-flex justify-content-center mt-3 mb-2">
@@ -237,6 +237,64 @@
 </div>
 
 @endif
+
+{{-- Modal Tambah Lokasi --}}
+<div class="modal fade" id="modalTambahLokasi">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Lokasi Baru</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nama Lokasi</label>
+                    <input type="text" id="inputNamaLokasi" class="form-control" required placeholder="Contoh: ILALANG 02">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btnSimpanLokasi">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal Tambah Unit --}}
+<div class="modal fade" id="modalTambahUnit">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah Unit Rumah Baru</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Lokasi Rumah</label>
+                    <select id="selectLokasiUnit" class="form-control" required>
+                        <option value="">-- pilih lokasi --</option>
+                        @foreach($locations as $loc)
+                            <option value="{{ $loc->id }}">{{ $loc->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Type Rumah</label>
+                    <input type="text" class="form-control" value="{{ $fixedType->nama }}" disabled style="background-color: #e9ecef; cursor: not-allowed;">
+                    <input type="hidden" id="selectTypeUnit" value="{{ $fixedType->id }}">
+                </div>
+                <div class="form-group">
+                    <label>Kode Unit</label>
+                    <input type="text" id="inputKodeUnit" class="form-control" placeholder="01 / 02 / 03" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="btnSimpanUnit">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @stop
 
@@ -630,6 +688,85 @@
             function parseUnformattedNumber(str) {
                 return parseFloat(str.replace(/[^\d-]/g, '')) || 0;
             }
+
+            // ===== TAMBAH LOKASI BARU (AJAX) =====
+            $('#btnSimpanLokasi').click(function() {
+                var namaLokasi = $('#inputNamaLokasi').val().trim();
+
+                if (namaLokasi === '') {
+                    alert('Nama lokasi tidak boleh kosong!');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route("inventory.add.location") }}',
+                    type: 'POST',
+                    data: { 
+                        _token: '{{ csrf_token() }}',
+                        nama: namaLokasi 
+                    },
+                    success: function(response) {
+                        $('#selectLocationRAB').append(
+                            '<option value="' + response.id + '">' + response.nama + '</option>'
+                        );
+                        $('#selectLokasiUnit').append(
+                            '<option value="' + response.id + '">' + response.nama + '</option>'
+                        );
+                        $('#selectLocationRAB').val(response.id);
+                        $('#inputNamaLokasi').val('');
+                        $('#modalTambahLokasi').modal('hide');
+                        alert('Lokasi "' + response.nama + '" berhasil ditambahkan!');
+                    },
+                    error: function(xhr) {
+                        alert('Gagal menambahkan lokasi. Silakan coba lagi.');
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            // ===== TAMBAH UNIT BARU (AJAX) =====
+            $('#btnSimpanUnit').click(function() {
+                var locationId = $('#selectLokasiUnit').val();
+                var typeId = $('#selectTypeUnit').val();
+                var kodeUnit = $('#inputKodeUnit').val().trim();
+
+                if (locationId === '') {
+                    alert('Pilih lokasi terlebih dahulu!');
+                    return;
+                }
+                if (kodeUnit === '') {
+                    alert('Kode unit tidak boleh kosong!');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route("inventory.addUnit") }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        location_id: locationId,
+                        type_id: typeId,
+                        kode_unit: kodeUnit
+                    },
+                    success: function(response) {
+                        location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Gagal menambahkan unit. Silakan coba lagi.');
+                        console.log(xhr.responseText);
+                    }
+                });
+            });
+
+            // Reset form modal saat modal ditutup
+            $('#modalTambahLokasi').on('hidden.bs.modal', function() {
+                $('#inputNamaLokasi').val('');
+            });
+
+            $('#modalTambahUnit').on('hidden.bs.modal', function() {
+                $('#selectLokasiUnit').val('');
+                $('#inputKodeUnit').val('');
+            });
         });
     }
     

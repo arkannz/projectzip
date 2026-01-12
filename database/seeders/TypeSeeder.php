@@ -19,6 +19,7 @@ class TypeSeeder extends Seeder
             ['nama' => '70'],
             ['nama' => '80'],
             ['nama' => '100'],
+            ['nama' => '107'],
         ];
 
         foreach ($types as $type) {
