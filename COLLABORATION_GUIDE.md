@@ -323,3 +323,6 @@ php artisan serve
 
 *Last updated: Setelah push fitur Data Angkutan dan Activity Log*
 
+
+
+
